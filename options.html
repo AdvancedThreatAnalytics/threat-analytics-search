@@ -1,0 +1,272 @@
+﻿<html class="page-options">
+  <head>
+    <title>Critical Start</title>
+
+    <script type="text/javascript" src="./libs/gibberish-aes-1.0.0.js"></script>
+    <script type="text/javascript" src="./libs/js-beautify-1.13.11.min.js"></script>
+    <script type="text/javascript" src="./libs/lodash-4.17.15.min.js"></script>
+    <script type="text/javascript" src="./libs/luxon-1.26.0.min.js"></script>
+    <script type="text/javascript" src="./libs/mustache-4.0.1.min.js"></script>
+    <script type="text/javascript" src="./libs/notiflix-2.7.0.min.js"></script>
+    <script type="text/javascript" src="./libs/sortable-js-1.10.2.min.js"></script>
+
+    <script type="text/javascript" src="./js/utils.js"></script>
+    <script type="text/javascript" src="./js/options.js"></script>
+
+    <link rel="stylesheet" href="./libs/bootstrap-4.6.0.min.css">
+    <link rel="stylesheet" href="./libs/fontawesome-5.15.13/css/all.min.css">
+    <link rel="stylesheet" href="./libs/notiflix-2.7.0.min.css">
+    <link rel="stylesheet" href="./css/main.css" />
+  </head>
+
+  <body>
+    <!-- Header -->
+    <header class="container d-flex mb-3">
+      <div>
+        <a href="http://www.criticalstart.com/threat-analytics-chrome-plugin/" title="Threat Analytics Chrome plugin notes">
+          <img src="./images/icon_128.png" alt="Critical Start logo" height="90px">
+        </a>
+      </div>
+      <div class="flex-grow-1 pl-3">
+        <h1 class="mb-1">Critical Start</h1>
+        <nav>Loading...</nav>
+
+        <script id="template-header-nav" type="x-tmpl-mustache">
+          <ul class="nav nav-tabs">
+            {{#tabs}}
+              <li class="nav-item">
+                <a
+                  class="nav-link {{ classes }}"
+                  data-tab="{{ page }}"
+                  href="{{ href }}"
+                  {{ attributes }}
+                >{{ label }}</a>
+              </li>
+            {{/tabs}}
+          </ul>
+        </script>
+      </div>
+      <div class="align-self-end pl-2 pb-2">
+        <a href="mailto:support@criticalstart.com?subject=Feedback for Threat Analytics Chrome Extension by Critical Start" title="Send email to Critical Start">
+          <i class="far fa-envelope" aria-hidden="true"></i>
+          Feedback
+        </a>
+      </div>
+    </header>
+
+    <!-- Tabs content -->
+    <main class="container">
+      <section data-tab="settings">
+        Loading...
+      </section>
+
+      <section data-tab="search-providers">
+        Loading...
+      </section>
+
+      <section data-tab="security-analytics">
+        <h2>Security Analytics Configuration</h2>
+
+        <form name="rsaConfig">
+          <div id="rsa_config">Loading...</div>
+        </form>
+
+        <h3>Manage Pivot Queries</h3>
+
+        <form name="rsaQueries">
+          <div id="rsa_queries">Loading...</div>
+        </form>
+      </section>
+
+      <section data-tab="netwitness">
+        <h2>NetWitness Investigator</h2>
+
+        <form name="nwiConfig">
+          <div id="nwi_config">Loading...</div>
+        </form>
+
+        <h3>Manage Pivot Queries</h3>
+
+        <form name="nwiQueries">
+          <div id="nwi_queries">Loading...</div>
+        </form>
+      </section>
+
+      <section data-tab="carbon-black">
+        <h2>Carbon Black Configuration</h2>
+
+        <form name="cbcConfig">
+          <div id="cbc_config">Loading...</div>
+        </form>
+
+        <h3>Manage Pivot Queries</h3>
+
+        <form name="cbcQueries">
+          <div id="cbc_queries">Loading...</div>
+        </form>
+      </section>
+
+      <section data-tab="about">
+        Loading...
+      </section>
+    </main>
+
+    <!-- Templates for CBC, NWI and SRA -->
+    <script id="template_providerConfig" type="x-tmpl-mustache">
+      <div class="row">
+        {{#items}}
+          <div class="col-md-6 align-self-end">
+            {{^isCheckbox}}
+              <div class="mt-2">
+                <label
+                  class="mb-0"
+                  for="subSettings_{{ key }}"
+                  >{{ label }}</label>
+                <input
+                  type="{{ type }}"
+                  class="form-control"
+                  name="{{ key }}"
+                  id="subSettings_{{ key }}"
+                  placeholder="{{ placeholder }}"
+                  value="{{ value }}">
+              </div>
+            {{/isCheckbox}}
+            {{#isCheckbox}}
+              <div class="form-check my-3">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  name="{{ key }}" 
+                  id="subSettings_{{ key }}"
+                  {{ checked }}
+                  value="yes">
+                <label
+                  class="form-check-label"
+                  for="subSettings_{{ key }}">
+                  {{ label }}
+                </label>
+              </div>
+            {{/isCheckbox}}
+          </div>
+        {{/items}}
+      </div>
+      <div class="text-right">
+        <button type="reset" class="btn btn-outline-danger">Undo recent changes</button>
+      </div>
+    </script>
+
+    <script id="template_providerQueries" type="x-tmpl-mustache">
+      <ul class="list-group">
+        {{#items}}
+          <li class="list-group-item sortable pl-1 pr-2 py-3" data-index="{{ index }}">
+            <div class="d-flex align-items-center">
+
+              <div class="sortable-handle p-2">
+                <i class="fas fa-arrows-alt text-large" aria-hidden="true"></i>
+              </div>
+
+              <div class="flex-1 mx-2">
+                <input
+                  type="text"
+                  value="{{ label }}"
+                  class="form-control text-black"
+                  placeholder="Label to be used in the context menu"
+                  name="label_{{ index }}">
+              </div>
+
+              <div class="flex-2 mx-2">
+                <input
+                  type="text"
+                  value="{{ query }}"
+                  class="form-control text-info"
+                  placeholder="Query to be used on the requests"
+                  name="query_{{ index }}">
+              </div>
+
+              <div class="form-check mx-2">
+                <input
+                  type="checkbox"
+                  value="yes"
+                  {{ enabled }}
+                  class="form-check-input"
+                  name="enabled_{{ index }}"
+                  id="{{ formName }}_enabled_{{ index }}">
+                <label
+                  class="form-check-label"
+                  for="{{ formName }}_enabled_{{ index }}">
+                  Enabled
+                </label>
+              </div>
+
+              <div>
+                <button
+                  type="button"
+                  class="btn btn-outline-danger py-0 px-1"
+                  title="Delete"
+                  name="delete_{{ index }}">
+                  <i class="fas fa-minus-circle" aria-hidden="true"></i>
+                  Delete
+                </button>
+              </div>
+
+            </div>
+          </li>
+        {{/items}}
+
+        <li class="list-group-item pl-1 pr-2">
+          <div class="d-flex align-items-center">
+
+            <div class="px-2 py-3">
+              <i class="fas fa-plus text-extra-large text-primary" aria-hidden="true"></i>
+            </div>
+
+            <div class="flex-1 mx-2">
+              <input
+                type="text"
+                value=""
+                class="form-control text-black"
+                placeholder="Label to be used in the context menu"
+                name="label_new">
+            </div>
+
+            <div class="flex-2 mx-2">
+              <input
+                type="text"
+                value=""
+                class="form-control text-info"
+                placeholder="Query to be used on the requests"
+                name="query_new">
+            </div>
+
+            <div>
+              <button
+                type="button"
+                class="btn btn-success"
+                title="Add"
+                name="add_new">
+                <i class="fas fa-plus-circle" aria-hidden="true"></i>
+                Add new query
+              </button>
+            </div>
+
+          </div>
+          <div class="alert alert-info text-small py-1 px-2 mt-2 ml-1 mb-0" role="alert">
+            To add a new query, replace the search term with "TESTSEARCH" in your query and copy the query to the 'Query' field below.
+          </div>
+        </li>
+      </ul>
+      <div class="text-right mt-2">
+        <button type="reset" class="btn btn-outline-danger">Undo recent changes</button>
+      </div>
+    </script>
+
+    <!-- Footer -->
+    <footer class="text-center mt-3 pb-2">
+      <hr class="my-2" />
+      <small class="text-muted">
+        Copyright 2015-2021 © Critical Start. All rights reserved.
+        <br><a target="_blank" href="https://www.criticalstart.com">https://www.criticalstart.com</a>
+      </small>
+    </footer>
+  </body>
+</html>

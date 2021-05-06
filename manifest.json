@@ -1,0 +1,31 @@
+{
+  "name": "Threat Analytics Search",
+  "manifest_version": 3,
+  "version": "5.0.0",
+  "icons": {
+    "16": "./images/icon_16.png",
+    "32": "./images/icon_32.png",
+    "48": "./images/icon_48.png",
+    "128": "./images/icon_128.png"
+  },
+  "description": "Use the right-click menu in Chrome to conduct single or group searches for selected text.",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "options_page": "options.html",
+  "permissions": [
+    "alarms",
+    "contextMenus",
+    "notifications",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "http://www.criticalstart.com/*",
+    "https://*/",
+    "http://*/"
+  ],
+  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCpwQdswwbWCDVkWd4XMJ1nxuzZYNmgnturk8DeuZgc85IPRiLyg5TTQKgSVjGU2s/i8a3qB/RsmMw7LR2V8f2L0z4qUO2CX3UfqeOtJMv1MkcUPTYBj7bOGe5sj4bFtKFMBD2YiSizlIFkFe63q0fr1QX6eF3DCBpgheYUTfmkzQIDAQAB",
+  "homepage_url": "http://www.criticalstart.com/threat-analytics-chrome-plugin/",
+  "update_url": "https://clients2.google.com/service/update2/crx"
+}

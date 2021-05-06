@@ -1,8 +1,16 @@
 // Load dependencies.
-importScripts('./libs/gibberish-aes-1.0.0.js');
-importScripts('./libs/lodash-4.17.15.min.js');
-importScripts('./libs/luxon-1.26.0.min.js');
-importScripts('./js/utils.js');
+const _ = require("lodash");
+const luxon = require("luxon");
+const {
+  MiscURLs,
+  StoreKey,
+  NWI_RANGE_LENGTH,
+  RSA_RANGE_LENGTH,
+  getGroupProviders,
+  getProviderTargetURL,
+  LocalStore,
+  ConfigFile
+} = require("./js/utils");
 
 // Install handler.
 chrome.runtime.onInstalled.addListener(async function(details) {

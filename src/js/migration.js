@@ -1,3 +1,14 @@
+require("../../node_modules/@fortawesome/fontawesome-free/css/all.min.css");
+require("../../node_modules/bootstrap/dist/css/bootstrap.min.css");
+const _ = require("lodash");
+const {
+  MiscURLs,
+  StoreKey,
+  Storage,
+  LocalStore,
+  ConfigFile
+} = require("./utils")
+
 /**
  * This script is run when updating the extension from version 4.x.x to version 5.0.0 (or higher) and
  * his main tasks is to relocate the user's settings saved from the local storage (i.e. "localStorage")

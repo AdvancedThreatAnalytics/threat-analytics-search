@@ -1,3 +1,8 @@
+const _ = require("lodash");
+const Mustache = require("mustache");
+const Notiflix = require("notiflix");
+const { Sortable } = require("sortablejs");
+
 // --- Constants --- //
 
 var MiscURLs = {
@@ -757,4 +762,20 @@ function providerTabHelper(
   };
 
   return tab;
+};
+
+module.exports = {
+  MiscURLs,
+  StoreKey,
+  CBC_CONFIG,
+  NWI_CONFIG,
+  NWI_RANGE_LENGTH,
+  RSA_CONFIG,
+  RSA_RANGE_LENGTH,
+  getGroupProviders,
+  getProviderTargetURL,
+  Storage,
+  LocalStore,
+  ConfigFile,
+  providerTabHelper
 };

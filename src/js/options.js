@@ -1,3 +1,20 @@
+require("../../node_modules/@fortawesome/fontawesome-free/css/all.min.css");
+require("../../node_modules/notiflix/dist/notiflix-2.7.0.min.css");
+require("../../node_modules/bootstrap/dist/css/bootstrap.min.css");
+const Mustache = require("mustache");
+const Notiflix = require("notiflix");
+const beautify = require("js-beautify");
+const { Sortable } = require("sortablejs");
+const {
+  StoreKey,
+  CBC_CONFIG,
+  NWI_CONFIG,
+  RSA_CONFIG,
+  LocalStore,
+  ConfigFile,
+  providerTabHelper
+} = require("./utils");
+
 
 // Global variable for store initial settings (before user changes).
 var initData = {};
@@ -241,7 +258,7 @@ var SettingsTab = {
         newSettings = await ConfigFile.generateJSONFile();
       }
 
-      textarea.value = js_beautify(JSON.stringify(newSettings), {indent_size: 2});
+      textarea.value = beautify(JSON.stringify(newSettings), {indent_size: 2});
     }
   },
 

@@ -1,3 +1,13 @@
+require("../../node_modules/@fortawesome/fontawesome-free/css/all.min.css");
+require("../../node_modules/bootstrap/dist/css/bootstrap.min.css");
+const _ = require("lodash");
+const Mustache = require("mustache");
+const {
+  StoreKey,
+  LocalStore
+} = require("./utils");
+
+
 // Wait for the page to be loaded to execute the initialization function.
 document.addEventListener("DOMContentLoaded", function() {
   init();

@@ -1,6 +1,5 @@
 const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
-const MinifyBundledWebpackPlugin = require('minify-bundled-webpack-plugin');
 const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
@@ -35,12 +34,14 @@ module.exports = {
 
         // Copy all files from src/ to dist/ folder.
         new CopyWebpackPlugin({
-            patterns: [path.join(__dirname, 'src/')],
-        }),
-
-        // Minify copied files.
-        new MinifyBundledWebpackPlugin({
-            patterns: ['**/*.+(json|css|js)'],
+            patterns: [{
+                from: path.join(__dirname, 'src/'),
+                globOptions: {
+                    ignore: [
+                        '**/*.+(css|js)'
+                    ]
+                }
+            }],
         })
     ],
     optimization: {

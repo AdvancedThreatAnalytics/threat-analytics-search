@@ -1,6 +1,7 @@
 require("../../node_modules/@fortawesome/fontawesome-free/css/all.min.css");
 require("../../node_modules/notiflix/dist/notiflix-2.7.0.min.css");
 require("../../node_modules/bootstrap/dist/css/bootstrap.min.css");
+require("../css/main.css");
 const Mustache = require("mustache");
 const Notiflix = require("notiflix");
 const beautify = require("js-beautify");

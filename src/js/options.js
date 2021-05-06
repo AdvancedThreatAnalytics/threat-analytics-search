@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", async function() {
   CarbonBlackTab.initialize();
   NetWitnessTab.initialize();
   SearchAnalyticsTab.initialize();
-  AboutTab.initialize();
 
   LocalStore.get([
     StoreKey.CARBON_BLACK,
@@ -55,71 +54,97 @@ function mainConfigurationUpdated(lazy) {
 // --- Header --- //
 
 var Header = {
-  TABS: [{
+  TABS: [
+    {
       page: "settings",
       href: "#",
-      label: "Settings"
+      label: "Settings",
     },
     {
       page: "search-providers",
       href: "#",
-      label: "Search Providers"
+      label: "Search Providers",
     },
     {
       page: "security-analytics",
       href: "#",
-      label: "Security Analytics"
+      label: "Security Analytics",
     },
     {
       page: "netwitness",
       href: "#",
-      label: "NetWitness"
+      label: "NetWitness",
     },
     {
       page: "carbon-black",
       href: "#",
-      label: "Carbon Black"
+      label: "Carbon Black",
+    },
+  ],
+
+  LINKS: [
+    {
+      label: "Home",
+      title: "Home",
+      icon: "fa fa-home",
+      href: MiscURLs.EXTENSION_HOME_URL,
     },
     {
-      page: "about",
-      href: "#",
-      label: "About"
+      label: "About us",
+      title: "About us",
+      icon: "fa fa-info-circle",
+      href: MiscURLs.ABOUT_US_URL,
+    },
+    {
+      label: "Feedback",
+      title: "Send email to Critical Start",
+      icon: "fa fa-envelope",
+      href: `mailto:${MiscURLs.SUPPORT_EMAIL}?subject=Feedback for Threat Analytics Chrome Extension by Critical Start`
     },
   ],
 
   DEFAULT_TAB: "search-providers",
 
-  update: function(params) {
-    var current = _.get(params, 'current') || Header.DEFAULT_TAB;
+  update: function (params) {
+    var current = _.get(params, "current") || Header.DEFAULT_TAB;
 
     // Add 'computed' variables to tabs.
-    var tabs = _.map(Header.TABS, function(tab) {
+    var tabs = _.map(Header.TABS, function (tab) {
       return _.assign({
-        classes: (tab.page === current) ? 'active' : 'text-success',
-        attributes: (tab.page === current) ? 'aria-current="page"' : ''
-      }, tab);
+          classes: tab.page === current ? "active" : "text-success",
+          attributes: tab.page === current ? 'aria-current="page"' : "",
+        },
+        tab
+      );
     });
 
     // Add default values to parameters.
     params = _.assign({
-      current: current,
-      tabs: tabs
-    }, params);
+        current: current,
+        tabs: tabs,
+      },
+      params
+    );
 
     // Replace template.
-    var template = document.getElementById('template-header-nav').innerHTML;
+    var template = document.getElementById("template-header-nav").innerHTML;
     var rendered = Mustache.render(template, params);
-    document.querySelector('header nav').innerHTML = rendered;
+    document.querySelector("header nav").innerHTML = rendered;
+
+    // Replace link template.
+    var template = document.getElementById("template-header-links").innerHTML;
+    var rendered = Mustache.render(template, { links: Header.LINKS });
+    document.getElementById("links").innerHTML = rendered;
 
     // Add click behaviors to tab links.
-    var items = document.querySelectorAll('header nav .nav-link');
+    var items = document.querySelectorAll("header nav .nav-link");
     for (var i = 0; i < items.length; i++) {
-      items[i].addEventListener('click', Header.tabClicked);
+      items[i].addEventListener("click", Header.tabClicked);
     }
   },
 
-  tabClicked: function(event) {
-    var current = event.target.getAttribute('data-tab');
+  tabClicked: function (event) {
+    var current = event.target.getAttribute("data-tab");
 
     Header.update({
       current: current
@@ -189,11 +214,24 @@ var SettingsTab = {
     });
 
     // Update 'last update' text.
-    var lastConfig = await LocalStore.getOne(StoreKey.LAST_CONFIG_UPDATE);
-    document.getElementById("settings_lastConfigUpdate").innerHTML = _.isNil(lastConfig)? "-" : (lastConfig + '');
+    SettingsTab.updateLastConfigUpdate();
 
     // Update import textarea.
     SettingsTab.updateJSONTextarea();
+  },
+
+  updateLastConfigUpdate: async function() {
+    var lastConfig = await LocalStore.getOne(StoreKey.LAST_CONFIG_DATA);
+    
+    let date = _.get(lastConfig, "date", "-");
+    let error = _.get(lastConfig, "errorMsg", "");
+
+    date = luxon.DateTime.fromSeconds(date / 1000).toLocaleString(
+      luxon.DateTime.DATETIME_SHORT_WITH_SECONDS
+    );
+    
+    document.getElementById("settings_lastConfigUpdate").innerHTML = date;
+    document.getElementById("settings_lastConfigUpdateError").innerHTML = error;
   },
 
   updateJSONTextarea: async function(newSettings) {
@@ -215,6 +253,9 @@ var SettingsTab = {
 
       Notiflix.Notify.Success("The settings were refreshed");
     } else {
+      // Update Last Config label to show error details.
+      SettingsTab.updateLastConfigUpdate();
+
       Notiflix.Notify.Failure("The settings couldn't be updated, please check the URL or the file content");
     }
   },
@@ -623,19 +664,3 @@ var SearchAnalyticsTab = providerTabHelper(
     return null;
   }
 );
-
-
-// --- About tab --- //
-
-var AboutTab = {
-  initialize: function() {
-    fetch('views/about.html')
-      .then((response) => response.text())
-      .then((htmlData) => {
-        document.querySelector('main section[data-tab="about"]').innerHTML = htmlData;
-
-        var manifest = chrome.runtime.getManifest();
-        document.getElementById("about_version").innerHTML = manifest.version;
-      });
-  }
-};

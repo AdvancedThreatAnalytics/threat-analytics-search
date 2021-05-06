@@ -1,7 +1,7 @@
 {
   "name": "Threat Analytics Search",
   "manifest_version": 3,
-  "version": "5.0.0",
+  "version": "5.1.0",
   "icons": {
     "16": "./images/icon_16.png",
     "32": "./images/icon_32.png",

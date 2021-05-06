@@ -1,7 +1,10 @@
 // --- Constants --- //
 
 var MiscURLs = {
-  INSTALLED_URL: "https://www.criticalstart.com/threat-analytics-chrome-plugin/"
+  ABOUT_US_URL: "https://www.criticalstart.com/company/",
+  EXTENSION_HOME_URL: "http://www.criticalstart.com/threat-analytics-chrome-plugin/",
+  INSTALLED_URL: "https://www.criticalstart.com/threat-analytics-chrome-plugin/",
+  SUPPORT_EMAIL: "support@criticalstart.com",
 };
 
 var BasicConfig = {
@@ -39,11 +42,11 @@ var ProvQuery = {
 
 var StoreKey = {
   CARBON_BLACK: "carbon_black",
-  LAST_CONFIG_UPDATE: "last_config_update",
+  LAST_CONFIG_DATA: "last_config_data",
   NET_WITNESS: "netwitness_investigator",
   RSA_SECURITY: "rsa_security_analytics",
   SEARCH_PROVIDERS: "search_providers",
-  SETTINGS: "settings"
+  SETTINGS: "settings",
 };
 
 var CBC_CONFIG = [
@@ -116,6 +119,9 @@ function getProviderTargetURL(provider, selectionText) {
   return targetURL;
 }
 
+var isDate = function (date) {
+  return new Date(date) !== "Invalid Date" && !isNaN(new Date(date));
+};
 
 // --- Storage --- //
 
@@ -209,6 +215,7 @@ var LocalStore = {
 var ConfigFile = {
   updateNow: async function() {
     var settings = await LocalStore.getOne(StoreKey.SETTINGS) || {};
+    var errMsg = null;
 
     try {
       // Execute request to get configuration file.
@@ -217,9 +224,6 @@ var ConfigFile = {
         var dataRaw = await response.text();
         dataRaw = dataRaw.replace(/\n\r|\r\n/g, "");
 
-        // Update date variable.
-        LocalStore.setOne(StoreKey.LAST_CONFIG_UPDATE, new Date().toString());
-
         // Check if the file should be decripted.
         if (settings.configEncrypted) {
           var k1 = settings.configEncryptionKey;
@@ -227,22 +231,29 @@ var ConfigFile = {
             dataRaw = GibberishAES.dec(dataRaw, k1);
           } catch (decErr) {
             console.error(decErr);
-            LocalStore.setOne(StoreKey.LAST_CONFIG_UPDATE, "Update failed - Decryption Error");
+            errMsg = "Update failed - Decryption Error";
           }
         }
 
         // Parse data object.
         var data = JSON.parse(dataRaw);
         await ConfigFile.parseJSONFile(data, false);
-        return true;
       } else {
-        LocalStore.setOne(StoreKey.LAST_CONFIG_UPDATE, "Update failed - Invalid URL");
+        errMsg = "Update failed - Invalid URL";
       }
     } catch (fileErr) {
       console.error(fileErr);
-      LocalStore.setOne(StoreKey.LAST_CONFIG_UPDATE, "Update failed - Invalid File");
+      errMsg = "Update failed - Invalid File";
     }
-    return false;
+
+    // Update timestamp and error message.
+    await LocalStore.setOne(StoreKey.LAST_CONFIG_DATA, {
+       date: new Date().getTime(),
+       errorMsg: errMsg
+    });
+
+    // Return success flag.
+    return !errMsg;
   },
 
   sanitizeSettings: async function() {

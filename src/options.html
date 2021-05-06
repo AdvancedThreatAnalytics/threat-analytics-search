@@ -30,7 +30,6 @@
       <div class="flex-grow-1 pl-3">
         <h1 class="mb-1">Critical Start</h1>
         <nav>Loading...</nav>
-
         <script id="template-header-nav" type="x-tmpl-mustache">
           <ul class="nav nav-tabs">
             {{#tabs}}
@@ -46,12 +45,17 @@
           </ul>
         </script>
       </div>
-      <div class="align-self-end pl-2 pb-2">
-        <a href="mailto:support@criticalstart.com?subject=Feedback for Threat Analytics Chrome Extension by Critical Start" title="Send email to Critical Start">
-          <i class="far fa-envelope" aria-hidden="true"></i>
-          Feedback
-        </a>
-      </div>
+      <div id="links" class="d-flex align-items-end"> Loading...</div> 
+      <script id="template-header-links" type="x-tmpl-mustache">
+        {{#links}}
+          <div class="mx-2 pb-2">
+            <a href="{{ href }}" title="{{ title }}" target="_blank">
+              <i class="{{ icon }}" aria-hidden="true"></i>
+              {{ label }}
+            </a>
+          </div>
+        {{/links}}
+      </script>
     </header>
 
     <!-- Tabs content -->
@@ -104,10 +108,6 @@
         <form name="cbcQueries">
           <div id="cbc_queries">Loading...</div>
         </form>
-      </section>
-
-      <section data-tab="about">
-        Loading...
       </section>
     </main>
 

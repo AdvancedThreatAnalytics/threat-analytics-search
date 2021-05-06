@@ -99,9 +99,24 @@ function migrateSpecialProvider(storeKey, fileKey, configKey, queryKey) {
 
 function migrateOthers() {
   return LocalStore.setOne(
-    StoreKey.LAST_CONFIG_UPDATE,
-    Storage.getItem("_configLastRefresh")
+    StoreKey.LAST_CONFIG_DATA,
+    parseLastRefresh(Storage.getItem("_configLastRefresh"))
   );
+}
+
+function parseLastRefresh(item) {
+  let error, date;
+
+  if (!_.isNil(item) && isDate(item)) {
+    date = new Date(item).getTime();
+  } else {
+    error = item;
+  }
+
+  return {
+    date: date,
+    errorMsg: error,
+  };
 }
 
 function tryJSONparse(string) {

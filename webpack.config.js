@@ -1,5 +1,4 @@
 const path = require("path");
-const webpack = require('webpack');
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MinifyBundledWebpackPlugin = require('minify-bundled-webpack-plugin');
 const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");

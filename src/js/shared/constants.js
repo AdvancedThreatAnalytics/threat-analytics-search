@@ -13,31 +13,6 @@ export const BasicConfig = {
   AUTO_UPDATE: 4,
 };
 
-export const SearchProv = {
-  MENU_INDEX: 0,
-  LABEL: 1,
-  LINK: 2,
-  ENABLED: 3,
-  FROM_CONFIG: 4,
-  GROUP: 5,
-  IS_POST: 6,
-  POST_REQUEST: 7,
-  PROXY_ENABLED: 8,
-  PROXY_URL: 9
-};
-
-export const ProvGroups = {
-  NUMBER: 0,
-  NAME: 1,
-};
-
-export const ProvQuery = {
-  MENU_INDEX: 0,
-  LABEL: 1,
-  QUERY: 2,
-  ENABLED: 3,
-};
-
 export const StoreKey = {
   CARBON_BLACK: "carbon_black",
   LAST_CONFIG_DATA: "last_config_data",
@@ -93,9 +68,6 @@ export const RSA_RANGE_LENGTH = 4;
 export default {
   MiscURLs,
   BasicConfig,
-  SearchProv,
-  ProvGroups,
-  ProvQuery,
   StoreKey,
   CBC_CONFIG,
   NWI_CONFIG,

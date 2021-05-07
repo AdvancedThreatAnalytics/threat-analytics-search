@@ -3,9 +3,6 @@ import _ from "lodash";
 import { DateTime } from "luxon";
 
 import {
-  ConfigFile
-} from "./js/utils";
-import {
   MiscURLs,
   StoreKey,
   NWI_RANGE_LENGTH,
@@ -15,6 +12,7 @@ import {
   getGroupProviders,
   getProviderTargetURL,
 } from "./js/shared/misc";
+import ConfigFile from "./js/shared/config_file";
 import LocalStore from "./js/shared/local_store";
 
 // Install handler.

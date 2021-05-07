@@ -4,13 +4,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import _ from "lodash";
 
 import {
-  ConfigFile,
-} from "./utils";
-import {
   MiscURLs,
   StoreKey,
 } from "./shared/constants";
 import { isDate } from "./shared/misc";
+import ConfigFile from "./shared/config_file";
 import LocalStore from "./shared/local_store";
 import Storage from "./shared/storage";
 

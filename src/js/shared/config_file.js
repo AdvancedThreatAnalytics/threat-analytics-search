@@ -1,15 +1,37 @@
 import _ from "lodash";
-import Mustache from "mustache";
-import Notiflix from "notiflix";
-import { Sortable } from "sortablejs";
 
-import { StoreKey } from "./shared/constants";
-import LocalStore from "./shared/local_store";
+import {
+  BasicConfig,
+  StoreKey
+} from "./constants";
+import LocalStore from "./local_store";
 
+const ProvGroups = {
+  NUMBER: 0,
+  NAME: 1,
+};
 
-// --- Configuration File --- //
+const ProvQuery = {
+  MENU_INDEX: 0,
+  LABEL: 1,
+  QUERY: 2,
+  ENABLED: 3,
+};
 
-export var ConfigFile = {
+const SearchProv = {
+  MENU_INDEX: 0,
+  LABEL: 1,
+  LINK: 2,
+  ENABLED: 3,
+  FROM_CONFIG: 4,
+  GROUP: 5,
+  IS_POST: 6,
+  POST_REQUEST: 7,
+  PROXY_ENABLED: 8,
+  PROXY_URL: 9
+}
+
+const ConfigFile = {
   updateNow: async function() {
     var settings = await LocalStore.getOne(StoreKey.SETTINGS) || {};
     var errMsg = null;
@@ -83,7 +105,7 @@ export var ConfigFile = {
     _.forEach(specialProviders, async function(special) {
       var data = await LocalStore.getOne(special.storeKey) || {};
       if(_.isEmpty(data.config)) {
-        data.config = _.get(defaultFile, `${special.fileKey}.Queries`) || {};
+        data.config = _.get(defaultFile, `${special.fileKey}.Config`) || {};
       }
       if(_.isEmpty(data.queries)) {
         data.queries = _.map(_.get(defaultFile, `${special.fileKey}.Queries`), ConfigFile.parseQuery);
@@ -282,7 +304,4 @@ export var ConfigFile = {
   }
 };
 
-
-export default {
-  ConfigFile
-};
+export default ConfigFile;

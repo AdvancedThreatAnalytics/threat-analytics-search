@@ -10,7 +10,6 @@ import beautify from "js-beautify";
 import { DateTime } from "luxon";
 import { Sortable } from "sortablejs";
 
-import { ConfigFile } from "./utils";
 import {
   MiscURLs,
   StoreKey,
@@ -18,6 +17,7 @@ import {
   NWI_CONFIG,
   RSA_CONFIG,
 } from "./shared/constants";
+import ConfigFile from "./shared/config_file";
 import LocalStore from "./shared/local_store";
 import providerTabHelper from "./shared/provider_helper";
 

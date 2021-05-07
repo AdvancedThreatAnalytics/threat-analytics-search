@@ -1,4 +1,5 @@
 import _ from "lodash";
+import GibberishAES from "gibberish-aes";
 
 import {
   BasicConfig,
@@ -120,7 +121,6 @@ const ConfigFile = {
 
     // - Update basic settings (if need).
     if (overrideConfig && !_.isEmpty(newData.config)) {
-      var config = newData.config[0];
       _.assign(settings, ConfigFile.parseBasicSettings(newData.config));
     }
 

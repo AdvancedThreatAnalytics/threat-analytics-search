@@ -277,6 +277,6 @@ function providerTabHelper(
   };
 
   return tab;
-};
+}
 
 export default providerTabHelper;

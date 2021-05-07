@@ -476,7 +476,7 @@ function showPopupMessage(title, message) {
   try{
     chrome.notifications.create('', {
       title: title,
-      message: url,
+      message: message,
       iconUrl: '/images/icon_48.png',
       type: 'basic'
     });

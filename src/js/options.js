@@ -4,6 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 import "../css/main.css";
 
+import _ from "lodash";
 import Mustache from "mustache";
 import Notiflix from "notiflix";
 import beautify from "js-beautify";
@@ -70,7 +71,7 @@ function mainConfigurationUpdated(lazy) {
   }
 
   chrome.runtime.sendMessage({ action: "updateContextualMenu" });
-};
+}
 
 
 // --- Header --- //
@@ -149,14 +150,14 @@ var Header = {
     );
 
     // Replace template.
-    var template = document.getElementById("template-header-nav").innerHTML;
-    var rendered = Mustache.render(template, params);
-    document.querySelector("header nav").innerHTML = rendered;
+    var headerTemplate = document.getElementById("template-header-nav").innerHTML;
+    var headerRendered = Mustache.render(headerTemplate, params);
+    document.querySelector("header nav").innerHTML = headerRendered;
 
     // Replace link template.
-    var template = document.getElementById("template-header-links").innerHTML;
-    var rendered = Mustache.render(template, { links: Header.LINKS });
-    document.getElementById("links").innerHTML = rendered;
+    var linksTemplate = document.getElementById("template-header-links").innerHTML;
+    var linksRendered = Mustache.render(linksTemplate, { links: Header.LINKS });
+    document.getElementById("links").innerHTML = linksRendered;
 
     // Add click behaviors to tab links.
     var items = document.querySelectorAll("header nav .nav-link");

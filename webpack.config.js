@@ -14,7 +14,7 @@ module.exports = {
     plugins: [
         // Copy all files from src/ to dist/ folder.
         new CopyWebpackPlugin({
-            patterns: [path.join(__dirname, 'src/')],
+            patterns: [path.join(__dirname, 'src/'), "./settings.json"],
         }),
 
         // Minify copied files.

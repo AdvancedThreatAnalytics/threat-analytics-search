@@ -30,18 +30,17 @@ module.exports = {
         ]
     },
     plugins: [
-        new CleanWebpackPlugin(),
-
-        // Copy all files from src/ to dist/ folder.
+        // Copy files from 'src/' and settings file to 'dist/' folder.
         new CopyWebpackPlugin({
             patterns: [{
                 from: path.join(__dirname, 'src/'),
                 globOptions: {
-                    ignore: [
-                        '**/*.+(css|js)'
-                    ]
-                }
-            }],
+                    ignore: ['**/*.+(css|js)']
+                    }
+                },
+                {
+                    from: "./settings.json"
+                }],
         })
     ],
     optimization: {

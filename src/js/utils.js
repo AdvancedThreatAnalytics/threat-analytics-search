@@ -290,10 +290,10 @@ export var ConfigFile = {
     ];
     _.forEach(specialProviders, async function(special) {
       var data = await LocalStore.getOne(special.storeKey) || {};
-      if(_.isEmpty(data.config)) {
-        data.config = _.get(defaultFile, `${special.fileKey}.Queries`) || {};
+      if(!_.isObject(data.config)) {
+        data.config = _.get(defaultFile, `${special.fileKey}.Config`) || {};
       }
-      if(_.isEmpty(data.queries)) {
+      if(!_.isArray(data.queries)) {
         data.queries = _.map(_.get(defaultFile, `${special.fileKey}.Queries`), ConfigFile.parseQuery);
       }
       LocalStore.setOne(special.storeKey, data);

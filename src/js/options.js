@@ -10,10 +10,7 @@ import beautify from "js-beautify";
 import { DateTime } from "luxon";
 import { Sortable } from "sortablejs";
 
-import {
-  ConfigFile,
-  providerTabHelper
-} from "./utils";
+import { ConfigFile } from "./utils";
 import {
   MiscURLs,
   StoreKey,
@@ -22,6 +19,7 @@ import {
   RSA_CONFIG,
 } from "./shared/constants";
 import LocalStore from "./shared/local_store";
+import providerTabHelper from "./shared/provider_helper";
 
 // Global variable for store initial settings (before user changes).
 var initData = {};

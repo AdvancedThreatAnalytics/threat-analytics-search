@@ -251,7 +251,10 @@ var ConfigFile = {
     // Sanitize basic settings and groups.
     var oldSettings = await LocalStore.getOne(StoreKey.SETTINGS);
     var newSettings = ConfigFile.parseBasicSettings(defaultFile.config);
-    newSettings.providersGroups = ConfigFile.parseBasicSettings(defaultFile.groups);
+    newSettings.providersGroups = ConfigFile.parseGroups(defaultFile.groups);
+    if(_.isObject(oldSettings) && !_.isArray(oldSettings.providersGroups)) {
+      delete oldSettings.providersGroups;
+    }
     await LocalStore.setOne(StoreKey.SETTINGS, _.assign(newSettings, oldSettings));
 
     // Sanitize search providers.
@@ -271,10 +274,10 @@ var ConfigFile = {
     ];
     _.forEach(specialProviders, async function(special) {
       var data = await LocalStore.getOne(special.storeKey) || {};
-      if(_.isEmpty(data.config)) {
-        data.config = _.get(defaultFile, `${special.fileKey}.Queries`) || {};
+      if(!_.isObject(data.config)) {
+        data.config = _.get(defaultFile, `${special.fileKey}.Config`) || {};
       }
-      if(_.isEmpty(data.queries)) {
+      if(!_.isArray(data.queries)) {
         data.queries = _.map(_.get(defaultFile, `${special.fileKey}.Queries`), ConfigFile.parseQuery);
       }
       LocalStore.setOne(special.storeKey, data);

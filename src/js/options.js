@@ -1,13 +1,16 @@
-require("../../node_modules/@fortawesome/fontawesome-free/css/all.min.css");
-require("../../node_modules/notiflix/dist/notiflix-2.7.0.min.css");
-require("../../node_modules/bootstrap/dist/css/bootstrap.min.css");
-require("../css/main.css");
-const Mustache = require("mustache");
-const Notiflix = require("notiflix");
-const beautify = require("js-beautify");
-const luxon = require("luxon");
-const { Sortable } = require("sortablejs");
-const {
+import "@fortawesome/fontawesome-free/css/all.min.css";
+import "notiflix/dist/notiflix-2.7.0.min.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+
+import "../css/main.css";
+
+import Mustache from "mustache";
+import Notiflix from "notiflix";
+import beautify from "js-beautify";
+import { DateTime } from "luxon";
+import { Sortable } from "sortablejs";
+
+import {
   MiscURLs,
   StoreKey,
   CBC_CONFIG,
@@ -16,8 +19,7 @@ const {
   LocalStore,
   ConfigFile,
   providerTabHelper
-} = require("./utils");
-
+} from "./utils";
 
 // Global variable for store initial settings (before user changes).
 var initData = {};
@@ -246,8 +248,8 @@ var SettingsTab = {
     let date = _.get(lastConfig, "date", "-");
     let error = _.get(lastConfig, "errorMsg", "");
 
-    date = luxon.DateTime.fromSeconds(date / 1000).toLocaleString(
-      luxon.DateTime.DATETIME_SHORT_WITH_SECONDS
+    date = DateTime.fromSeconds(date / 1000).toLocaleString(
+      DateTime.DATETIME_SHORT_WITH_SECONDS
     );
     
     document.getElementById("settings_lastConfigUpdate").innerHTML = date;

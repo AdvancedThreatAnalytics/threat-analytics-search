@@ -1,7 +1,7 @@
 // Load dependencies.
-const _ = require("lodash");
-const luxon = require("luxon");
-const {
+import _ from "lodash";
+import { DateTime } from "luxon";
+import {
   MiscURLs,
   StoreKey,
   NWI_RANGE_LENGTH,
@@ -10,7 +10,7 @@ const {
   getProviderTargetURL,
   LocalStore,
   ConfigFile
-} = require("./js/utils");
+} from "./js/utils";
 
 // Install handler.
 chrome.runtime.onInstalled.addListener(async function(details) {
@@ -125,8 +125,8 @@ var ContextualMenu = {
 
   _addCarbonBlack: async function() {
     var data = await LocalStore.getOne(StoreKey.CARBON_BLACK);
-    config = _.get(data, 'config', {});
-    queries = _.get(data, 'queries', []);
+    var config = _.get(data, 'config', {});
+    var queries = _.get(data, 'queries', []);
 
     // Create the CBC menu (if enabled).
     if (config.CBCConfigEnable) {
@@ -158,8 +158,8 @@ var ContextualMenu = {
 
   _addNetWitness: async function() {
     var data = await LocalStore.getOne(StoreKey.NET_WITNESS);
-    config = _.get(data, 'config', {});
-    queries = _.get(data, 'queries', []);
+    var config = _.get(data, 'config', {});
+    var queries = _.get(data, 'queries', []);
 
     // Create the NWI menu (if enabled)
     if (config.NWIConfigEnable) {
@@ -202,8 +202,8 @@ var ContextualMenu = {
 
   _addRSASecurity: async function() {
     var data = await LocalStore.getOne(StoreKey.RSA_SECURITY);
-    config = _.get(data, 'config', {});
-    queries = _.get(data, 'queries', []);
+    var config = _.get(data, 'config', {});
+    var queries = _.get(data, 'queries', []);
 
     // Create the RSA menu (if enabled)
     if (config.RSAConfigEnable) {
@@ -359,8 +359,8 @@ var ContextualMenu = {
 
   carbonBlackClicked: async function(info, tab) {
     var data = await LocalStore.getOne(StoreKey.CARBON_BLACK);
-    config = _.get(data, 'config', {});
-    queries = _.get(data, 'queries', []);
+    var config = _.get(data, 'config', {});
+    var queries = _.get(data, 'queries', []);
 
     var queryItem = _.find(queries, function(item) { return item.menuIndex === info.menuItemId});
     if(queryItem) {
@@ -387,8 +387,8 @@ var ContextualMenu = {
 
   netWitnessClicked: async function(info, tab) {
     var data = await LocalStore.getOne(StoreKey.NET_WITNESS);
-    config = _.get(data, 'config', {});
-    queries = _.get(data, 'queries', []);
+    var config = _.get(data, 'config', {});
+    var queries = _.get(data, 'queries', []);
 
     var queryItem = _.find(queries, function(item) { return item.menuIndex === info.parentMenuItemId});
     if(queryItem) {
@@ -407,7 +407,7 @@ var ContextualMenu = {
       query = escape("(") + encodeURIComponent(query) + escape(")");
 
       // Set start and end date.
-      var endDate = luxon.DateTime.now();
+      var endDate = DateTime.now();
       var startDate = endDate.minus(hours * 60 * 60 * 1000);
       if (useGMT) {
         endDate = endDate.setZone("UTC");
@@ -434,8 +434,8 @@ var ContextualMenu = {
 
   rsaSecurityClicked: async function(info, tab) {
     var data = await LocalStore.getOne(StoreKey.RSA_SECURITY);
-    config = _.get(data, 'config', {});
-    queries = _.get(data, 'queries', []);
+    var config = _.get(data, 'config', {});
+    var queries = _.get(data, 'queries', []);
 
     var queryItem = _.find(queries, function(item) { return item.menuIndex === info.parentMenuItemId});
     if(queryItem) {

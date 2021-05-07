@@ -1,13 +1,15 @@
-require("../../node_modules/@fortawesome/fontawesome-free/css/all.min.css");
-require("../../node_modules/bootstrap/dist/css/bootstrap.min.css");
-const _ = require("lodash");
-const {
+import "@fortawesome/fontawesome-free/css/all.min.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+
+import _ from "lodash";
+
+import {
   MiscURLs,
   StoreKey,
   Storage,
   LocalStore,
   ConfigFile
-} = require("./utils")
+} from "./utils";
 
 /**
  * This script is run when updating the extension from version 4.x.x to version 5.0.0 (or higher) and

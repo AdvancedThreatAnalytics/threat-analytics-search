@@ -12,9 +12,9 @@ module.exports = {
         filename: "background.js"
     },
     plugins: [
-        // Copy all files from src/ to dist/ folder.
+        // Copy files from 'src/' and settings file to 'dist/' folder.
         new CopyWebpackPlugin({
-            patterns: [path.join(__dirname, 'src/')],
+            patterns: [path.join(__dirname, 'src/'), "./settings.json"],
         }),
 
         // Minify copied files.

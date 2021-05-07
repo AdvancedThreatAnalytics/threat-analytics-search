@@ -4,12 +4,15 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import _ from "lodash";
 
 import {
-  MiscURLs,
-  StoreKey,
   Storage,
   LocalStore,
-  ConfigFile
+  ConfigFile,
 } from "./utils";
+import {
+  MiscURLs,
+  StoreKey,
+} from "./shared/constants";
+import { isDate } from "./shared/misc";
 
 /**
  * This script is run when updating the extension from version 4.x.x to version 5.0.0 (or higher) and

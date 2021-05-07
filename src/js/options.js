@@ -11,15 +11,17 @@ import { DateTime } from "luxon";
 import { Sortable } from "sortablejs";
 
 import {
+  LocalStore,
+  ConfigFile,
+  providerTabHelper
+} from "./utils";
+import {
   MiscURLs,
   StoreKey,
   CBC_CONFIG,
   NWI_CONFIG,
   RSA_CONFIG,
-  LocalStore,
-  ConfigFile,
-  providerTabHelper
-} from "./utils";
+} from "./shared/constants";
 
 // Global variable for store initial settings (before user changes).
 var initData = {};

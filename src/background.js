@@ -1,16 +1,21 @@
 // Load dependencies.
 import _ from "lodash";
 import { DateTime } from "luxon";
+
+import {
+  LocalStore,
+  ConfigFile
+} from "./js/utils";
 import {
   MiscURLs,
   StoreKey,
   NWI_RANGE_LENGTH,
   RSA_RANGE_LENGTH,
+} from "./js/shared/constants";
+import {
   getGroupProviders,
   getProviderTargetURL,
-  LocalStore,
-  ConfigFile
-} from "./js/utils";
+} from "./js/shared/misc";
 
 // Install handler.
 chrome.runtime.onInstalled.addListener(async function(details) {

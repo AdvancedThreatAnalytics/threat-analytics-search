@@ -3,7 +3,6 @@ import _ from "lodash";
 import { DateTime } from "luxon";
 
 import {
-  LocalStore,
   ConfigFile
 } from "./js/utils";
 import {
@@ -16,6 +15,7 @@ import {
   getGroupProviders,
   getProviderTargetURL,
 } from "./js/shared/misc";
+import LocalStore from "./js/shared/local_store";
 
 // Install handler.
 chrome.runtime.onInstalled.addListener(async function(details) {

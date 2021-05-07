@@ -4,92 +4,7 @@ import Notiflix from "notiflix";
 import { Sortable } from "sortablejs";
 
 import { StoreKey } from "./shared/constants";
-
-// --- Storage --- //
-
-/**
- * Utility for simplify interactions with the local storage.
- *
- * @deprecated: use LocalStore instead, since the local storage can't be used on service workers.
- */
-export var Storage = {
-  setItem: function(key, value) {
-    try {
-      window.localStorage.removeItem(key);
-      window.localStorage.setItem(key, value);
-    } catch (err) {
-      console.error(err);
-    }
-  },
-
-  getItem: function(key) {
-    var value;
-    try {
-      value = window.localStorage.getItem(key);
-    } catch (err) {
-      console.error(err);
-      value = "null";
-    }
-    return value;
-  },
-
-  clearAll: function() {
-    window.localStorage.clear();
-  }
-};
-
-/**
- * Utility to wrap calls to Chrome local storage in Promises.
- */
-export var LocalStore = {
-  set: function(keysAndValues) {
-    return new Promise(function(resolve, reject) { 
-      chrome.storage.local.set(keysAndValues, function() {
-        if(typeof runtime !== "undefined" && runtime.lastError) {
-          reject(runtime.lastError)
-        } else {
-          resolve();
-        }
-      });
-    });
-  },
-
-  setOne: function(key, value) {
-    var payload = {};
-    payload[key] = value;
-    return LocalStore.set(payload);
-  },
-
-  get: function(keys) {
-    return new Promise(function(resolve, reject) { 
-      chrome.storage.local.get(keys, function(result) {
-        if(typeof runtime !== "undefined" && runtime.lastError) {
-          reject(runtime.lastError)
-        } else {
-          resolve(result);
-        }
-      });
-    });
-  },
-
-  getOne: function(key) {
-    return LocalStore.get([key]).then(function(result) {
-      return result[key];
-    });
-  },
-
-  clear: function() {
-    return new Promise(function(resolve, reject) { 
-      chrome.storage.local.clear(function() {
-        if(typeof runtime !== "undefined" && runtime.lastError) {
-          reject(runtime.lastError)
-        } else {
-          resolve();
-        }
-      });
-    });
-  }
-};
+import LocalStore from "./shared/local_store";
 
 
 // --- Configuration File --- //
@@ -645,8 +560,6 @@ export function providerTabHelper(
 };
 
 export default {
-  Storage,
-  LocalStore,
   ConfigFile,
   providerTabHelper
 };

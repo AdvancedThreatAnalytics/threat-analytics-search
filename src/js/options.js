@@ -11,7 +11,6 @@ import { DateTime } from "luxon";
 import { Sortable } from "sortablejs";
 
 import {
-  LocalStore,
   ConfigFile,
   providerTabHelper
 } from "./utils";
@@ -22,6 +21,7 @@ import {
   NWI_CONFIG,
   RSA_CONFIG,
 } from "./shared/constants";
+import LocalStore from "./shared/local_store";
 
 // Global variable for store initial settings (before user changes).
 var initData = {};

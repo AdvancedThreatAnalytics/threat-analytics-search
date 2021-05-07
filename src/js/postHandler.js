@@ -1,3 +1,14 @@
+import "@fortawesome/fontawesome-free/css/all.min.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+
+import _ from "lodash";
+import Mustache from "mustache";
+
+import {
+  StoreKey,
+  LocalStore
+} from "./utils";
+
 // Wait for the page to be loaded to execute the initialization function.
 document.addEventListener("DOMContentLoaded", function() {
   init();

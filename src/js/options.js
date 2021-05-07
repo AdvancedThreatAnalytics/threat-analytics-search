@@ -1,3 +1,25 @@
+import "@fortawesome/fontawesome-free/css/all.min.css";
+import "notiflix/dist/notiflix-2.7.0.min.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+
+import "../css/main.css";
+
+import Mustache from "mustache";
+import Notiflix from "notiflix";
+import beautify from "js-beautify";
+import { DateTime } from "luxon";
+import { Sortable } from "sortablejs";
+
+import {
+  MiscURLs,
+  StoreKey,
+  CBC_CONFIG,
+  NWI_CONFIG,
+  RSA_CONFIG,
+  LocalStore,
+  ConfigFile,
+  providerTabHelper
+} from "./utils";
 
 // Global variable for store initial settings (before user changes).
 var initData = {};
@@ -226,8 +248,8 @@ var SettingsTab = {
     let date = _.get(lastConfig, "date", "-");
     let error = _.get(lastConfig, "errorMsg", "");
 
-    date = luxon.DateTime.fromSeconds(date / 1000).toLocaleString(
-      luxon.DateTime.DATETIME_SHORT_WITH_SECONDS
+    date = DateTime.fromSeconds(date / 1000).toLocaleString(
+      DateTime.DATETIME_SHORT_WITH_SECONDS
     );
     
     document.getElementById("settings_lastConfigUpdate").innerHTML = date;
@@ -241,7 +263,7 @@ var SettingsTab = {
         newSettings = await ConfigFile.generateJSONFile();
       }
 
-      textarea.value = js_beautify(JSON.stringify(newSettings), {indent_size: 2});
+      textarea.value = beautify(JSON.stringify(newSettings), {indent_size: 2});
     }
   },
 

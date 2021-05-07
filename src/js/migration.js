@@ -1,3 +1,16 @@
+import "@fortawesome/fontawesome-free/css/all.min.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+
+import _ from "lodash";
+
+import {
+  MiscURLs,
+  StoreKey,
+  Storage,
+  LocalStore,
+  ConfigFile
+} from "./utils";
+
 /**
  * This script is run when updating the extension from version 4.x.x to version 5.0.0 (or higher) and
  * his main tasks is to relocate the user's settings saved from the local storage (i.e. "localStorage")

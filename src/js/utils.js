@@ -1,13 +1,18 @@
+import _ from "lodash";
+import Mustache from "mustache";
+import Notiflix from "notiflix";
+import { Sortable } from "sortablejs";
+
 // --- Constants --- //
 
-var MiscURLs = {
+export var MiscURLs = {
   ABOUT_US_URL: "https://www.criticalstart.com/company/",
   EXTENSION_HOME_URL: "http://www.criticalstart.com/threat-analytics-chrome-plugin/",
   INSTALLED_URL: "https://www.criticalstart.com/threat-analytics-chrome-plugin/",
   SUPPORT_EMAIL: "support@criticalstart.com",
 };
 
-var BasicConfig = {
+export var BasicConfig = {
   CONFIG_URL: 0,
   USE_GROUPS: 1,
   ENCRYPTED: 2,
@@ -15,7 +20,7 @@ var BasicConfig = {
   AUTO_UPDATE: 4,
 };
 
-var SearchProv = {
+export var SearchProv = {
   MENU_INDEX: 0,
   LABEL: 1,
   LINK: 2,
@@ -28,19 +33,19 @@ var SearchProv = {
   PROXY_URL: 9
 };
 
-var ProvGroups = {
+export var ProvGroups = {
   NUMBER: 0,
   NAME: 1,
 };
 
-var ProvQuery = {
+export var ProvQuery = {
   MENU_INDEX: 0,
   LABEL: 1,
   QUERY: 2,
   ENABLED: 3,
 };
 
-var StoreKey = {
+export var StoreKey = {
   CARBON_BLACK: "carbon_black",
   LAST_CONFIG_DATA: "last_config_data",
   NET_WITNESS: "netwitness_investigator",
@@ -49,7 +54,7 @@ var StoreKey = {
   SETTINGS: "settings",
 };
 
-var CBC_CONFIG = [
+export var CBC_CONFIG = [
   { key: "CBCConfigEnable", type: "checkbox", label: "Enable Carbon Black Settings" },
   { key: "CBCConfigUseHttps", type: "checkbox", label: "HTTPS (SSL) Enabled" },
   { key: "CBCConfigHost", type: "text", label: "Carbon Black Hostname or IP Address" },
@@ -59,7 +64,7 @@ var CBC_CONFIG = [
   { key: "CBCConfigPopup", type: "checkbox", label: "Enable debug popup window" },
 ];
 
-var NWI_CONFIG = [
+export var NWI_CONFIG = [
   { key: "NWIConfigEnable", type: "checkbox", label: "Enable NetWitness Investigator Settings" },
   { key: "NWIConfigExampleLink", type: "text", label: "Paste example link from NetWitness Investigator to autofill settings", autofiller: true, placeholder: "e.g. https://netwitness.com:81/?collection=12" },
   { key: "NWIConfigHost", type: "text", label: "Host (IP Address/Hostname)" },
@@ -73,9 +78,9 @@ var NWI_CONFIG = [
   { key: "NWIConfigPopup", type: "checkbox", label: "Enable debug popup window" },
 ];
 
-var NWI_RANGE_LENGTH = 4;
+export var NWI_RANGE_LENGTH = 4;
 
-var RSA_CONFIG = [
+export var RSA_CONFIG = [
   { key: "RSAConfigEnable", type: "checkbox", label: "Enable RSA Security Analytics Settings" },
   { key: "RSAConfigExampleLink", type: "text", label: "Paste example link from Security Analytics Investigation to autofill settings", autofiller: true, placeholder: "e.g. https://security.com:81/investigation/12/" },
   { key: "RSAConfigHost", type: "text", label: "Security Analytics Host (IP Address/Hostname)" },
@@ -90,12 +95,12 @@ var RSA_CONFIG = [
   { key: "RSAConfigPopup", type: "checkbox", label: "Enable debug popup window" },
 ];
 
-var RSA_RANGE_LENGTH = 4;
+export var RSA_RANGE_LENGTH = 4;
 
 
 // --- Miscellaneous --- //
 
-function getGroupProviders(groupIndex, providers) {
+export function getGroupProviders(groupIndex, providers) {
   var mask = Math.pow(2, groupIndex)
   return _.filter(providers, function(item) {
     // Note that the group's value (from providers) uses each bit of the number for indicate to
@@ -105,7 +110,7 @@ function getGroupProviders(groupIndex, providers) {
   });
 }
 
-function getProviderTargetURL(provider, selectionText) {
+export function getProviderTargetURL(provider, selectionText) {
   var targetURL;
 
   if (provider.postEnabled === true || provider.postEnabled === 'true') {
@@ -119,7 +124,7 @@ function getProviderTargetURL(provider, selectionText) {
   return targetURL;
 }
 
-var isDate = function (date) {
+export var isDate = function (date) {
   return new Date(date) !== "Invalid Date" && !isNaN(new Date(date));
 };
 
@@ -130,7 +135,7 @@ var isDate = function (date) {
  *
  * @deprecated: use LocalStore instead, since the local storage can't be used on service workers.
  */
-var Storage = {
+export var Storage = {
   setItem: function(key, value) {
     try {
       window.localStorage.removeItem(key);
@@ -159,7 +164,7 @@ var Storage = {
 /**
  * Utility to wrap calls to Chrome local storage in Promises.
  */
-var LocalStore = {
+export var LocalStore = {
   set: function(keysAndValues) {
     return new Promise(function(resolve, reject) { 
       chrome.storage.local.set(keysAndValues, function() {
@@ -212,7 +217,7 @@ var LocalStore = {
 
 // --- Configuration File --- //
 
-var ConfigFile = {
+export var ConfigFile = {
   updateNow: async function() {
     var settings = await LocalStore.getOne(StoreKey.SETTINGS) || {};
     var errMsg = null;
@@ -488,7 +493,7 @@ var ConfigFile = {
 
 // --- Providers configuration and queries --- //
 
-function providerTabHelper(
+export function providerTabHelper(
   initData,
   storageKey,
   settings,
@@ -760,4 +765,20 @@ function providerTabHelper(
   };
 
   return tab;
+};
+
+export default {
+  MiscURLs,
+  StoreKey,
+  CBC_CONFIG,
+  NWI_CONFIG,
+  NWI_RANGE_LENGTH,
+  RSA_CONFIG,
+  RSA_RANGE_LENGTH,
+  getGroupProviders,
+  getProviderTargetURL,
+  Storage,
+  LocalStore,
+  ConfigFile,
+  providerTabHelper
 };

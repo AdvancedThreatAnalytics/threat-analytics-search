@@ -6,12 +6,25 @@
   "repository": "https://github.com/AdvancedThreatAnalytics/threat-analytics-search.git",
   "private": true,
   "scripts": {
-    "build": "webpack --config webpack.config.js"
+    "build": "webpack --config webpack.config.js",
+    "live": "webpack --config webpack.config.js --watch"
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.3",
+    "bootstrap": "^4.6.0",
+    "clean-webpack-plugin": "^4.0.0-alpha.0",
     "copy-webpack-plugin": "^8.1.1",
+    "css-loader": "^5.2.4",
+    "file-loader": "^6.2.0",
+    "gibberish-aes": "^1.0.0",
     "html-minimizer-webpack-plugin": "^2.1.0",
-    "minify-bundled-webpack-plugin": "^0.0.3",
+    "js-beautify": "^1.13.13",
+    "lodash": "^4.17.21",
+    "luxon": "^1.26.0",
+    "mustache": "^4.2.0",
+    "notiflix": "^2.7.0",
+    "sortablejs": "^1.13.0",
+    "style-loader": "^2.0.0",
     "webpack": "^5.36.2",
     "webpack-cli": "^4.6.0"
   }

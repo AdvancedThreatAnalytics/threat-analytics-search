@@ -59,7 +59,7 @@ Additionally, there is a migration page that is used to relocate the user's sett
 
 ### Building
 
-Building is done using [Webpack](https://webpack.js.org/). To build the "distribution" code, you first have to execute `yarn`, to install all dependencies, and then `yarn run build` to build. This command will create `dist` directory and copies all files into it and minifies them.
+Building is done using [Webpack](https://webpack.js.org/). To build the "distribution" code, you first have to execute `yarn`, to install all dependencies, and then `yarn run build` to build once or `yarn run live` to watch file changes and rebuild on file change. These commands will create `dist` directory and copies all files into it and minifies them.
 
 ### Packaging
 

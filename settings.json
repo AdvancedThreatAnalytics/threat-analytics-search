@@ -38,7 +38,7 @@
     ],
     [
       -1,
-      "D - WhoIS DNS Info",
+      "D - WHOIS DNS Info",
       "http://who.is/whois/TESTSEARCH",
       true,
       true,
@@ -122,8 +122,8 @@
     ],
     [
       -1,
-      "H - Virus Total Hash",
-      "https://www.virustotal.com/latest-report.html?resource=TESTSEARCH",
+      "H - VirusTotal Hash",
+      "https://www.virustotal.com/gui/file/%s/detection",
       true,
       true,
       4,

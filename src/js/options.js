@@ -120,9 +120,9 @@ var Header = {
     },
     {
       label: "Feedback",
-      title: "Send email to Critical Start",
-      icon: "fa fa-envelope",
-      href: `mailto:${MiscURLs.SUPPORT_EMAIL}?subject=Feedback for Threat Analytics Chrome Extension by Critical Start`
+      title: "Report an issue",
+      icon: "fab fa-github",
+      href: MiscURLs.ISSUES_URL
     },
   ],
 

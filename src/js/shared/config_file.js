@@ -1,5 +1,5 @@
 import _ from "lodash";
-import GibberishAES from "gibberish-aes";
+import GibberishAES from "gibberish-aes/dist/gibberish-aes-1.0.0.min";
 
 import {
   BasicConfig,

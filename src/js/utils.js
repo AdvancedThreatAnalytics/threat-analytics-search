@@ -12,6 +12,8 @@ export var MiscURLs = {
   ISSUES_URL: "https://github.com/AdvancedThreatAnalytics/threat-analytics-search/issues",
 };
 
+export const exportFileName = "Settings.json";
+
 export var BasicConfig = {
   CONFIG_URL: 0,
   USE_GROUPS: 1,
@@ -780,5 +782,6 @@ export default {
   Storage,
   LocalStore,
   ConfigFile,
-  providerTabHelper
+  providerTabHelper,
+  exportFileName
 };

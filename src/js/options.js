@@ -18,7 +18,8 @@ import {
   RSA_CONFIG,
   LocalStore,
   ConfigFile,
-  providerTabHelper
+  providerTabHelper,
+  exportFileName
 } from "./utils";
 
 // Global variable for store initial settings (before user changes).
@@ -56,18 +57,12 @@ function updateTabsVisibility(current) {
   }
 }
 
-function mainConfigurationUpdated(lazy) {
-  if(!lazy) {
-    SettingsTab.updateForms();
-    ProvidersTab.updateForms();
-    CarbonBlackTab.updateForms();
-    NetWitnessTab.updateForms();
-    SearchAnalyticsTab.updateForms();
-  } else {
-    // When lazy is 'true' the forms don't need to be refreshed, just the textarea showing
-    // the configuration setting in JSON format must be updated.
-    SettingsTab.updateJSONTextarea();
-  }
+function mainConfigurationUpdated() {
+  SettingsTab.updateForms();
+  ProvidersTab.updateForms();
+  CarbonBlackTab.updateForms();
+  NetWitnessTab.updateForms();
+  SearchAnalyticsTab.updateForms();
 
   chrome.runtime.sendMessage({ action: "updateContextualMenu" });
 };
@@ -121,18 +116,19 @@ var Header = {
       label: "Feedback",
       title: "Report an issue",
       icon: "fab fa-github",
-      href: MiscURLs.ISSUES_URL
+      href: MiscURLs.ISSUES_URL,
     },
   ],
 
-  DEFAULT_TAB: "search-providers",
+  DEFAULT_TAB: "settings",
 
   update: function (params) {
     var current = _.get(params, "current") || Header.DEFAULT_TAB;
 
     // Add 'computed' variables to tabs.
     var tabs = _.map(Header.TABS, function (tab) {
-      return _.assign({
+      return _.assign(
+        {
           classes: tab.page === current ? "active" : "text-success",
           attributes: tab.page === current ? 'aria-current="page"' : "",
         },
@@ -141,7 +137,8 @@ var Header = {
     });
 
     // Add default values to parameters.
-    params = _.assign({
+    params = _.assign(
+      {
         current: current,
         tabs: tabs,
       },
@@ -169,7 +166,7 @@ var Header = {
     var current = event.target.getAttribute("data-tab");
 
     Header.update({
-      current: current
+      current: current,
     });
     updateTabsVisibility(current);
 
@@ -187,15 +184,34 @@ var SettingsTab = {
       .then((response) => response.text())
       .then((htmlData) => {
         // Insert template file.
-        document.querySelector('main section[data-tab="settings"]').innerHTML = htmlData;
+        document.querySelector(
+          'main section[data-tab="settings"]'
+        ).innerHTML = htmlData;
 
         // Add click/change behaviors.
-        document.getElementById("settings_saveImport").addEventListener("click", SettingsTab.saveImport);
         document.getElementById("settings_refreshNow").addEventListener("click", SettingsTab.updateNow);
+        document.getElementById("settings_import").addEventListener("click", SettingsTab.importFromFile);
+        document.getElementById("settings_export").addEventListener("click", SettingsTab.exportToFile);
+        document.getElementById("settings_edit").addEventListener("click", SettingsTab.openModal);
+        document.getElementById("settings_fileInput").addEventListener("change", SettingsTab.fileImported);
+        document.getElementById("settings_closeModal").addEventListener("click", SettingsTab.closeModal);
+        document.getElementById("settings_saveChanges").addEventListener("click", SettingsTab.saveModalChanges);
+        document.getElementById("settings_discardChanges").addEventListener("click", SettingsTab.closeModal);
+        // document.getElementById("settings_saveImport").addEventListener("click", SettingsTab.saveImport);
+
+        // Get the _Edit Changes_ Modal
+        var modal = document.getElementById("settings_editModal");
+
+        // When the user clicks anywhere outside of the modal, close it.
+        window.onclick = function (event) {
+          if (event.target === modal) {
+            SettingsTab.closeModal();
+          }
+        };
 
         var inputs = document.querySelectorAll('form[name="settings"] input');
-        _.each(inputs, function(input) {
-          if(input.type === "checkbox") {
+        _.each(inputs, function (input) {
+          if (input.type === "checkbox") {
             input.addEventListener("click", SettingsTab.onInputChanged);
           } else {
             input.addEventListener("change", SettingsTab.onInputChanged);
@@ -217,7 +233,7 @@ var SettingsTab = {
       await LocalStore.setOne(StoreKey.SETTINGS, newSettings);
 
       // Update UI according to this change.
-      mainConfigurationUpdated(true);
+      mainConfigurationUpdated();
     }
   },
 
@@ -282,23 +298,85 @@ var SettingsTab = {
     }
   },
 
-  saveImport: async function() {
+  saveSearches: async function(data) {
     try{
-      var parsedImport = JSON.parse(document.getElementById("settings_json").value);
+      var parsedData = JSON.parse(data);
 
       if(confirm("Are you sure you want to override your local settings with these values?")) {
-        await ConfigFile.parseJSONFile(parsedImport, true);
+        await ConfigFile.parseJSONFile(parsedData, true);
 
         // Update UI according to this change
         mainConfigurationUpdated();
 
         Notiflix.Notify.Success("New configuration saved");
+        return true;
       }
     }catch(err) {
       console.error(err);
-      Notiflix.Notify.Failure("Configuration couldn't be saved. Please verify that the file is valid.");
+      Notiflix.Notify.Failure("Configuration couldn't be saved. Please verify that the file/data is valid.");
+      return false;
     }
-  }
+  },
+
+  importFromFile() {
+    document.getElementById("settings_fileInput").click();
+  },
+
+  fileImported(event) {
+    let selectedFile = _.first(this.files);
+    var reader = new FileReader();
+
+    reader.onload = function(event) {
+      SettingsTab.saveSearches(event.target.result);
+    }
+    reader.readAsText(selectedFile);
+
+    // Reset the value
+    event.target.value = "";
+  },
+
+  exportToFile: async function() {
+    // Generate the JSON 
+    let data = await ConfigFile.generateJSONFile();
+
+    // Create a downloadable link with content. I have named the exported file to `Settings.json`
+    var downloadLink = document.createElement("a");
+    var blob = new Blob([JSON.stringify(data)], {
+      type: "text/plain;charset=utf-8",
+    });
+    var url = URL.createObjectURL(blob);
+    downloadLink.href = url;
+    downloadLink.download = exportFileName;
+
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  },
+
+  openModal: async function() {
+    // Update text Area
+    await SettingsTab.updateJSONTextarea();
+
+    document.getElementById("Settings_editModalBackdrop").style.display ="block";
+    document.getElementById("settings_editModal").style.display = "block";
+    document.getElementById("settings_editModal").classList.add("show");
+  },
+
+  saveModalChanges() {
+    let changes = document.getElementById("settings_json").value;
+    var success = SettingsTab.saveSearches(changes);
+    
+    // close Modal if saved
+    if(success) {
+      SettingsTab.closeModal();
+    }
+  },
+
+  closeModal() {
+    document.getElementById("Settings_editModalBackdrop").style.display ="none";
+    document.getElementById("settings_editModal").style.display = "none";
+    document.getElementById("settings_editModal").classList.remove("show");
+  },
 };
 
 
@@ -394,7 +472,7 @@ var ProvidersTab = {
     // Update UI according to this change.
     // NOTE: Updating the form is required because the 'index' is being used as unique ID for each item.
     ProvidersTab.updateProvidersForm();
-    mainConfigurationUpdated(true);
+    mainConfigurationUpdated();
   },
 
   removeProvider: async function(event) {
@@ -412,7 +490,7 @@ var ProvidersTab = {
 
       // Update UI according to this change.
       ProvidersTab.updateProvidersForm();
-      mainConfigurationUpdated(true);
+      mainConfigurationUpdated();
 
       Notiflix.Notify.Success("Item removed");
     }
@@ -458,7 +536,7 @@ var ProvidersTab = {
     await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, providers);
 
     // Update UI according to this change.
-    mainConfigurationUpdated(true);
+    mainConfigurationUpdated();
   },
 
   undoProvidersChanges: async function(event) {
@@ -471,7 +549,7 @@ var ProvidersTab = {
 
       // Update UI according to this change.
       ProvidersTab.updateForms();
-      mainConfigurationUpdated(true);
+      mainConfigurationUpdated();
 
       Notiflix.Notify.Success("Recent changes on menu items were undo");
     }
@@ -531,7 +609,7 @@ var ProvidersTab = {
 
     // Update UI according to this change.
     ProvidersTab.updateProvidersForm();
-    mainConfigurationUpdated(true);
+    mainConfigurationUpdated();
 
     Notiflix.Notify.Success("Option added successfully");
   },
@@ -580,7 +658,7 @@ var ProvidersTab = {
 
     // Update UI according to this change.
     ProvidersTab.updateProvidersForm();
-    mainConfigurationUpdated(true);
+    mainConfigurationUpdated();
   },
 
   undoGroupsChanges: async function(event) {
@@ -594,7 +672,7 @@ var ProvidersTab = {
 
       // Update UI according to this change.
       ProvidersTab.updateForms();
-      mainConfigurationUpdated(true);
+      mainConfigurationUpdated();
 
       Notiflix.Notify.Success("Recent changes on groups were undo");
     }
@@ -614,7 +692,7 @@ var CarbonBlackTab = providerTabHelper(
   'cbcQueries',
   'cbc_queries',
   'template_providerQueries',
-  mainConfigurationUpdated.bind(this, true),
+  mainConfigurationUpdated.bind(this),
 );
 
 var NetWitnessTab = providerTabHelper(
@@ -627,7 +705,7 @@ var NetWitnessTab = providerTabHelper(
   'nwiQueries',
   'nwi_queries',
   'template_providerQueries',
-  mainConfigurationUpdated.bind(this, true),
+  mainConfigurationUpdated.bind(this),
   function(link) {
     try{
       if(!_.isEmpty(link)) {
@@ -661,7 +739,7 @@ var SearchAnalyticsTab = providerTabHelper(
   'rsaQueries',
   'rsa_queries',
   'template_providerQueries',
-  mainConfigurationUpdated.bind(this, true),
+  mainConfigurationUpdated.bind(this),
   function(link) {
     try{
       if(!_.isEmpty(link)) {

@@ -6,10 +6,11 @@ import _ from "lodash";
 import {
   MiscURLs,
   StoreKey,
-  Storage,
-  LocalStore,
-  ConfigFile
-} from "./utils";
+} from "./shared/constants";
+import { isDate } from "./shared/misc";
+import ConfigFile from "./shared/config_file";
+import LocalStore from "./shared/local_store";
+import Storage from "./shared/storage";
 
 /**
  * This script is run when updating the extension from version 4.x.x to version 5.0.0 (or higher) and

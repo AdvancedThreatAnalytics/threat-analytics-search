@@ -1,16 +1,19 @@
 // Load dependencies.
 import _ from "lodash";
 import { DateTime } from "luxon";
+
 import {
   MiscURLs,
   StoreKey,
   NWI_RANGE_LENGTH,
   RSA_RANGE_LENGTH,
+} from "./js/shared/constants";
+import {
   getGroupProviders,
   getProviderTargetURL,
-  LocalStore,
-  ConfigFile
-} from "./js/utils";
+} from "./js/shared/misc";
+import ConfigFile from "./js/shared/config_file";
+import LocalStore from "./js/shared/local_store";
 
 // Install handler.
 chrome.runtime.onInstalled.addListener(async function(details) {
@@ -473,7 +476,7 @@ function showPopupMessage(title, message) {
   try{
     chrome.notifications.create('', {
       title: title,
-      message: url,
+      message: message,
       iconUrl: '/images/icon_48.png',
       type: 'basic'
     });

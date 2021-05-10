@@ -145,5 +145,11 @@ async function makeRequest(targetURL, reqData, proxyURL) {
   if (response.status < 200 || response.status >= 300) {
     throw new Error(data);
   }
-  return JSON.parse(data);
+
+  try {
+    return JSON.parse(data);
+  } catch {
+    return data;
+  }
+  
 }

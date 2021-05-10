@@ -4,10 +4,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import _ from "lodash";
 import Mustache from "mustache";
 
-import {
-  StoreKey,
-  LocalStore
-} from "./utils";
+import LocalStore from "./shared/local_store";
+import { StoreKey } from "./shared/constants";
 
 // Wait for the page to be loaded to execute the initialization function.
 document.addEventListener("DOMContentLoaded", function() {

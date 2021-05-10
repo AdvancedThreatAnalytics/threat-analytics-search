@@ -48,5 +48,8 @@ module.exports = {
         minimizer: [
             new HtmlMinimizerPlugin(),
         ],
+        splitChunks: {
+           chunks: 'all',
+        },
     }
 }

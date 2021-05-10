@@ -8,35 +8,32 @@ import {
   NWI_RANGE_LENGTH,
   RSA_RANGE_LENGTH,
 } from "./js/shared/constants";
-import {
-  getGroupProviders,
-  getProviderTargetURL,
-} from "./js/shared/misc";
+import { getGroupProviders, getProviderTargetURL } from "./js/shared/misc";
 import ConfigFile from "./js/shared/config_file";
 import LocalStore from "./js/shared/local_store";
 
 // Install handler.
-chrome.runtime.onInstalled.addListener(async function(details) {
+chrome.runtime.onInstalled.addListener(async function (details) {
   // Check if migration script should be run.
-  var previous = _.get(details, 'previousVersion');
-  if(!_.isEmpty(previous) && previous.split('.')[0] === '4') {
+  var previous = _.get(details, "previousVersion");
+  if (!_.isEmpty(previous) && previous.split(".")[0] === "4") {
     // Open migration screen.
     chrome.tabs.create({
-      "url": "migration.html?previous=" + previous,
-      "selected": true
+      url: "migration.html?previous=" + previous,
+      selected: true,
     });
   } else {
     // Open welcome screen.
     chrome.tabs.create({
-      "url": MiscURLs.INSTALLED_URL,
-      "selected": true
+      url: MiscURLs.INSTALLED_URL,
+      selected: true,
     });
 
     // Sanitize settings with default values.
     await ConfigFile.sanitizeSettings();
 
     // If the user is installing for the first time, update settings with newer values.
-    if(_.get(details, 'reason') === 'install') {
+    if (_.get(details, "reason") === "install") {
       await ConfigFile.updateNow();
     }
 
@@ -46,17 +43,17 @@ chrome.runtime.onInstalled.addListener(async function(details) {
 });
 
 // Startup handler.
-chrome.runtime.onStartup.addListener(function() {
+chrome.runtime.onStartup.addListener(function () {
   // Update contextual menu.
   ContextualMenu.update();
 });
 
 // Every week check if the settings must be refreshed.
 chrome.alarms.create({
-  periodInMinutes: 10080
+  periodInMinutes: 10080,
 });
-chrome.alarms.onAlarm.addListener(async function() {
-  var settings = await LocalStore.getOne(StoreKey.SETTINGS)
+chrome.alarms.onAlarm.addListener(async function () {
+  var settings = await LocalStore.getOne(StoreKey.SETTINGS);
   if (settings.autoUpdateConfig) {
     await ConfigFile.updateNow();
     ContextualMenu.update();
@@ -64,15 +61,15 @@ chrome.alarms.onAlarm.addListener(async function() {
 });
 
 // Messages handler.
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-  if(_.get(request, 'action') === 'updateContextualMenu') {
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  if (_.get(request, "action") === "updateContextualMenu") {
     ContextualMenu.update();
     sendResponse({ success: true });
   }
 });
 
 // Context menu handler.
-chrome.contextMenus.onClicked.addListener(function(info, tab) {
+chrome.contextMenus.onClicked.addListener(function (info, tab) {
   if (info.menuItemId.indexOf(MenuPreffix.GROUP) === 0) {
     ContextualMenu.groupClicked(info, tab);
   }
@@ -95,11 +92,10 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
 
   if (info.menuItemId === MenuPreffix.OPTIONS) {
     chrome.tabs.create({
-      "url": "options.html"
+      url: "options.html",
     });
   }
 });
-
 
 // --- Contextual menu --- //
 
@@ -111,44 +107,43 @@ var MenuPreffix = {
   PARENT: "parent-",
   PROVIDER: "searchprovider-",
   RSA_SECURITY: "rsasecurity-",
-  SEPARATOR: "separator-"
+  SEPARATOR: "separator-",
 };
 
 var ContextualMenu = {
-
   // --- Update menu --- //
 
-  _addSeparator: function() {
+  _addSeparator: function () {
     chrome.contextMenus.create({
-      "id": _.uniqueId(MenuPreffix.SEPARATOR),
-      "type": "separator",
-      "contexts": ["selection"]
+      id: _.uniqueId(MenuPreffix.SEPARATOR),
+      type: "separator",
+      contexts: ["selection"],
     });
   },
 
-  _addCarbonBlack: async function() {
+  _addCarbonBlack: async function () {
     var data = await LocalStore.getOne(StoreKey.CARBON_BLACK);
-    var config = _.get(data, 'config', {});
-    var queries = _.get(data, 'queries', []);
+    var config = _.get(data, "config", {});
+    var queries = _.get(data, "queries", []);
 
     // Create the CBC menu (if enabled).
     if (config.CBCConfigEnable) {
       var parentMenu = chrome.contextMenus.create({
-        "id": _.uniqueId(MenuPreffix.PARENT),
-        "title": "Carbon Black",
-        "contexts": ["selection"]
+        id: _.uniqueId(MenuPreffix.PARENT),
+        title: "Carbon Black",
+        contexts: ["selection"],
       });
 
       // Create entries for queries.
-      _.forEach(queries, function(query, index) {
-        if(query.enabled !== false && query.enabled !== 'false') {
+      _.forEach(queries, function (query, index) {
+        if (query.enabled !== false && query.enabled !== "false") {
           query.menuIndex = chrome.contextMenus.create({
-            "id": MenuPreffix.CARBON_BLACK + index,
-            "title": query.label,
-            "contexts": ["selection"],
-            "parentId": parentMenu
+            id: MenuPreffix.CARBON_BLACK + index,
+            title: query.label,
+            contexts: ["selection"],
+            parentId: parentMenu,
           });
-        }   
+        }
       });
 
       ContextualMenu._addSeparator();
@@ -159,38 +154,37 @@ var ContextualMenu = {
     }
   },
 
-  _addNetWitness: async function() {
+  _addNetWitness: async function () {
     var data = await LocalStore.getOne(StoreKey.NET_WITNESS);
-    var config = _.get(data, 'config', {});
-    var queries = _.get(data, 'queries', []);
+    var config = _.get(data, "config", {});
+    var queries = _.get(data, "queries", []);
 
     // Create the NWI menu (if enabled)
     if (config.NWIConfigEnable) {
       var parentMenu = chrome.contextMenus.create({
-        "id": _.uniqueId(MenuPreffix.PARENT),
-        "title": "NetWitness Investigator",
-        "contexts": ["selection"]
+        id: _.uniqueId(MenuPreffix.PARENT),
+        title: "NetWitness Investigator",
+        contexts: ["selection"],
       });
 
       // Create entries for queries.
-      _.forEach(queries, function(query, index) {
-        if(query.enabled !== false && query.enabled !== 'false') {
+      _.forEach(queries, function (query, index) {
+        if (query.enabled !== false && query.enabled !== "false") {
           query.menuIndex = chrome.contextMenus.create({
-            "id": MenuPreffix.NET_WITNESS + index,
-            "title": query.label,
-            "contexts": ["selection"],
-            "parentId": parentMenu
+            id: MenuPreffix.NET_WITNESS + index,
+            title: query.label,
+            contexts: ["selection"],
+            parentId: parentMenu,
           });
 
           // Create range entries.
-          for(var k=1; k<=NWI_RANGE_LENGTH; k++) {
+          for (var k = 1; k <= NWI_RANGE_LENGTH; k++) {
             chrome.contextMenus.create({
-              "id": query.menuIndex + "_" + k,
-              "title": config['NWIConfigRange' + k] + " Hour(s)",
-              "contexts": ["selection"],
-              "parentId": query.menuIndex
+              id: query.menuIndex + "_" + k,
+              title: config["NWIConfigRange" + k] + " Hour(s)",
+              contexts: ["selection"],
+              parentId: query.menuIndex,
             });
-
           }
         }
       });
@@ -203,38 +197,37 @@ var ContextualMenu = {
     }
   },
 
-  _addRSASecurity: async function() {
+  _addRSASecurity: async function () {
     var data = await LocalStore.getOne(StoreKey.RSA_SECURITY);
-    var config = _.get(data, 'config', {});
-    var queries = _.get(data, 'queries', []);
+    var config = _.get(data, "config", {});
+    var queries = _.get(data, "queries", []);
 
     // Create the RSA menu (if enabled)
     if (config.RSAConfigEnable) {
       var parentMenu = chrome.contextMenus.create({
-        "id": _.uniqueId(MenuPreffix.PARENT),
-        "title": "RSA Security Analytics",
-        "contexts": ["selection"]
+        id: _.uniqueId(MenuPreffix.PARENT),
+        title: "RSA Security Analytics",
+        contexts: ["selection"],
       });
 
       // Create entries for queries.
-      _.forEach(queries, function(query, index) {
-        if(query.enabled !== false && query.enabled !== 'false') {
+      _.forEach(queries, function (query, index) {
+        if (query.enabled !== false && query.enabled !== "false") {
           query.menuIndex = chrome.contextMenus.create({
-            "id": MenuPreffix.RSA_SECURITY + index,
-            "title": query.label,
-            "contexts": ["selection"],
-            "parentId": parentMenu
+            id: MenuPreffix.RSA_SECURITY + index,
+            title: query.label,
+            contexts: ["selection"],
+            parentId: parentMenu,
           });
 
           // Create range entries.
-          for(var k=1; k<=RSA_RANGE_LENGTH; k++) {
+          for (var k = 1; k <= RSA_RANGE_LENGTH; k++) {
             chrome.contextMenus.create({
-              "id": query.menuIndex + "_" + k,
-              "title": config['RSAConfigRange' + k] + " Hour(s)",
-              "contexts": ["selection"],
-              "parentId": query.menuIndex
+              id: query.menuIndex + "_" + k,
+              title: config["RSAConfigRange" + k] + " Hour(s)",
+              contexts: ["selection"],
+              parentId: query.menuIndex,
             });
-
           }
         }
       });
@@ -247,13 +240,14 @@ var ContextualMenu = {
     }
   },
 
-  update: async function() {
+  update: async function () {
     // Clear contextual menu.
     chrome.contextMenus.removeAll();
 
     // Get current settings and list of search providers.
-    var searchProviders = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS) || [];
-    var settings = await LocalStore.getOne(StoreKey.SETTINGS) || {};
+    var searchProviders =
+      (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
+    var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
 
     // Add entries for special search providers.
     await ContextualMenu._addCarbonBlack();
@@ -265,14 +259,17 @@ var ContextualMenu = {
       var addSeparatorAfterGroups = false;
 
       // Iterate each group.
-      _.forEach(settings.providersGroups, function(group, index) {
+      _.forEach(settings.providersGroups, function (group, index) {
         // Check if the group is enabled and has items.
-        if(group.enabled && getGroupProviders(index, searchProviders).length > 0) {
+        if (
+          group.enabled &&
+          getGroupProviders(index, searchProviders).length > 0
+        ) {
           // Add entry to contextual menu.
           chrome.contextMenus.create({
-            "id": MenuPreffix.GROUP + index,
-            "title": group.name,
-            "contexts": ["selection"]
+            id: MenuPreffix.GROUP + index,
+            title: group.name,
+            contexts: ["selection"],
           });
 
           addSeparatorAfterGroups = true;
@@ -286,12 +283,12 @@ var ContextualMenu = {
     }
 
     // Add entries for standard seach providers.
-    _.forEach(searchProviders, function(provider, index) {
+    _.forEach(searchProviders, function (provider, index) {
       if (provider.enabled) {
         provider.menuIndex = chrome.contextMenus.create({
-          "id": MenuPreffix.PROVIDER + index,
-          "title": provider.label,
-          "contexts": ["selection"]
+          id: MenuPreffix.PROVIDER + index,
+          title: provider.label,
+          contexts: ["selection"],
         });
       } else {
         provider.menuIndex = -1;
@@ -306,67 +303,69 @@ var ContextualMenu = {
       ContextualMenu._addSeparator();
 
       chrome.contextMenus.create({
-        "id": MenuPreffix.OPTIONS,
-        "title": "Options",
-        "contexts": ["selection"]
+        id: MenuPreffix.OPTIONS,
+        title: "Options",
+        contexts: ["selection"],
       });
     }
   },
 
   // --- Click handlers --- //
 
-  providerClicked: async function(info, tab) {
+  providerClicked: async function (info, tab) {
     var providers = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
-    var provider = _.find(providers, function(item) { return item.menuIndex === info.menuItemId});
+    var provider = _.find(providers, function (item) {
+      return item.menuIndex === info.menuItemId;
+    });
 
-    if(provider) {
+    if (provider) {
       var targetURL = getProviderTargetURL(provider, info.selectionText);
       var settings = await LocalStore.getOne(StoreKey.SETTINGS);
 
-      var index = settings.enableAdjacentTabs
-        ? tab.index + 1
-        :null;
+      var index = settings.enableAdjacentTabs ? tab.index + 1 : null;
 
       chrome.tabs.create({
-        "url": targetURL,
-        "selected": !settings.resultsInBackgroundTab,
-        "index": index
+        url: targetURL,
+        selected: !settings.resultsInBackgroundTab,
+        index: index,
       });
     }
   },
 
-  groupClicked: async function(info, tab) {
+  groupClicked: async function (info, tab) {
     var settings = await LocalStore.getOne(StoreKey.SETTINGS);
     var providers = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
 
-    var groupIndex = parseInt(info.menuItemId.split('-')[1], 10);
+    var groupIndex = parseInt(info.menuItemId.split("-")[1], 10);
     var groupItems = getGroupProviders(groupIndex, providers);
     var urls = _.map(groupItems, getProviderTargetURL);
 
     if (settings.openGroupsInNewWindow) {
       chrome.windows.create({
         url: urls,
-        focused: !settings.resultsInBackgroundTab
+        focused: !settings.resultsInBackgroundTab,
       });
     } else {
       var index = tab.index;
       for (var i = 0; i < urls.length; i++) {
         chrome.tabs.create({
-          "url": urls[i],
-          "selected": !settings.resultsInBackgroundTab,
-          "index": settings.enableAdjacentTabs ? ++index : null
+          url: urls[i],
+          selected: !settings.resultsInBackgroundTab,
+          index: settings.enableAdjacentTabs ? ++index : null,
         });
       }
     }
   },
 
-  carbonBlackClicked: async function(info, tab) {
+  carbonBlackClicked: async function (info) {
     var data = await LocalStore.getOne(StoreKey.CARBON_BLACK);
-    var config = _.get(data, 'config', {});
-    var queries = _.get(data, 'queries', []);
+    var config = _.get(data, "config", {});
+    var queries = _.get(data, "queries", []);
 
-    var queryItem = _.find(queries, function(item) { return item.menuIndex === info.menuItemId});
-    if(queryItem) {
+    var queryItem = _.find(queries, function (item) {
+      return item.menuIndex === info.menuItemId;
+    });
+    if (queryItem) {
       var query = queryItem.query.replace(/TESTSEARCH/g, info.selectionText);
       query = query.replace(/%s/g, info.selectionText);
       query = encodeURI(query);
@@ -375,38 +374,54 @@ var ContextualMenu = {
       var urlVersion = config.CBCConfigURLVersion || 1;
       var protocol = config.CBCConfigUseHttps ? "https://" : "http://";
 
-      var url = protocol + config.CBCConfigHost + port + "/#/search/cb.urlver=" + urlVersion + "&" + query + "&sort=start%20desc&rows=10&start=0";
+      var url =
+        protocol +
+        config.CBCConfigHost +
+        port +
+        "/#/search/cb.urlver=" +
+        urlVersion +
+        "&" +
+        query +
+        "&sort=start%20desc&rows=10&start=0";
 
       if (config.CBCConfigPopup) {
         showPopupMessage("Carbon Black", url);
       }
 
       chrome.tabs.create({
-        "url": url,
-        "selected": config.CBCConfigNewTab
+        url: url,
+        selected: config.CBCConfigNewTab,
       });
     }
   },
 
-  netWitnessClicked: async function(info, tab) {
+  netWitnessClicked: async function (info) {
     var data = await LocalStore.getOne(StoreKey.NET_WITNESS);
-    var config = _.get(data, 'config', {});
-    var queries = _.get(data, 'queries', []);
+    var config = _.get(data, "config", {});
+    var queries = _.get(data, "queries", []);
 
-    var queryItem = _.find(queries, function(item) { return item.menuIndex === info.parentMenuItemId});
-    if(queryItem) {
-      var rangeNumber = parseInt(info.menuItemId.split('_')[1], 10);
-      var hours = parseInt(config['NWIConfigRange' + rangeNumber], 10)
+    var queryItem = _.find(queries, function (item) {
+      return item.menuIndex === info.parentMenuItemId;
+    });
+    if (queryItem) {
+      var rangeNumber = parseInt(info.menuItemId.split("_")[1], 10);
+      var hours = parseInt(config["NWIConfigRange" + rangeNumber], 10);
 
       // Build query.
       var port = config.NWIConfigPort ? ":" + config.NWIConfigPort : "";
       var useGMT = config.NWIConfigGMT;
-      var historyString = escape("collection=" + config.NWIConfigCollectionName);
+      var historyString = escape(
+        "collection=" + config.NWIConfigCollectionName
+      );
 
       var query = queryItem.query.replace(/TESTSEARCH/g, info.selectionText);
       query = query.replace(/%s/g, info.selectionText);
 
-      var queryName = 'Critical+Start+Drill+' + escape('"') + encodeURIComponent(query) + escape('"');
+      var queryName =
+        "Critical+Start+Drill+" +
+        escape('"') +
+        encodeURIComponent(query) +
+        escape('"');
       query = escape("(") + encodeURIComponent(query) + escape(")");
 
       // Set start and end date.
@@ -419,10 +434,27 @@ var ContextualMenu = {
 
       // Escape all special characters, except for the "+" sign.
       var NWI_DATETIME_FORMAT = "yyyy-LLL-dd+hh:mm a";
-      var timeString = encodeURIComponent(startDate.toFormat(NWI_DATETIME_FORMAT) + "++to++" + endDate.toFormat(NWI_DATETIME_FORMAT)).replace(/%2B/g, "+");
+      var timeString = encodeURIComponent(
+        startDate.toFormat(NWI_DATETIME_FORMAT) +
+          "++to++" +
+          endDate.toFormat(NWI_DATETIME_FORMAT)
+      ).replace(/%2B/g, "+");
 
       // Build URL.
-      var url = "nw://" + config.NWIConfigHost + port + "/?collection=" + config.NWIConfigCollectionName + "&where=" + query + "&time=" + timeString + "&name=" + queryName + "&history=" + historyString;
+      var url =
+        "nw://" +
+        config.NWIConfigHost +
+        port +
+        "/?collection=" +
+        config.NWIConfigCollectionName +
+        "&where=" +
+        query +
+        "&time=" +
+        timeString +
+        "&name=" +
+        queryName +
+        "&history=" +
+        historyString;
 
       // Show popup message (if need) and open tab.
       if (config.NWIConfigPopup) {
@@ -430,20 +462,22 @@ var ContextualMenu = {
       }
 
       chrome.tabs.create({
-        "url": url
+        url: url,
       });
     }
   },
 
-  rsaSecurityClicked: async function(info, tab) {
+  rsaSecurityClicked: async function (info) {
     var data = await LocalStore.getOne(StoreKey.RSA_SECURITY);
-    var config = _.get(data, 'config', {});
-    var queries = _.get(data, 'queries', []);
+    var config = _.get(data, "config", {});
+    var queries = _.get(data, "queries", []);
 
-    var queryItem = _.find(queries, function(item) { return item.menuIndex === info.parentMenuItemId});
-    if(queryItem) {
-      var rangeNumber = parseInt(info.menuItemId.split('_')[1], 10);
-      var hours = parseInt(config['RSAConfigRange' + rangeNumber], 10)
+    var queryItem = _.find(queries, function (item) {
+      return item.menuIndex === info.parentMenuItemId;
+    });
+    if (queryItem) {
+      var rangeNumber = parseInt(info.menuItemId.split("_")[1], 10);
+      var hours = parseInt(config["RSAConfigRange" + rangeNumber], 10);
 
       // Build URL.
       var query = queryItem.query.replace(/TESTSEARCH/g, info.selectionText);
@@ -456,7 +490,18 @@ var ContextualMenu = {
       var startDate = new Date(endDate.getTime() - hours * 60 * 60 * 1000);
 
       var protocol = config.RSAConfigUseHttps ? "https://" : "http://";
-      var url = protocol + config.RSAConfigHost + port + "/investigation/" + config.RSAConfigDevId + "/navigate/query/" + query + "/date/" + startDate.toISOString().replace(/\.\d+Z$/, "Z") + "/" + endDate.toISOString().replace(/\.\d+Z$/, "Z");
+      var url =
+        protocol +
+        config.RSAConfigHost +
+        port +
+        "/investigation/" +
+        config.RSAConfigDevId +
+        "/navigate/query/" +
+        query +
+        "/date/" +
+        startDate.toISOString().replace(/\.\d+Z$/, "Z") +
+        "/" +
+        endDate.toISOString().replace(/\.\d+Z$/, "Z");
 
       // Show popup (if need) and open tab.
       if (config.RSAConfigPopup) {
@@ -464,23 +509,23 @@ var ContextualMenu = {
       }
 
       chrome.tabs.create({
-        "url": url,
-        "selected": config.RSAConfigNewTab
+        url: url,
+        selected: config.RSAConfigNewTab,
       });
     }
   },
 };
 
 function showPopupMessage(title, message) {
-  // Wrap with a try-catch since this method throws an error for Chrome v90 or less. 
-  try{
-    chrome.notifications.create('', {
+  // Wrap with a try-catch since this method throws an error for Chrome v90 or less.
+  try {
+    chrome.notifications.create("", {
       title: title,
       message: message,
-      iconUrl: '/images/icon_48.png',
-      type: 'basic'
+      iconUrl: "/images/icon_48.png",
+      type: "basic",
     });
-  }catch(err) {
+  } catch (err) {
     // Do nothing.
   }
 }

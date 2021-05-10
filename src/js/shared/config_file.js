@@ -1,10 +1,7 @@
 import _ from "lodash";
 import GibberishAES from "gibberish-aes/dist/gibberish-aes-1.0.0.min";
 
-import {
-  BasicConfig,
-  StoreKey
-} from "./constants";
+import { BasicConfig, StoreKey } from "./constants";
 import LocalStore from "./local_store";
 
 const ProvGroups = {
@@ -29,12 +26,12 @@ const SearchProv = {
   IS_POST: 6,
   POST_REQUEST: 7,
   PROXY_ENABLED: 8,
-  PROXY_URL: 9
-}
+  PROXY_URL: 9,
+};
 
 const ConfigFile = {
-  updateNow: async function() {
-    var settings = await LocalStore.getOne(StoreKey.SETTINGS) || {};
+  updateNow: async function () {
+    var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
     var errMsg = null;
 
     try {
@@ -68,56 +65,62 @@ const ConfigFile = {
 
     // Update timestamp and error message.
     await LocalStore.setOne(StoreKey.LAST_CONFIG_DATA, {
-       date: new Date().getTime(),
-       errorMsg: errMsg
+      date: new Date().getTime(),
+      errorMsg: errMsg,
     });
 
     // Return success flag.
     return !errMsg;
   },
 
-  sanitizeSettings: async function() {
+  sanitizeSettings: async function () {
     var defaultFile = await ConfigFile.getDefaultJSON();
 
     // Sanitize basic settings and groups.
     var oldSettings = await LocalStore.getOne(StoreKey.SETTINGS);
     var newSettings = ConfigFile.parseBasicSettings(defaultFile.config);
     newSettings.providersGroups = ConfigFile.parseGroups(defaultFile.groups);
-    if(_.isObject(oldSettings) && !_.isArray(oldSettings.providersGroups)) {
+    if (_.isObject(oldSettings) && !_.isArray(oldSettings.providersGroups)) {
       delete oldSettings.providersGroups;
     }
-    await LocalStore.setOne(StoreKey.SETTINGS, _.assign(newSettings, oldSettings));
+    await LocalStore.setOne(
+      StoreKey.SETTINGS,
+      _.assign(newSettings, oldSettings)
+    );
 
     // Sanitize search providers.
     var providers = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
-    if(_.isEmpty(providers)) {
+    if (_.isEmpty(providers)) {
       await LocalStore.setOne(
         StoreKey.SEARCH_PROVIDERS,
         _.map(defaultFile.searchproviders, ConfigFile.parseProvider)
-      );      
+      );
     }
 
     // Sanitize special providers.
     var specialProviders = [
-      { storeKey: StoreKey.CARBON_BLACK, fileKey: 'CBC' },
-      { storeKey: StoreKey.NET_WITNESS, fileKey: 'NWI' },
-      { storeKey: StoreKey.RSA_SECURITY, fileKey: 'RSA' },
+      { storeKey: StoreKey.CARBON_BLACK, fileKey: "CBC" },
+      { storeKey: StoreKey.NET_WITNESS, fileKey: "NWI" },
+      { storeKey: StoreKey.RSA_SECURITY, fileKey: "RSA" },
     ];
-    _.forEach(specialProviders, async function(special) {
-      var data = await LocalStore.getOne(special.storeKey) || {};
-      if(!_.isObject(data.config)) {
+    _.forEach(specialProviders, async function (special) {
+      var data = (await LocalStore.getOne(special.storeKey)) || {};
+      if (!_.isObject(data.config)) {
         data.config = _.get(defaultFile, `${special.fileKey}.Config`) || {};
       }
-      if(!_.isArray(data.queries)) {
-        data.queries = _.map(_.get(defaultFile, `${special.fileKey}.Queries`), ConfigFile.parseQuery);
+      if (!_.isArray(data.queries)) {
+        data.queries = _.map(
+          _.get(defaultFile, `${special.fileKey}.Queries`),
+          ConfigFile.parseQuery
+        );
       }
       LocalStore.setOne(special.storeKey, data);
     });
   },
 
-  parseJSONFile: async function(newData, overrideConfig) {
+  parseJSONFile: async function (newData, overrideConfig) {
     // Update main settings.
-    var settings = await LocalStore.getOne(StoreKey.SETTINGS) || {};
+    var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
 
     // - Update basic settings (if need).
     if (overrideConfig && !_.isEmpty(newData.config)) {
@@ -127,10 +130,14 @@ const ConfigFile = {
     // - Update group names in the local store (if need).
     var groups = newData.groups;
     if (settings.useGroups && !_.isEmpty(groups)) {
-      if(_.isEmpty(settings.providersGroups)) {        
+      if (_.isEmpty(settings.providersGroups)) {
         settings.providersGroups = ConfigFile.parseGroups(groups);
       } else {
-        for (var k = 0; k < groups.length && k < settings.providersGroups.length; k++) {
+        for (
+          var k = 0;
+          k < groups.length && k < settings.providersGroups.length;
+          k++
+        ) {
           if (groups[k]) {
             settings.providersGroups[k].name = groups[k][ProvGroups.NAME];
           }
@@ -143,15 +150,18 @@ const ConfigFile = {
 
     // Update search providers.
     // - Get menu items (with current search providers).
-    var searchProviders = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS) || [];
+    var searchProviders =
+      (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
 
     // - Check if the new list of search providers are already included on the list of menu items.
     var newProviders = _.map(newData.searchproviders, ConfigFile.parseProvider);
     for (var i = 0; i < newProviders.length; i++) {
       // Check if the search provider wasn't already included (and add it if not).
-      if (!_.find(searchProviders, function(provider) {
+      if (
+        !_.find(searchProviders, function (provider) {
           return provider.link === newProviders[i].link;
-        })) {
+        })
+      ) {
         searchProviders.push(newProviders[i]);
       }
     }
@@ -165,48 +175,51 @@ const ConfigFile = {
     await ConfigFile.parseSpecialProvider(StoreKey.CARBON_BLACK, newData.CBC);
   },
 
-  parseBasicSettings: function(configArray) {
-    var config = _.get(configArray, '0');
+  parseBasicSettings: function (configArray) {
+    var config = _.get(configArray, "0");
     if (!_.isEmpty(config) && config.length >= 5) {
       return {
         configurationURL: config[BasicConfig.CONFIG_URL],
-        useGroups: config[BasicConfig.USE_GROUPS] === true || config[BasicConfig.USE_GROUPS] === "true",
-        configEncrypted: config[BasicConfig.ENCRYPTED] === true || config[BasicConfig.ENCRYPTED] === "true",
+        useGroups:
+          config[BasicConfig.USE_GROUPS] === true ||
+          config[BasicConfig.USE_GROUPS] === "true",
+        configEncrypted:
+          config[BasicConfig.ENCRYPTED] === true ||
+          config[BasicConfig.ENCRYPTED] === "true",
         configEncryptionKey: config[BasicConfig.ENCRIPTION_KEY] || null,
-        autoUpdateConfig: config[BasicConfig.AUTO_UPDATE] === true || config[BasicConfig.AUTO_UPDATE] === "true",
+        autoUpdateConfig:
+          config[BasicConfig.AUTO_UPDATE] === true ||
+          config[BasicConfig.AUTO_UPDATE] === "true",
 
         resultsInBackgroundTab: true,
         enableAdjacentTabs: true,
         openGroupsInNewWindow: true,
-        enableOptionsMenuItem: true
+        enableOptionsMenuItem: true,
       };
     }
-    return {};    
+    return {};
   },
 
-  parseGroups: function(groupsArray) {
-    if(_.isArray(groupsArray) && groupsArray.length >= 3) {
-      return _.map(groupsArray, function(group, index) {
+  parseGroups: function (groupsArray) {
+    if (_.isArray(groupsArray) && groupsArray.length >= 3) {
+      return _.map(groupsArray, function (group, index) {
         return {
-          name: _.get(group, '1'),
-          enabled: index < 2
+          name: _.get(group, "1"),
+          enabled: index < 2,
         };
       });
     }
     return [];
   },
 
-  parseSpecialProvider: function(storeKey, subData) {
+  parseSpecialProvider: function (storeKey, subData) {
     return LocalStore.setOne(storeKey, {
-      config: _.get(subData, 'Config', {}),
-      queries: _.map(
-        _.get(subData, 'Queries', []),
-        ConfigFile.parseQuery
-      )
+      config: _.get(subData, "Config", {}),
+      queries: _.map(_.get(subData, "Queries", []), ConfigFile.parseQuery),
     });
   },
 
-  parseProvider: function(item) {
+  parseProvider: function (item) {
     return {
       menuIndex: item[SearchProv.MENU_INDEX],
       label: item[SearchProv.LABEL],
@@ -221,7 +234,7 @@ const ConfigFile = {
     };
   },
 
-  parseProviderInverse: function(item) {
+  parseProviderInverse: function (item) {
     var res = new Array(10);
     res[SearchProv.MENU_INDEX] = item.menuIndex;
     res[SearchProv.LABEL] = item.label;
@@ -236,7 +249,7 @@ const ConfigFile = {
     return res;
   },
 
-  parseQuery: function(item) {
+  parseQuery: function (item) {
     return {
       menuIndex: item[ProvQuery.MENU_INDEX],
       label: item[ProvQuery.LABEL],
@@ -245,7 +258,7 @@ const ConfigFile = {
     };
   },
 
-  parseQueryInverse: function(item) {
+  parseQueryInverse: function (item) {
     var res = new Array(4);
     res[ProvQuery.MENU_INDEX] = item.menuIndex;
     res[ProvQuery.LABEL] = item.label;
@@ -254,21 +267,21 @@ const ConfigFile = {
     return res;
   },
 
-  getDefaultJSON: async function() {
+  getDefaultJSON: async function () {
     try {
       var response = await fetch("../settings.json");
       return await response.json();
-    } catch(err) {
+    } catch (err) {
       return {};
     }
   },
 
-  generateJSONFile: async function() {
-    var settings = await LocalStore.getOne(StoreKey.SETTINGS) || {};
-    var rsa = await LocalStore.getOne(StoreKey.RSA_SECURITY) || {};
-    var nwi = await LocalStore.getOne(StoreKey.NET_WITNESS) || {};
-    var cbc = await LocalStore.getOne(StoreKey.CARBON_BLACK) || {};
-    var providers = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS) || [];
+  generateJSONFile: async function () {
+    var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+    var rsa = (await LocalStore.getOne(StoreKey.RSA_SECURITY)) || {};
+    var nwi = (await LocalStore.getOne(StoreKey.NET_WITNESS)) || {};
+    var cbc = (await LocalStore.getOne(StoreKey.CARBON_BLACK)) || {};
+    var providers = (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
 
     var basicConfig = new Array(5);
     basicConfig[BasicConfig.CONFIG_URL] = settings.configurationURL;
@@ -283,25 +296,25 @@ const ConfigFile = {
       groups: [
         ["1", settings.providersGroups[0].name],
         ["2", settings.providersGroups[1].name],
-        ["3", settings.providersGroups[2].name]
+        ["3", settings.providersGroups[2].name],
       ],
 
       config: [basicConfig],
 
       RSA: {
         Config: rsa.config,
-        Queries: _.map(rsa.queries, ConfigFile.parseQueryInverse)
+        Queries: _.map(rsa.queries, ConfigFile.parseQueryInverse),
       },
       NWI: {
         Config: nwi.config,
-        Queries: _.map(nwi.queries, ConfigFile.parseQueryInverse)
+        Queries: _.map(nwi.queries, ConfigFile.parseQueryInverse),
       },
       CBC: {
         Config: cbc.config,
-        Queries: _.map(cbc.queries, ConfigFile.parseQueryInverse)
-      }
+        Queries: _.map(cbc.queries, ConfigFile.parseQueryInverse),
+      },
     };
-  }
+  },
 };
 
 export default ConfigFile;

@@ -7,7 +7,7 @@ import Mustache from "mustache";
 import LocalStore from "./shared/local_store";
 import { StoreKey } from "./shared/constants";
 
-// Wait for the page to be loaded to execute the initialization function.
+// Wait for the page to be loaded before executing the initialization function.
 document.addEventListener("DOMContentLoaded", function () {
   init();
 });

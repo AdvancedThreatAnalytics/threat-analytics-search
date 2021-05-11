@@ -31,7 +31,7 @@ function updateUI(params) {
       params
     ),
     function (result, value, key) {
-      result[key] = _.isObject(value) ? JSON.stringify(value) : value;
+      result[key] = _.isObject(value) ? JSON.stringify(value, null, 4) : value;
     }
   );
 
@@ -153,5 +153,10 @@ async function makeRequest(targetURL, reqData, proxyURL) {
   if (response.status < 200 || response.status >= 300) {
     throw new Error(data);
   }
-  return data;
+
+  try {
+    return JSON.parse(data);
+  } catch {
+    return data;
+  }
 }

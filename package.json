@@ -12,7 +12,6 @@
     "live": "webpack --config webpack.config.js --watch"
   },
   "devDependencies": {
-    "clean-webpack-plugin": "^4.0.0-alpha.0",
     "copy-webpack-plugin": "^8.1.1",
     "css-loader": "^5.2.4",
     "eslint": "^7.25.0",

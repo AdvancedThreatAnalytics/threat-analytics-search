@@ -5,8 +5,8 @@ const LocalStore = {
   set: function (keysAndValues) {
     return new Promise(function (resolve, reject) {
       chrome.storage.local.set(keysAndValues, function () {
-        if (typeof runtime !== "undefined" && runtime.lastError) {
-          reject(runtime.lastError);
+        if (typeof chrome.runtime !== "undefined" && chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
         } else {
           resolve();
         }
@@ -23,8 +23,8 @@ const LocalStore = {
   get: function (keys) {
     return new Promise(function (resolve, reject) {
       chrome.storage.local.get(keys, function (result) {
-        if (typeof runtime !== "undefined" && runtime.lastError) {
-          reject(runtime.lastError);
+        if (typeof chrome.runtime !== "undefined" && chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
         } else {
           resolve(result);
         }
@@ -41,8 +41,8 @@ const LocalStore = {
   clear: function () {
     return new Promise(function (resolve, reject) {
       chrome.storage.local.clear(function () {
-        if (typeof runtime !== "undefined" && runtime.lastError) {
-          reject(runtime.lastError);
+        if (typeof chrome.runtime !== "undefined" && chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
         } else {
           resolve();
         }

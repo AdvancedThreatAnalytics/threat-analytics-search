@@ -29,10 +29,10 @@ module.exports = {
     ],
   },
   plugins: [
-    // Copy files from 'src/' and settings file to 'dist/' folder.
     new CopyWebpackPlugin({
       patterns: [
         {
+          // Copy assets from 'src/' and settings file to 'dist/' folder.
           from: path.join(__dirname, "src/"),
           globOptions: {
             ignore: ["**/*.+(css|js)"],
@@ -46,9 +46,6 @@ module.exports = {
   ],
   optimization: {
     minimize: true,
-    minimizer: [new HtmlMinimizerPlugin()],
-    splitChunks: {
-      chunks: "all",
-    },
+    minimizer: [new HtmlMinimizerPlugin()]
   },
 };

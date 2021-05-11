@@ -339,7 +339,9 @@ var ContextualMenu = {
 
     var groupIndex = parseInt(info.menuItemId.split('-')[1], 10);
     var groupItems = getGroupProviders(groupIndex, providers);
-    var urls = _.map(groupItems, getProviderTargetURL);
+    var urls = _.map(groupItems, function(provider) {
+      return getProviderTargetURL(provider, info.selectionText);
+    });
 
     if (settings.openGroupsInNewWindow) {
       chrome.windows.create({

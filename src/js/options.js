@@ -4,6 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 import "../css/main.css";
 
+import _ from "lodash";
 import Mustache from "mustache";
 import Notiflix from "notiflix";
 import beautify from "js-beautify";
@@ -16,11 +17,12 @@ import {
   CBC_CONFIG,
   NWI_CONFIG,
   RSA_CONFIG,
-  LocalStore,
-  ConfigFile,
-  providerTabHelper,
   exportFileName
-} from "./utils";
+} from "./shared/constants";
+
+import ConfigFile from "./shared/config_file";
+import LocalStore from "./shared/local_store";
+import providerTabHelper from "./shared/provider_helper";
 
 // Global variable for store initial settings (before user changes).
 var initData = {};
@@ -65,7 +67,7 @@ function mainConfigurationUpdated() {
   SearchAnalyticsTab.updateForms();
 
   chrome.runtime.sendMessage({ action: "updateContextualMenu" });
-};
+}
 
 
 // --- Header --- //
@@ -137,8 +139,7 @@ var Header = {
     });
 
     // Add default values to parameters.
-    params = _.assign(
-      {
+    params = _.assign({
         current: current,
         tabs: tabs,
       },
@@ -146,14 +147,14 @@ var Header = {
     );
 
     // Replace template.
-    var template = document.getElementById("template-header-nav").innerHTML;
-    var rendered = Mustache.render(template, params);
-    document.querySelector("header nav").innerHTML = rendered;
+    var headerTemplate = document.getElementById("template-header-nav").innerHTML;
+    var headerRendered = Mustache.render(headerTemplate, params);
+    document.querySelector("header nav").innerHTML = headerRendered;
 
     // Replace link template.
-    var template = document.getElementById("template-header-links").innerHTML;
-    var rendered = Mustache.render(template, { links: Header.LINKS });
-    document.getElementById("links").innerHTML = rendered;
+    var linksTemplate = document.getElementById("template-header-links").innerHTML;
+    var linksRendered = Mustache.render(linksTemplate, { links: Header.LINKS });
+    document.getElementById("links").innerHTML = linksRendered;
 
     // Add click behaviors to tab links.
     var items = document.querySelectorAll("header nav .nav-link");
@@ -197,7 +198,6 @@ var SettingsTab = {
         document.getElementById("settings_closeModal").addEventListener("click", SettingsTab.closeModal);
         document.getElementById("settings_saveChanges").addEventListener("click", SettingsTab.saveModalChanges);
         document.getElementById("settings_discardChanges").addEventListener("click", SettingsTab.closeModal);
-        // document.getElementById("settings_saveImport").addEventListener("click", SettingsTab.saveImport);
 
         // Get the _Edit Changes_ Modal
         var modal = document.getElementById("settings_editModal");
@@ -253,9 +253,6 @@ var SettingsTab = {
 
     // Update 'last update' text.
     SettingsTab.updateLastConfigUpdate();
-
-    // Update import textarea.
-    SettingsTab.updateJSONTextarea();
   },
 
   updateLastConfigUpdate: async function() {

@@ -4,10 +4,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import _ from "lodash";
 import Mustache from "mustache";
 
-import {
-  StoreKey,
-  LocalStore
-} from "./utils";
+import LocalStore from "./shared/local_store";
+import { StoreKey } from "./shared/constants";
 
 // Wait for the page to be loaded to execute the initialization function.
 document.addEventListener("DOMContentLoaded", function() {
@@ -28,7 +26,7 @@ function updateUI(params) {
     loading: false,
     error: false
   }, params), function(result, value, key) {
-    result[key] = _.isObject(value) ? JSON.stringify(value) : value;
+    result[key] = _.isObject(value) ? JSON.stringify(value, null, 4) : value;
   });
 
   // Add 'computed' properties.
@@ -145,5 +143,11 @@ async function makeRequest(targetURL, reqData, proxyURL) {
   if (response.status < 200 || response.status >= 300) {
     throw new Error(data);
   }
-  return data;
+
+  try {
+    return JSON.parse(data);
+  } catch {
+    return data;
+  }
+  
 }

@@ -94,9 +94,7 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
   }
 
   if (info.menuItemId === MenuPreffix.OPTIONS) {
-    chrome.tabs.create({
-      "url": "options.html"
-    });
+    chrome.runtime.openOptionsPage();
   }
 });
 

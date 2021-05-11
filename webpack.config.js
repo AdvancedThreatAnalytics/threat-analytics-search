@@ -62,6 +62,12 @@ module.exports = {
     new bomPlugin(true)
   ],
   optimization: {
-    minimize: true
+    minimize: true,
+    splitChunks: {
+      chunks(chunk) {
+        // Dont split background file, otherwise won't be loaded completely by Chrome.
+        return chunk.name !== 'background';
+      },
+    },
   },
 };

@@ -2,11 +2,11 @@
  * Utility to wrap calls to Chrome local storage in Promises.
  */
 const LocalStore = {
-  set: function(keysAndValues) {
-    return new Promise(function(resolve, reject) { 
-      chrome.storage.local.set(keysAndValues, function() {
-        if(typeof runtime !== "undefined" && runtime.lastError) {
-          reject(runtime.lastError)
+  set: function (keysAndValues) {
+    return new Promise(function (resolve, reject) {
+      chrome.storage.local.set(keysAndValues, function () {
+        if (typeof runtime !== "undefined" && runtime.lastError) {
+          reject(runtime.lastError);
         } else {
           resolve();
         }
@@ -14,17 +14,17 @@ const LocalStore = {
     });
   },
 
-  setOne: function(key, value) {
+  setOne: function (key, value) {
     var payload = {};
     payload[key] = value;
     return LocalStore.set(payload);
   },
 
-  get: function(keys) {
-    return new Promise(function(resolve, reject) { 
-      chrome.storage.local.get(keys, function(result) {
-        if(typeof runtime !== "undefined" && runtime.lastError) {
-          reject(runtime.lastError)
+  get: function (keys) {
+    return new Promise(function (resolve, reject) {
+      chrome.storage.local.get(keys, function (result) {
+        if (typeof runtime !== "undefined" && runtime.lastError) {
+          reject(runtime.lastError);
         } else {
           resolve(result);
         }
@@ -32,23 +32,23 @@ const LocalStore = {
     });
   },
 
-  getOne: function(key) {
-    return LocalStore.get([key]).then(function(result) {
+  getOne: function (key) {
+    return LocalStore.get([key]).then(function (result) {
       return result[key];
     });
   },
 
-  clear: function() {
-    return new Promise(function(resolve, reject) { 
-      chrome.storage.local.clear(function() {
-        if(typeof runtime !== "undefined" && runtime.lastError) {
-          reject(runtime.lastError)
+  clear: function () {
+    return new Promise(function (resolve, reject) {
+      chrome.storage.local.clear(function () {
+        if (typeof runtime !== "undefined" && runtime.lastError) {
+          reject(runtime.lastError);
         } else {
           resolve();
         }
       });
     });
-  }
+  },
 };
 
 export default LocalStore;

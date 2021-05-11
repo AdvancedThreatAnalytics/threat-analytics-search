@@ -17,7 +17,7 @@ import {
   CBC_CONFIG,
   NWI_CONFIG,
   RSA_CONFIG,
-  exportFileName
+  exportFileName,
 } from "./shared/constants";
 
 import ConfigFile from "./shared/config_file";
@@ -28,7 +28,7 @@ import providerTabHelper from "./shared/provider_helper";
 var initData = {};
 
 // Wait for the page to be loaded to execute the initialization function.
-document.addEventListener("DOMContentLoaded", async function() {
+document.addEventListener("DOMContentLoaded", async function () {
   Header.update();
   updateTabsVisibility(Header.DEFAULT_TAB);
 
@@ -44,31 +44,32 @@ document.addEventListener("DOMContentLoaded", async function() {
     StoreKey.RSA_SECURITY,
     StoreKey.SEARCH_PROVIDERS,
     StoreKey.SETTINGS,
-  ]).then(function(result) {
+  ]).then(function (result) {
     _.assign(initData, result);
   });
 });
 
 function updateTabsVisibility(current) {
-  var pages = document.querySelectorAll('main section');
+  var pages = document.querySelectorAll("main section");
   for (var i = 0; i < pages.length; i++) {
-    var pageAttr = pages[i].getAttribute('data-tab');
+    var pageAttr = pages[i].getAttribute("data-tab");
     if (!_.isEmpty(pageAttr)) {
       pages[i].style.display = pageAttr === current ? "block" : "none";
     }
   }
 }
 
-function mainConfigurationUpdated() {
-  SettingsTab.updateForms();
-  ProvidersTab.updateForms();
-  CarbonBlackTab.updateForms();
-  NetWitnessTab.updateForms();
-  SearchAnalyticsTab.updateForms();
+function mainConfigurationUpdated(lazy) {
+  if (!lazy) {
+    SettingsTab.updateForms();
+    ProvidersTab.updateForms();
+    CarbonBlackTab.updateForms();
+    NetWitnessTab.updateForms();
+    SearchAnalyticsTab.updateForms();
+  }
 
   chrome.runtime.sendMessage({ action: "updateContextualMenu" });
 }
-
 
 // --- Header --- //
 
@@ -139,7 +140,8 @@ var Header = {
     });
 
     // Add default values to parameters.
-    params = _.assign({
+    params = _.assign(
+      {
         current: current,
         tabs: tabs,
       },
@@ -147,12 +149,16 @@ var Header = {
     );
 
     // Replace template.
-    var headerTemplate = document.getElementById("template-header-nav").innerHTML;
+    var headerTemplate = document.getElementById(
+      "template-header-nav"
+    ).innerHTML;
     var headerRendered = Mustache.render(headerTemplate, params);
     document.querySelector("header nav").innerHTML = headerRendered;
 
     // Replace link template.
-    var linksTemplate = document.getElementById("template-header-links").innerHTML;
+    var linksTemplate = document.getElementById(
+      "template-header-links"
+    ).innerHTML;
     var linksRendered = Mustache.render(linksTemplate, { links: Header.LINKS });
     document.getElementById("links").innerHTML = linksRendered;
 
@@ -176,28 +182,42 @@ var Header = {
   },
 };
 
-
 // --- Settings tab --- //
 
 var SettingsTab = {
-  initialize: function() {
-    fetch('views/settings.html')
+  initialize: function () {
+    fetch("views/settings.html")
       .then((response) => response.text())
       .then((htmlData) => {
         // Insert template file.
-        document.querySelector(
-          'main section[data-tab="settings"]'
-        ).innerHTML = htmlData;
+        document.querySelector('main section[data-tab="settings"]').innerHTML =
+          htmlData;
 
         // Add click/change behaviors.
-        document.getElementById("settings_refreshNow").addEventListener("click", SettingsTab.updateNow);
-        document.getElementById("settings_import").addEventListener("click", SettingsTab.importFromFile);
-        document.getElementById("settings_export").addEventListener("click", SettingsTab.exportToFile);
-        document.getElementById("settings_edit").addEventListener("click", SettingsTab.openModal);
-        document.getElementById("settings_fileInput").addEventListener("change", SettingsTab.fileImported);
-        document.getElementById("settings_closeModal").addEventListener("click", SettingsTab.closeModal);
-        document.getElementById("settings_saveChanges").addEventListener("click", SettingsTab.saveModalChanges);
-        document.getElementById("settings_discardChanges").addEventListener("click", SettingsTab.closeModal);
+        document
+          .getElementById("settings_refreshNow")
+          .addEventListener("click", SettingsTab.updateNow);
+        document
+          .getElementById("settings_import")
+          .addEventListener("click", SettingsTab.importFromFile);
+        document
+          .getElementById("settings_export")
+          .addEventListener("click", SettingsTab.exportToFile);
+        document
+          .getElementById("settings_edit")
+          .addEventListener("click", SettingsTab.openModal);
+        document
+          .getElementById("settings_fileInput")
+          .addEventListener("change", SettingsTab.fileImported);
+        document
+          .getElementById("settings_closeModal")
+          .addEventListener("click", SettingsTab.closeModal);
+        document
+          .getElementById("settings_saveChanges")
+          .addEventListener("click", SettingsTab.saveModalChanges);
+        document
+          .getElementById("settings_discardChanges")
+          .addEventListener("click", SettingsTab.closeModal);
 
         // Get the _Edit Changes_ Modal
         var modal = document.getElementById("settings_editModal");
@@ -223,28 +243,30 @@ var SettingsTab = {
       });
   },
 
-  onInputChanged: async function(event) {
-    var targetName = _.get(event, 'target.name');
-    if(!_.isEmpty(targetName)) {
-      var newSettings = _.clone(await LocalStore.getOne(StoreKey.SETTINGS)) || {};
-      newSettings[targetName] = event.target.type === 'checkbox'
-        ? event.target.checked
-        : event.target.value;
+  onInputChanged: async function (event) {
+    var targetName = _.get(event, "target.name");
+    if (!_.isEmpty(targetName)) {
+      var newSettings =
+        _.clone(await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      newSettings[targetName] =
+        event.target.type === "checkbox"
+          ? event.target.checked
+          : event.target.value;
       await LocalStore.setOne(StoreKey.SETTINGS, newSettings);
 
-      // Update UI according to this change.
-      mainConfigurationUpdated();
+      // Update context menu
+      mainConfigurationUpdated(true);
     }
   },
 
-  updateForms: async function() {
+  updateForms: async function () {
     var settings = await LocalStore.getOne(StoreKey.SETTINGS);
 
     // Update inputs.
     var inputs = document.querySelectorAll('form[name="settings"] input');
-    _.each(inputs, function(input) {
+    _.each(inputs, function (input) {
       var value = _.get(settings, input.name);
-      if(input.type === "checkbox") {
+      if (input.type === "checkbox") {
         input.checked = value === true;
       } else {
         input.value = value;
@@ -255,34 +277,36 @@ var SettingsTab = {
     SettingsTab.updateLastConfigUpdate();
   },
 
-  updateLastConfigUpdate: async function() {
+  updateLastConfigUpdate: async function () {
     var lastConfig = await LocalStore.getOne(StoreKey.LAST_CONFIG_DATA);
-    
+
     let date = _.get(lastConfig, "date", "-");
     let error = _.get(lastConfig, "errorMsg", "");
 
     date = DateTime.fromSeconds(date / 1000).toLocaleString(
       DateTime.DATETIME_SHORT_WITH_SECONDS
     );
-    
+
     document.getElementById("settings_lastConfigUpdate").innerHTML = date;
     document.getElementById("settings_lastConfigUpdateError").innerHTML = error;
   },
 
-  updateJSONTextarea: async function(newSettings) {
+  updateJSONTextarea: async function (newSettings) {
     var textarea = document.getElementById("settings_json");
-    if(textarea) {
-      if(_.isNil(newSettings)) {
+    if (textarea) {
+      if (_.isNil(newSettings)) {
         newSettings = await ConfigFile.generateJSONFile();
       }
 
-      textarea.value = beautify(JSON.stringify(newSettings), {indent_size: 2});
+      textarea.value = beautify(JSON.stringify(newSettings), {
+        indent_size: 2,
+      });
     }
   },
 
-  updateNow: async function() {
+  updateNow: async function () {
     var success = await ConfigFile.updateNow();
-    if(success) {
+    if (success) {
       // Update UI according to this change
       mainConfigurationUpdated();
 
@@ -291,15 +315,21 @@ var SettingsTab = {
       // Update Last Config label to show error details.
       SettingsTab.updateLastConfigUpdate();
 
-      Notiflix.Notify.Failure("The settings couldn't be updated, please check the URL or the file content");
+      Notiflix.Notify.Failure(
+        "The settings couldn't be updated, please check the URL or the file content"
+      );
     }
   },
 
-  saveSearches: async function(data) {
-    try{
+  saveSearches: async function (data) {
+    try {
       var parsedData = JSON.parse(data);
 
-      if(confirm("Are you sure you want to override your local settings with these values?")) {
+      if (
+        confirm(
+          "Are you sure you want to override your local settings with these values?"
+        )
+      ) {
         await ConfigFile.parseJSONFile(parsedData, true);
 
         // Update UI according to this change
@@ -308,9 +338,11 @@ var SettingsTab = {
         Notiflix.Notify.Success("New configuration saved");
         return true;
       }
-    }catch(err) {
+    } catch (err) {
       console.error(err);
-      Notiflix.Notify.Failure("Configuration couldn't be saved. Please verify that the file/data is valid.");
+      Notiflix.Notify.Failure(
+        "Configuration couldn't be saved. Please verify that the file/data is valid."
+      );
       return false;
     }
   },
@@ -323,17 +355,17 @@ var SettingsTab = {
     let selectedFile = _.first(this.files);
     var reader = new FileReader();
 
-    reader.onload = function(event) {
+    reader.onload = function (event) {
       SettingsTab.saveSearches(event.target.result);
-    }
+    };
     reader.readAsText(selectedFile);
 
     // Reset the value
     event.target.value = "";
   },
 
-  exportToFile: async function() {
-    // Generate the JSON 
+  exportToFile: async function () {
+    // Generate the JSON
     let data = await ConfigFile.generateJSONFile();
 
     // Create a downloadable link with content. I have named the exported file to `Settings.json`
@@ -350,11 +382,12 @@ var SettingsTab = {
     document.body.removeChild(downloadLink);
   },
 
-  openModal: async function() {
+  openModal: async function () {
     // Update text Area
     await SettingsTab.updateJSONTextarea();
 
-    document.getElementById("Settings_editModalBackdrop").style.display ="block";
+    document.getElementById("Settings_editModalBackdrop").style.display =
+      "block";
     document.getElementById("settings_editModal").style.display = "block";
     document.getElementById("settings_editModal").classList.add("show");
   },
@@ -362,45 +395,57 @@ var SettingsTab = {
   saveModalChanges() {
     let changes = document.getElementById("settings_json").value;
     var success = SettingsTab.saveSearches(changes);
-    
+
     // close Modal if saved
-    if(success) {
+    if (success) {
       SettingsTab.closeModal();
     }
   },
 
   closeModal() {
-    document.getElementById("Settings_editModalBackdrop").style.display ="none";
+    document.getElementById("Settings_editModalBackdrop").style.display =
+      "none";
     document.getElementById("settings_editModal").style.display = "none";
     document.getElementById("settings_editModal").classList.remove("show");
   },
 };
 
-
 // --- Search Providers tab --- //
 
 var ProvidersTab = {
-  initialize: function() {
-    fetch('views/providers.html')
+  initialize: function () {
+    fetch("views/providers.html")
       .then((response) => response.text())
       .then((htmlData) => {
         // Insert template file.
-        document.querySelector('main section[data-tab="search-providers"]').innerHTML = htmlData;
+        document.querySelector(
+          'main section[data-tab="search-providers"]'
+        ).innerHTML = htmlData;
 
         // Add event listeners.
-        document.querySelector('form[name="manage_providers"] button[type="reset"]').addEventListener("click", ProvidersTab.undoProvidersChanges);
-        document.querySelector('form[name="edit_groups"] button[type="reset"]').addEventListener("click", ProvidersTab.undoGroupsChanges);
+        document
+          .querySelector('form[name="manage_providers"] button[type="reset"]')
+          .addEventListener("click", ProvidersTab.undoProvidersChanges);
+        document
+          .querySelector('form[name="edit_groups"] button[type="reset"]')
+          .addEventListener("click", ProvidersTab.undoGroupsChanges);
 
-        document.querySelector('form[name="add_provider"] button[type="submit"]').addEventListener("click", ProvidersTab.addNewProvider);
-        document.querySelector('form[name="add_provider"] input[name="postEnabled"]').addEventListener("click", ProvidersTab.toggleInputByCheckbox);
-        document.querySelector('form[name="add_provider"] input[name="proxyEnabled"]').addEventListener("click", ProvidersTab.toggleInputByCheckbox);
+        document
+          .querySelector('form[name="add_provider"] button[type="submit"]')
+          .addEventListener("click", ProvidersTab.addNewProvider);
+        document
+          .querySelector('form[name="add_provider"] input[name="postEnabled"]')
+          .addEventListener("click", ProvidersTab.toggleInputByCheckbox);
+        document
+          .querySelector('form[name="add_provider"] input[name="proxyEnabled"]')
+          .addEventListener("click", ProvidersTab.toggleInputByCheckbox);
 
         // Update forms with stored values.
         ProvidersTab.updateForms();
-    });
+      });
   },
 
-  updateForms: function() {
+  updateForms: function () {
     return Promise.all([
       ProvidersTab.updateGroupsForm(),
       ProvidersTab.updateProvidersForm(),
@@ -409,50 +454,57 @@ var ProvidersTab = {
 
   // --- Providers list --- //
 
-  updateProvidersForm: async function() {
-    var settings = await LocalStore.getOne(StoreKey.SETTINGS) || {};
-    var searchProviders = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS) || [];
+  updateProvidersForm: async function () {
+    var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+    var searchProviders =
+      (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
 
     // Update HTML.
-    var template = document.getElementById('template_menuItemsManager').innerHTML;
+    var template = document.getElementById(
+      "template_menuItemsManager"
+    ).innerHTML;
     var rendered = Mustache.render(template, {
-      menuItems: _.map(searchProviders, function(item, index) {
+      menuItems: _.map(searchProviders, function (item, index) {
         return _.assign({}, item, {
           index: index,
           enabled: item.enabled ? "checked" : "",
         });
       }),
-      groups: function() {
+      groups: function () {
         var item = this;
-        return _.map(settings.providersGroups, function(group, index) {
+        return _.map(settings.providersGroups, function (group, index) {
           var mask = Math.pow(2, index);
           return {
-            value: (index + 1),
+            value: index + 1,
             name: group.name,
-            checked: (item.group & mask ? 'checked' : ''),
-            classes: (group.enabled ? '' : 'text-line-through'),
-          }
+            checked: item.group & mask ? "checked" : "",
+            classes: group.enabled ? "" : "text-line-through",
+          };
         });
       },
     });
-    document.getElementById('providers_menuItems').innerHTML = rendered;
+    document.getElementById("providers_menuItems").innerHTML = rendered;
 
     // Make list sortable.
     Sortable.create(
-      document.querySelector('#providers_menuItems ul.list-group'),
+      document.querySelector("#providers_menuItems ul.list-group"),
       { handle: ".sortable-handle", onEnd: ProvidersTab.onProviderDragged }
     );
 
     // Add click listeners to delete buttons.
-    var deleteButtons = document.querySelectorAll('form[name="manage_providers"] button[title="Delete"]');
-    _.forEach(deleteButtons, function(button) {
-      button.addEventListener('click', ProvidersTab.removeProvider);
+    var deleteButtons = document.querySelectorAll(
+      'form[name="manage_providers"] button[title="Delete"]'
+    );
+    _.forEach(deleteButtons, function (button) {
+      button.addEventListener("click", ProvidersTab.removeProvider);
     });
 
     // Add click/change listeners to inputs.
-    var inputs = document.querySelectorAll('form[name="manage_providers"] input');
-    _.forEach(inputs, function(input) {
-      if(input.type === "checkbox") {
+    var inputs = document.querySelectorAll(
+      'form[name="manage_providers"] input'
+    );
+    _.forEach(inputs, function (input) {
+      if (input.type === "checkbox") {
         input.addEventListener("click", ProvidersTab.onProviderInputChanged);
       } else {
         input.addEventListener("change", ProvidersTab.onProviderInputChanged);
@@ -460,7 +512,7 @@ var ProvidersTab = {
     });
   },
 
-  onProviderDragged: async function(event) {
+  onProviderDragged: async function (event) {
     // Move provider.
     var providers = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
     providers.splice(event.newIndex, 0, providers.splice(event.oldIndex, 1)[0]);
@@ -469,15 +521,15 @@ var ProvidersTab = {
     // Update UI according to this change.
     // NOTE: Updating the form is required because the 'index' is being used as unique ID for each item.
     ProvidersTab.updateProvidersForm();
-    mainConfigurationUpdated();
+    mainConfigurationUpdated(true);
   },
 
-  removeProvider: async function(event) {
+  removeProvider: async function (event) {
     event.preventDefault();
 
-    if(confirm("Are you sure you want to remove this item?")) {
+    if (confirm("Are you sure you want to remove this item?")) {
       // Get index.
-      var rootElem = event.target.closest('li');
+      var rootElem = event.target.closest("li");
       var index = parseInt(rootElem.getAttribute("data-index"), 10);
 
       // Remove provider.
@@ -487,18 +539,18 @@ var ProvidersTab = {
 
       // Update UI according to this change.
       ProvidersTab.updateProvidersForm();
-      mainConfigurationUpdated();
+      mainConfigurationUpdated(true);
 
       Notiflix.Notify.Success("Item removed");
     }
   },
 
-  onProviderInputChanged: async function(event) {
-    var settings = await LocalStore.getOne(StoreKey.SETTINGS) || {};
+  onProviderInputChanged: async function (event) {
+    var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
     var providers = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
 
     // Get index.
-    var rootElem = event.target.closest('li');
+    var rootElem = event.target.closest("li");
     var index = parseInt(rootElem.getAttribute("data-index"), 10);
 
     // Get form data.
@@ -512,19 +564,19 @@ var ProvidersTab = {
     item.enabled = formData.get("enabled_" + index) === "yes";
 
     var group = 0;
-    for(var k=0; k<settings.providersGroups.length; k++) {
-      var value = k+1;
+    for (var k = 0; k < settings.providersGroups.length; k++) {
+      var value = k + 1;
       var isChecked = !_.isNil(formData.get("group_" + index + "_" + value));
-      if(isChecked) {
+      if (isChecked) {
         group += Math.pow(2, k);
       }
     }
     item.group = group;
 
-    if(item.postEnabled) {
+    if (item.postEnabled) {
       item.postValue = formData.get("postValue_" + index);
     }
-    if(item.proxyEnabled) {
+    if (item.proxyEnabled) {
       item.proxyUrl = formData.get("proxyUrl_" + index);
     }
 
@@ -532,21 +584,25 @@ var ProvidersTab = {
     providers[index] = item;
     await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, providers);
 
-    // Update UI according to this change.
-    mainConfigurationUpdated();
+    // Update context menu
+    mainConfigurationUpdated(true);
   },
 
-  undoProvidersChanges: async function(event) {
+  undoProvidersChanges: async function (event) {
     event.preventDefault();
 
-    if(confirm("Are you sure you want to undo all recents changes on menu items?")) {
+    if (
+      confirm(
+        "Are you sure you want to undo all recents changes on menu items?"
+      )
+    ) {
       // Reset data.
       var oldProviders = initData[StoreKey.SEARCH_PROVIDERS];
       await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, oldProviders);
 
       // Update UI according to this change.
       ProvidersTab.updateForms();
-      mainConfigurationUpdated();
+      mainConfigurationUpdated(true);
 
       Notiflix.Notify.Success("Recent changes on menu items were undo");
     }
@@ -554,15 +610,15 @@ var ProvidersTab = {
 
   // --- Provider add --- //
 
-  toggleInputByCheckbox: function(event) {
+  toggleInputByCheckbox: function (event) {
     var checkbox = event.target;
     var input = document.getElementById(checkbox.getAttribute("data-target"));
-    if(!_.isNil(input)) {
+    if (!_.isNil(input)) {
       input.disabled = !checkbox.checked;
     }
   },
 
-  addNewProvider: async function(event) {
+  addNewProvider: async function (event) {
     event.preventDefault();
 
     // Get form data.
@@ -571,14 +627,20 @@ var ProvidersTab = {
 
     // Validate values.
     var errMsg;
-    if(_.isEmpty(formData.get('label')) || _.isEmpty(formData.get('link'))) {
+    if (_.isEmpty(formData.get("label")) || _.isEmpty(formData.get("link"))) {
       errMsg = "The display name and the link are required values";
-    } else if (formData.get('postEnabled') === "yes" && _.isEmpty(formData.get('postValue'))) {
+    } else if (
+      formData.get("postEnabled") === "yes" &&
+      _.isEmpty(formData.get("postValue"))
+    ) {
       errMsg = "If POST is enabled you must provide a value";
-    } else if (formData.get('proxyEnabled') === "yes" && _.isEmpty(formData.get('proxyUrl'))) {
+    } else if (
+      formData.get("proxyEnabled") === "yes" &&
+      _.isEmpty(formData.get("proxyUrl"))
+    ) {
       errMsg = "If proxy is enabled you must provide the Proxy's URL";
     }
-    if(!_.isNil(errMsg)) {
+    if (!_.isNil(errMsg)) {
       Notiflix.Notify.Failure(errMsg);
       return;
     }
@@ -587,48 +649,55 @@ var ProvidersTab = {
     var searchProviders = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
     searchProviders.push({
       menuIndex: -1,
-      label: formData.get('label'),
-      link: formData.get('link'),
+      label: formData.get("label"),
+      link: formData.get("link"),
       enabled: true,
       fromConfig: false,
       group: 0,
-      postEnabled: formData.get('postEnabled') === "yes",
-      postValue: formData.get('postValue'),
-      proxyEnabled: formData.get('proxyEnabled') === "yes",
-      proxyUrl: formData.get('proxyUrl'),
+      postEnabled: formData.get("postEnabled") === "yes",
+      postValue: formData.get("postValue"),
+      proxyEnabled: formData.get("proxyEnabled") === "yes",
+      proxyUrl: formData.get("proxyUrl"),
     });
     await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, searchProviders);
 
     // Clear form.
-    _.forEach(document.querySelectorAll('form[name="add_provider"] input[type="text"]'), function(input) {
-      input.value = "";
-    });
+    _.forEach(
+      document.querySelectorAll('form[name="add_provider"] input[type="text"]'),
+      function (input) {
+        input.value = "";
+      }
+    );
 
     // Update UI according to this change.
     ProvidersTab.updateProvidersForm();
-    mainConfigurationUpdated();
+    mainConfigurationUpdated(true);
 
     Notiflix.Notify.Success("Option added successfully");
   },
 
   // --- Groups --- //
 
-  updateGroupsForm: async function() {
-    var settings = await LocalStore.getOne(StoreKey.SETTINGS) || {};
+  updateGroupsForm: async function () {
+    var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
 
     // Update HTML.
-    var template = document.getElementById('template_groupsManager').innerHTML;
+    var template = document.getElementById("template_groupsManager").innerHTML;
     var rendered = Mustache.render(template, {
       groups: settings.providersGroups,
-      index: function() { return settings.providersGroups.indexOf(this); },
-      checked: function() { return this.enabled ? "checked" : ""; },
+      index: function () {
+        return settings.providersGroups.indexOf(this);
+      },
+      checked: function () {
+        return this.enabled ? "checked" : "";
+      },
     });
-    document.getElementById('providers_groupsManager').innerHTML = rendered;
+    document.getElementById("providers_groupsManager").innerHTML = rendered;
 
     // Add click/change listeners.
     var inputs = document.querySelectorAll('form[name="edit_groups"] input');
-    _.forEach(inputs, function(input) {
-      if(input.type === "checkbox") {
+    _.forEach(inputs, function (input) {
+      if (input.type === "checkbox") {
         input.addEventListener("click", ProvidersTab.onGroupInputChanged);
       } else {
         input.addEventListener("change", ProvidersTab.onGroupInputChanged);
@@ -636,9 +705,9 @@ var ProvidersTab = {
     });
   },
 
-  onGroupInputChanged: async function(event) {
+  onGroupInputChanged: async function (event) {
     // Get index.
-    var rootElem = event.target.closest('li');
+    var rootElem = event.target.closest("li");
     var index = parseInt(rootElem.getAttribute("data-index"), 10);
 
     // Get form data.
@@ -648,34 +717,35 @@ var ProvidersTab = {
     // Update group.
     var settings = await LocalStore.getOne(StoreKey.SETTINGS);
     settings.providersGroups[index] = {
-      name: formData.get('label_' + index) || ("Group " + (index+1)),
-      enabled: formData.get('enabled_' + index) === "yes",      
+      name: formData.get("label_" + index) || "Group " + (index + 1),
+      enabled: formData.get("enabled_" + index) === "yes",
     };
     await LocalStore.setOne(StoreKey.SETTINGS, settings);
 
     // Update UI according to this change.
     ProvidersTab.updateProvidersForm();
-    mainConfigurationUpdated();
+    mainConfigurationUpdated(true);
   },
 
-  undoGroupsChanges: async function(event) {
+  undoGroupsChanges: async function (event) {
     event.preventDefault();
 
-    if(confirm("Are you sure you want to undo all recents changes on groups?")) {
+    if (
+      confirm("Are you sure you want to undo all recents changes on groups?")
+    ) {
       // Reset data.
-      var settings = await LocalStore.getOne(StoreKey.SETTINGS) || {};
+      var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       settings.providersGroups = initData[StoreKey.SETTINGS].providersGroups;
       await LocalStore.setOne(StoreKey.SETTINGS, settings);
 
       // Update UI according to this change.
       ProvidersTab.updateForms();
-      mainConfigurationUpdated();
+      mainConfigurationUpdated(true);
 
       Notiflix.Notify.Success("Recent changes on groups were undo");
     }
   },
 };
-
 
 // --- Carbon Black & NetWitness & Serch analytics tabs --- //
 
@@ -683,29 +753,29 @@ var CarbonBlackTab = providerTabHelper(
   initData,
   StoreKey.CARBON_BLACK,
   CBC_CONFIG,
-  'cbcConfig',
-  'cbc_config',
-  'template_providerConfig',
-  'cbcQueries',
-  'cbc_queries',
-  'template_providerQueries',
-  mainConfigurationUpdated.bind(this),
+  "cbcConfig",
+  "cbc_config",
+  "template_providerConfig",
+  "cbcQueries",
+  "cbc_queries",
+  "template_providerQueries",
+  mainConfigurationUpdated.bind(this, true)
 );
 
 var NetWitnessTab = providerTabHelper(
   initData,
   StoreKey.NET_WITNESS,
   NWI_CONFIG,
-  'nwiConfig',
-  'nwi_config',
-  'template_providerConfig',
-  'nwiQueries',
-  'nwi_queries',
-  'template_providerQueries',
-  mainConfigurationUpdated.bind(this),
-  function(link) {
-    try{
-      if(!_.isEmpty(link)) {
+  "nwiConfig",
+  "nwi_config",
+  "template_providerConfig",
+  "nwiQueries",
+  "nwi_queries",
+  "template_providerQueries",
+  mainConfigurationUpdated.bind(this, true),
+  function (link) {
+    try {
+      if (!_.isEmpty(link)) {
         var temp = link.match(/:\/\/([^:\/?]*)(:(\d+)|[\/?])/);
         var hostname = temp ? (temp[1] ? temp[1] : "") : "";
         var port = temp ? (temp[3] ? temp[3] : "") : "";
@@ -719,7 +789,7 @@ var NetWitnessTab = providerTabHelper(
           { key: "NWIConfigCollectionName", value: collectionName },
         ];
       }
-    }catch(err) {
+    } catch (err) {
       // Do nothing.
     }
     return null;
@@ -730,16 +800,16 @@ var SearchAnalyticsTab = providerTabHelper(
   initData,
   StoreKey.RSA_SECURITY,
   RSA_CONFIG,
-  'rsaConfig',
-  'rsa_config',
-  'template_providerConfig',
-  'rsaQueries',
-  'rsa_queries',
-  'template_providerQueries',
-  mainConfigurationUpdated.bind(this),
-  function(link) {
-    try{
-      if(!_.isEmpty(link)) {
+  "rsaConfig",
+  "rsa_config",
+  "template_providerConfig",
+  "rsaQueries",
+  "rsa_queries",
+  "template_providerQueries",
+  mainConfigurationUpdated.bind(this, true),
+  function (link) {
+    try {
+      if (!_.isEmpty(link)) {
         var ssl = link.search(/https:/) == 0 ? true : false;
         var temp = link.match(/:\/\/([^:\/?]*)(:(\d+)|[\/?])/);
         var hostname = temp ? (temp[1] ? temp[1] : "") : "";
@@ -755,7 +825,7 @@ var SearchAnalyticsTab = providerTabHelper(
           { key: "RSAConfigDevId", value: devId },
         ];
       }
-    }catch(err) {
+    } catch (err) {
       // Do nothing.
     }
     return null;

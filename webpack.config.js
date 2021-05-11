@@ -1,55 +1,51 @@
 const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
-    mode: "production",
-    entry: {
-        "background": './src/background.js',
-        "js/migration": './src/js/migration.js',
-        "js/options": './src/js/options.js',
-        "js/postHandler": './src/js/postHandler.js'
-    },
-    output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: "[name].js",
-        publicPath: "./"
-    },
-    devtool: 'source-map',
-    module: {
-        rules: [
-            {
-                test: /\.css$/i,
-                use: ['style-loader', 'css-loader'],
-            },
-            {
-                test: /\.(svg|eot|woff|woff2|ttf)$/,
-                use: ['file-loader']
-            }
-        ]
-    },
-    plugins: [
-        // Copy files from 'src/' and settings file to 'dist/' folder.
-        new CopyWebpackPlugin({
-            patterns: [{
-                from: path.join(__dirname, 'src/'),
-                globOptions: {
-                    ignore: ['**/*.+(css|js)']
-                    }
-                },
-                {
-                    from: "./settings.json"
-                }],
-        })
+  mode: "production",
+  entry: {
+    background: "./src/background.js",
+    "js/migration": "./src/js/migration.js",
+    "js/options": "./src/js/options.js",
+    "js/postHandler": "./src/js/postHandler.js",
+  },
+  output: {
+    path: path.resolve(__dirname, "dist"),
+    filename: "[name].js",
+    publicPath: "./",
+  },
+  devtool: "source-map",
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: ["style-loader", "css-loader"],
+      },
+      {
+        test: /\.(svg|eot|woff|woff2|ttf)$/,
+        use: ["file-loader"],
+      },
     ],
-    optimization: {
-        minimize: true,
-        minimizer: [
-            new HtmlMinimizerPlugin(),
-        ],
-        splitChunks: {
-           chunks: 'all',
+  },
+  plugins: [
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          // Copy assets from 'src/' and settings file to 'dist/' folder.
+          from: path.join(__dirname, "src/"),
+          globOptions: {
+            ignore: ["**/*.+(css|js)"],
+          },
         },
-    }
-}
+        {
+          from: "./settings.json",
+        },
+      ],
+    }),
+  ],
+  optimization: {
+    minimize: true,
+    minimizer: [new HtmlMinimizerPlugin()]
+  },
+};

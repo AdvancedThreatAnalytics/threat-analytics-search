@@ -4,7 +4,7 @@
  * @deprecated: use LocalStore instead, since the local storage can't be used on service workers.
  */
 const Storage = {
-  setItem: function(key, value) {
+  setItem: function (key, value) {
     try {
       window.localStorage.removeItem(key);
       window.localStorage.setItem(key, value);
@@ -13,7 +13,7 @@ const Storage = {
     }
   },
 
-  getItem: function(key) {
+  getItem: function (key) {
     var value;
     try {
       value = window.localStorage.getItem(key);
@@ -24,9 +24,9 @@ const Storage = {
     return value;
   },
 
-  clearAll: function() {
+  clearAll: function () {
     window.localStorage.clear();
-  }
+  },
 };
 
 export default Storage;

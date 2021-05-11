@@ -8,7 +8,7 @@ import LocalStore from "./shared/local_store";
 import { StoreKey } from "./shared/constants";
 
 // Wait for the page to be loaded to execute the initialization function.
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
   init();
 });
 
@@ -19,30 +19,37 @@ document.addEventListener("DOMContentLoaded", function() {
  */
 function updateUI(params) {
   // Add default values to parameters and parse them to string if need.
-  params = _.transform(_.assign({
-    targetURL: '-',
-    reqData: null,
-    response: null,
-    loading: false,
-    error: false
-  }, params), function(result, value, key) {
-    result[key] = _.isObject(value) ? JSON.stringify(value, null, 4) : value;
-  });
+  params = _.transform(
+    _.assign(
+      {
+        targetURL: "-",
+        reqData: null,
+        response: null,
+        loading: false,
+        error: false,
+      },
+      params
+    ),
+    function (result, value, key) {
+      result[key] = _.isObject(value) ? JSON.stringify(value, null, 4) : value;
+    }
+  );
 
   // Add 'computed' properties.
-  params.busy = params.loading + '';
+  params.busy = params.loading + "";
   params.resultClass = params.error && !params.loading ? "text-danger" : "";
-  params.succeeded = !params.loading && !params.error && !_.isEmpty(params.response);
+  params.succeeded =
+    !params.loading && !params.error && !_.isEmpty(params.response);
 
   // Replace template.
-  var template = document.getElementById('template').innerHTML;
+  var template = document.getElementById("template").innerHTML;
   var rendered = Mustache.render(template, params);
-  document.getElementById('target').innerHTML = rendered;
+  document.getElementById("target").innerHTML = rendered;
 
   // Add click listener to retry button (if rendered).
-  var retryBtn = document.getElementById('retryBtn');
-  if(!_.isNil(retryBtn)) {
-     retryBtn.addEventListener('click', init);  
+  var retryBtn = document.getElementById("retryBtn");
+  if (!_.isNil(retryBtn)) {
+    retryBtn.addEventListener("click", init);
   }
 }
 
@@ -59,10 +66,10 @@ async function init() {
 
   // Find menu's item.
   var menuItems = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
-  var itemIndex = _.findIndex(menuItems, function(item) {
+  var itemIndex = _.findIndex(menuItems, function (item) {
     return item.label === name;
   });
-  var menuItem = menuItems[itemIndex]
+  var menuItem = menuItems[itemIndex];
 
   // Prepare request's parameters and URL.
   var reqData = menuItem.postValue;
@@ -76,8 +83,8 @@ async function init() {
   var initParams = {
     targetURL: targetURL,
     reqData: reqData,
-    loading: true
-  }
+    loading: true,
+  };
   updateUI(initParams);
 
   try {
@@ -89,17 +96,21 @@ async function init() {
     var response = await makeRequest(targetURL, reqData, proxyURL);
 
     // Update UI with response.
-    updateUI(_.assign({}, initParams, {
-      response: response,
-      loading: false
-    }));
+    updateUI(
+      _.assign({}, initParams, {
+        response: response,
+        loading: false,
+      })
+    );
   } catch (err) {
     // Update UI with error.
-    updateUI(_.assign({}, initParams, {
-      response: err + '',
-      loading: false,
-      error: true
-    }));
+    updateUI(
+      _.assign({}, initParams, {
+        response: err + "",
+        loading: false,
+        error: true,
+      })
+    );
   }
 }
 
@@ -120,22 +131,21 @@ async function makeRequest(targetURL, reqData, proxyURL) {
     response = await fetch(targetURL, {
       method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      body: _.isObject(reqData) ? JSON.stringify(reqData) : null
+      body: _.isObject(reqData) ? JSON.stringify(reqData) : null,
     });
   } else {
     response = await fetch(proxyURL, {
       method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        "url": targetURL,
-        "data": reqData
-      })
+        url: targetURL,
+        data: reqData,
+      }),
     });
-
   }
 
   // Parse response.
@@ -149,5 +159,4 @@ async function makeRequest(targetURL, reqData, proxyURL) {
   } catch {
     return data;
   }
-  
 }

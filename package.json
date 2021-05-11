@@ -12,12 +12,14 @@
     "live": "webpack --config webpack.config.js --watch"
   },
   "devDependencies": {
-    "clean-webpack-plugin": "^4.0.0-alpha.0",
     "copy-webpack-plugin": "^8.1.1",
     "css-loader": "^5.2.4",
     "eslint": "^7.25.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
     "file-loader": "^6.2.0",
     "html-minimizer-webpack-plugin": "^2.1.0",
+    "prettier": "2.3.0",
     "style-loader": "^2.0.0",
     "webpack": "^5.36.2",
     "webpack-cli": "^4.6.0"

@@ -177,7 +177,7 @@ var Header = {
     var footerLogoTemplate =
       document.getElementById("template-logo-link").innerHTML;
     var footerLogoRendered = Mustache.render(footerLogoTemplate, {
-      href: MiscURLs.TOS_RELEASES_URL,
+      href: MiscURLs.TAS_RELEASES_URL,
     });
     document.getElementById("logo-link").innerHTML = footerLogoRendered;
 
@@ -418,14 +418,14 @@ var ProvidersTab = {
     document.getElementById("providers_menuItems").innerHTML = rendered;
 
     // Replace more information link.
-    var tosLinkTemplate = document.getElementById(
+    var tasLinkTemplate = document.getElementById(
       "template-more-information-link"
     ).innerHTML;
-    var tosLinkRendered = Mustache.render(tosLinkTemplate, {
-      href: MiscURLs.TOS_URL,
+    var tasLinkRendered = Mustache.render(tasLinkTemplate, {
+      href: MiscURLs.TAS_URL,
     });
     document.getElementById("more-information-link").innerHTML =
-      tosLinkRendered;
+      tasLinkRendered;
 
     // Make list sortable.
     Sortable.create(

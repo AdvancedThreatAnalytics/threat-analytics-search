@@ -1,6 +1,7 @@
 const path = require("path");
+const bomPlugin = require('webpack-utf8-bom');
 const CopyWebpackPlugin = require("copy-webpack-plugin");
-const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
   mode: "production",
@@ -29,13 +30,28 @@ module.exports = {
     ],
   },
   plugins: [
+    new HtmlWebpackPlugin({
+      template: './src/options.html',
+      filename: "options.html",
+      chunks: ['js/options']
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/postHandler.html',
+      filename: "postHandler.html",
+      chunks: ['js/postHandler']
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/migration.html',
+      filename: "migration.html",
+      chunks: ['js/migration']
+    }),
     new CopyWebpackPlugin({
       patterns: [
         {
           // Copy assets from 'src/' and settings file to 'dist/' folder.
           from: path.join(__dirname, "src/"),
           globOptions: {
-            ignore: ["**/*.+(css|js)"],
+            ignore: ["**/*.+(css|js)", '**/migration.html', '**/options.html', '**/postHandler.html'],
           },
         },
         {
@@ -43,9 +59,15 @@ module.exports = {
         },
       ],
     }),
+    new bomPlugin(true)
   ],
   optimization: {
     minimize: true,
-    minimizer: [new HtmlMinimizerPlugin()]
+    splitChunks: {
+      chunks(chunk) {
+        // Dont split background file, otherwise won't be loaded completely by Chrome.
+        return chunk.name !== 'background';
+      },
+    },
   },
 };

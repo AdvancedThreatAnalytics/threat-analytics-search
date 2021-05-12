@@ -10,6 +10,7 @@ import Notiflix from "notiflix";
 import beautify from "js-beautify";
 import { DateTime } from "luxon";
 import { Sortable } from "sortablejs";
+import BSN from "bootstrap.native/dist/bootstrap-native.esm.min.js";
 
 import {
   MiscURLs,
@@ -17,7 +18,7 @@ import {
   CBC_CONFIG,
   NWI_CONFIG,
   RSA_CONFIG,
-  exportFileName,
+  EXPORT_FILE_NAME,
 } from "./shared/constants";
 
 import ConfigFile from "./shared/config_file";
@@ -184,6 +185,8 @@ var Header = {
 
 // --- Settings tab --- //
 
+var editModal;
+
 var SettingsTab = {
   initialize: function () {
     fetch("views/settings.html")
@@ -218,16 +221,6 @@ var SettingsTab = {
         document
           .getElementById("settings_discardChanges")
           .addEventListener("click", SettingsTab.closeModal);
-
-        // Get the _Edit Changes_ Modal
-        var modal = document.getElementById("settings_editModal");
-
-        // When the user clicks anywhere outside of the modal, close it.
-        window.onclick = function (event) {
-          if (event.target === modal) {
-            SettingsTab.closeModal();
-          }
-        };
 
         var inputs = document.querySelectorAll('form[name="settings"] input');
         _.each(inputs, function (input) {
@@ -341,7 +334,7 @@ var SettingsTab = {
     } catch (err) {
       console.error(err);
       Notiflix.Notify.Failure(
-        "Configuration couldn't be saved. Please verify that the file/data is valid."
+        "Configuration couldn't be saved. Please verify that the file is valid."
       );
       return false;
     }
@@ -375,7 +368,7 @@ var SettingsTab = {
     });
     var url = URL.createObjectURL(blob);
     downloadLink.href = url;
-    downloadLink.download = exportFileName;
+    downloadLink.download = EXPORT_FILE_NAME;
 
     document.body.appendChild(downloadLink);
     downloadLink.click();
@@ -385,28 +378,22 @@ var SettingsTab = {
   openModal: async function () {
     // Update text Area
     await SettingsTab.updateJSONTextarea();
-
-    document.getElementById("Settings_editModalBackdrop").style.display =
-      "block";
-    document.getElementById("settings_editModal").style.display = "block";
-    document.getElementById("settings_editModal").classList.add("show");
+    editModal = new BSN.Modal("#settings_editModal");
+    editModal.show();
   },
 
-  saveModalChanges() {
-    let changes = document.getElementById("settings_json").value;
-    var success = SettingsTab.saveSearches(changes);
+  saveModalChanges: async function () {
+    var changes = document.getElementById("settings_json").value;
+    var success = await SettingsTab.saveSearches(changes);
 
-    // close Modal if saved
+    // close Modal on success
     if (success) {
       SettingsTab.closeModal();
     }
   },
 
   closeModal() {
-    document.getElementById("Settings_editModalBackdrop").style.display =
-      "none";
-    document.getElementById("settings_editModal").style.display = "none";
-    document.getElementById("settings_editModal").classList.remove("show");
+    editModal.dispose();
   },
 };
 

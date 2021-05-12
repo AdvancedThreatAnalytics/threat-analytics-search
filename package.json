@@ -28,6 +28,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.3",
     "bootstrap": "^4.6.0",
+    "bootstrap.native": "^3.0.15",
     "gibberish-aes": "^1.0.0",
     "js-beautify": "^1.13.13",
     "lodash": "^4.17.21",

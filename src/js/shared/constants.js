@@ -172,7 +172,7 @@ export const RSA_CONFIG = [
 
 export const RSA_RANGE_LENGTH = 4;
 
-export const exportFileName = "Settings.json";
+export const EXPORT_FILE_NAME = "Settings.json";
 
 export default {
   MiscURLs,
@@ -183,5 +183,5 @@ export default {
   NWI_RANGE_LENGTH,
   RSA_CONFIG,
   RSA_RANGE_LENGTH,
-  exportFileName,
+  EXPORT_FILE_NAME,
 };

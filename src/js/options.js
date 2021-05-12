@@ -394,7 +394,7 @@ var ProvidersTab = {
             name: group.name,
             checked: item.group & mask ? "checked" : "",
             classes: group.enabled ? "" : "text-muted",
-            enabled: group.enabled ? "" : "disabled",
+            interaction: group.enabled ? "" : "disabled",
           };
         });
       },

@@ -691,7 +691,7 @@ var NetWitnessTab = providerTabHelper(
   function (link) {
     try {
       if (!_.isEmpty(link)) {
-        var temp = link.match(/:\/\/([^:\/?]*)(:(\d+)|[\/?])/);
+        var temp = link.match(/:\/\/([^:/?]*)(:(\d+)|[/?])/);
         var hostname = temp ? (temp[1] ? temp[1] : "") : "";
         var port = temp ? (temp[3] ? temp[3] : "") : "";
         temp = link.match(/collection=([^&]*)/);
@@ -726,10 +726,10 @@ var SearchAnalyticsTab = providerTabHelper(
     try {
       if (!_.isEmpty(link)) {
         var ssl = link.search(/https:/) == 0 ? true : false;
-        var temp = link.match(/:\/\/([^:\/?]*)(:(\d+)|[\/?])/);
+        var temp = link.match(/:\/\/([^:/?]*)(:(\d+)|[/?])/);
         var hostname = temp ? (temp[1] ? temp[1] : "") : "";
         var port = temp ? (temp[3] ? temp[3] : "") : "";
-        temp = link.match(/investigation\/([^\/]*)\//);
+        temp = link.match(/investigation\/([^/]*)\//);
         var devId = temp ? (temp[1] ? temp[1] : "") : "";
 
         return [

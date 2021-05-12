@@ -6,11 +6,12 @@
   <body>
     <!-- Header -->
     <header class="container d-flex mb-3">
-      <div>
-        <a href="https://github.com/AdvancedThreatAnalytics/threat-analytics-search/releases" title="Threat Analytics Chrome plugin notes">
+      <div id="logo-link">Loading...</div>
+      <script id="template-logo-link" type="x-tmpl-mustache">
+        <a href="{{ href }}" title="Threat Analytics Chrome plugin notes">
           <img src="./images/icon_128.png" alt="CRITICALSTART logo" height="90px">
         </a>
-      </div>
+       </script>
       <div class="flex-grow-1 pl-3">
         <h1 class="mb-1">CRITICALSTART</h1>
         <nav>Loading...</nav>
@@ -249,7 +250,10 @@
       <hr class="my-2" />
       <small class="text-muted">
         Copyright 2015-2021 © CRITICALSTART. All rights reserved.
-        <br><a target="_blank" href="https://www.criticalstart.com">https://www.criticalstart.com</a>
+        <br><span id="footer-link">Loading...</span>
+        <script id="template-footer-link" type="x-tmpl-mustache">
+          <a target="_blank" href="{{ href }}">https://www.criticalstart.com</a>
+        </script>
       </small>
     </footer>
   </body>

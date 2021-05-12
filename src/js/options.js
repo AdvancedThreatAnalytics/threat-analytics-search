@@ -164,6 +164,23 @@ var Header = {
     var linksRendered = Mustache.render(linksTemplate, { links: Header.LINKS });
     document.getElementById("links").innerHTML = linksRendered;
 
+    // Replace footer link.
+    var footerLinkTemplate = document.getElementById(
+      "template-footer-link"
+    ).innerHTML;
+    var footerLinkRendered = Mustache.render(footerLinkTemplate, {
+      href: MiscURLs.CRITICALSTART_URL,
+    });
+    document.getElementById("footer-link").innerHTML = footerLinkRendered;
+
+    // Replace logo link.
+    var footerLogoTemplate =
+      document.getElementById("template-logo-link").innerHTML;
+    var footerLogoRendered = Mustache.render(footerLogoTemplate, {
+      href: MiscURLs.TOS_RELEASES_URL,
+    });
+    document.getElementById("logo-link").innerHTML = footerLogoRendered;
+
     // Add click behaviors to tab links.
     var items = document.querySelectorAll("header nav .nav-link");
     for (var i = 0; i < items.length; i++) {
@@ -399,6 +416,16 @@ var ProvidersTab = {
       },
     });
     document.getElementById("providers_menuItems").innerHTML = rendered;
+
+    // Replace more information link.
+    var tosLinkTemplate = document.getElementById(
+      "template-more-information-link"
+    ).innerHTML;
+    var tosLinkRendered = Mustache.render(tosLinkTemplate, {
+      href: MiscURLs.TOS_URL,
+    });
+    document.getElementById("more-information-link").innerHTML =
+      tosLinkRendered;
 
     // Make list sortable.
     Sortable.create(

@@ -7,8 +7,7 @@ export const MiscURLs = {
     "https://www.criticalstart.com/threat-analytics-chrome-plugin/",
   ISSUES_URL:
     "https://github.com/AdvancedThreatAnalytics/threat-analytics-search/issues",
-  TAS_URL: "https://github.com/AdvancedThreatAnalytics/threat-analytics-search",
-  TAS_RELEASES_URL:
+  RELEASES_URL:
     "https://github.com/AdvancedThreatAnalytics/threat-analytics-search/releases",
 };
 

@@ -6,12 +6,17 @@
   <body>
     <!-- Header -->
     <header class="container d-flex mb-3">
-      <div id="logo-link">Loading...</div>
-      <script id="template-logo-link" type="x-tmpl-mustache">
-        <a href="{{ href }}" title="Threat Analytics Chrome plugin notes">
-          <img src="./images/icon_128.png" alt="CRITICALSTART logo" height="90px">
-        </a>
-       </script>
+      <a
+        id="logo-link"
+        target="_blank"
+        title="Threat Analytics Chrome plugin notes"
+      >
+        <img
+          src="./images/icon_128.png"
+          alt="CRITICALSTART logo"
+          height="90px"
+        />
+      </a>
       <div class="flex-grow-1 pl-3">
         <h1 class="mb-1">CRITICALSTART</h1>
         <nav>Loading...</nav>
@@ -30,7 +35,7 @@
           </ul>
         </script>
       </div>
-      <div id="links" class="d-flex align-items-end"> Loading...</div> 
+      <div id="links" class="d-flex align-items-end">Loading...</div>
       <script id="template-header-links" type="x-tmpl-mustache">
         {{#links}}
           <div class="mx-2 pb-2">
@@ -45,13 +50,9 @@
 
     <!-- Tabs content -->
     <main class="container">
-      <section data-tab="settings">
-        Loading...
-      </section>
+      <section data-tab="settings">Loading...</section>
 
-      <section data-tab="search-providers">
-        Loading...
-      </section>
+      <section data-tab="search-providers">Loading...</section>
 
       <section data-tab="security-analytics">
         <h2>RSA Security Analytics Configuration</h2>
@@ -121,7 +122,7 @@
                 <input
                   type="checkbox"
                   class="form-check-input"
-                  name="{{ key }}" 
+                  name="{{ key }}"
                   id="subSettings_{{ key }}"
                   {{ checked }}
                   value="yes">
@@ -250,10 +251,7 @@
       <hr class="my-2" />
       <small class="text-muted">
         Copyright 2015-2021 © CRITICALSTART. All rights reserved.
-        <br><span id="footer-link">Loading...</span>
-        <script id="template-footer-link" type="x-tmpl-mustache">
-          <a target="_blank" href="{{ href }}">https://www.criticalstart.com</a>
-        </script>
+        <br /><a id="footer-link" target="_blank"></a>
       </small>
     </footer>
   </body>

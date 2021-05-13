@@ -165,21 +165,14 @@ var Header = {
     document.getElementById("links").innerHTML = linksRendered;
 
     // Replace footer link.
-    var footerLinkTemplate = document.getElementById(
-      "template-footer-link"
-    ).innerHTML;
-    var footerLinkRendered = Mustache.render(footerLinkTemplate, {
-      href: MiscURLs.CRITICALSTART_URL,
-    });
-    document.getElementById("footer-link").innerHTML = footerLinkRendered;
+    var el = document.getElementById("footer-link");
+    el.setAttribute("href", MiscURLs.CRITICALSTART_URL);
+    el.innerHTML = MiscURLs.CRITICALSTART_URL;
 
     // Replace logo link.
-    var footerLogoTemplate =
-      document.getElementById("template-logo-link").innerHTML;
-    var footerLogoRendered = Mustache.render(footerLogoTemplate, {
-      href: MiscURLs.TAS_RELEASES_URL,
-    });
-    document.getElementById("logo-link").innerHTML = footerLogoRendered;
+    document
+      .getElementById("logo-link")
+      .setAttribute("href", MiscURLs.RELEASES_URL);
 
     // Add click behaviors to tab links.
     var items = document.querySelectorAll("header nav .nav-link");
@@ -417,15 +410,10 @@ var ProvidersTab = {
     });
     document.getElementById("providers_menuItems").innerHTML = rendered;
 
-    // Replace more information link.
-    var tasLinkTemplate = document.getElementById(
-      "template-more-information-link"
-    ).innerHTML;
-    var tasLinkRendered = Mustache.render(tasLinkTemplate, {
-      href: MiscURLs.TAS_URL,
-    });
-    document.getElementById("more-information-link").innerHTML =
-      tasLinkRendered;
+    // Add extension's github url
+    var el = document.getElementById("extension_home_url");
+    el.setAttribute("href", MiscURLs.EXTENSION_HOME_URL);
+    el.innerHTML = MiscURLs.EXTENSION_HOME_URL;
 
     // Make list sortable.
     Sortable.create(

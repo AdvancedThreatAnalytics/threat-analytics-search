@@ -689,25 +689,24 @@ var NetWitnessTab = providerTabHelper(
   "template_providerQueries",
   mainConfigurationUpdated.bind(this, true),
   function (link) {
+    var hostname, port, collectionName;
     try {
       if (!_.isEmpty(link)) {
         var temp = link.match(/:\/\/([^:/?]*)(:(\d+)|[/?])/);
-        var hostname = temp ? (temp[1] ? temp[1] : "") : "";
-        var port = temp ? (temp[3] ? temp[3] : "") : "";
+        hostname = temp ? (temp[1] ? temp[1] : "") : "";
+        port = temp ? (temp[3] ? temp[3] : "") : "";
         temp = link.match(/collection=([^&]*)/);
-        var collectionName = temp ? (temp[1] ? temp[1] : "") : "";
-
-        return [
-          { key: "NWIConfigEnable", value: true },
-          { key: "NWIConfigHost", value: hostname },
-          { key: "NWIConfigPort", value: port },
-          { key: "NWIConfigCollectionName", value: collectionName },
-        ];
+        collectionName = temp ? (temp[1] ? temp[1] : "") : "";
       }
     } catch (err) {
       // Do nothing.
     }
-    return null;
+    return [
+      { key: "NWIConfigEnable", value: true },
+      { key: "NWIConfigHost", value: hostname },
+      { key: "NWIConfigPort", value: port },
+      { key: "NWIConfigCollectionName", value: collectionName },
+    ];
   }
 );
 
@@ -723,26 +722,25 @@ var SearchAnalyticsTab = providerTabHelper(
   "template_providerQueries",
   mainConfigurationUpdated.bind(this, true),
   function (link) {
+    var ssl, hostname, port, devId;
     try {
       if (!_.isEmpty(link)) {
-        var ssl = link.search(/https:/) == 0 ? true : false;
+        ssl = link.search(/https:/) == 0 ? true : false;
         var temp = link.match(/:\/\/([^:/?]*)(:(\d+)|[/?])/);
-        var hostname = temp ? (temp[1] ? temp[1] : "") : "";
-        var port = temp ? (temp[3] ? temp[3] : "") : "";
+        hostname = temp ? (temp[1] ? temp[1] : "") : "";
+        port = temp ? (temp[3] ? temp[3] : "") : "";
         temp = link.match(/investigation\/([^/]*)\//);
-        var devId = temp ? (temp[1] ? temp[1] : "") : "";
-
-        return [
-          { key: "RSAConfigEnable", value: true },
-          { key: "RSAConfigUseHttps", value: ssl },
-          { key: "RSAConfigHost", value: hostname },
-          { key: "RSAConfigPort", value: port },
-          { key: "RSAConfigDevId", value: devId },
-        ];
+        devId = temp ? (temp[1] ? temp[1] : "") : "";
       }
     } catch (err) {
       // Do nothing.
     }
-    return null;
+    return [
+      { key: "RSAConfigEnable", value: true },
+      { key: "RSAConfigUseHttps", value: ssl },
+      { key: "RSAConfigHost", value: hostname },
+      { key: "RSAConfigPort", value: port },
+      { key: "RSAConfigDevId", value: devId },
+    ];
   }
 );

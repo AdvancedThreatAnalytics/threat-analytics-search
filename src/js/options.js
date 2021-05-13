@@ -164,6 +164,16 @@ var Header = {
     var linksRendered = Mustache.render(linksTemplate, { links: Header.LINKS });
     document.getElementById("links").innerHTML = linksRendered;
 
+    // Replace footer link.
+    var el = document.getElementById("footer-link");
+    el.setAttribute("href", MiscURLs.CRITICALSTART_URL);
+    el.innerHTML = MiscURLs.CRITICALSTART_URL;
+
+    // Replace logo link.
+    document
+      .getElementById("logo-link")
+      .setAttribute("href", MiscURLs.RELEASES_URL);
+
     // Add click behaviors to tab links.
     var items = document.querySelectorAll("header nav .nav-link");
     for (var i = 0; i < items.length; i++) {
@@ -399,6 +409,11 @@ var ProvidersTab = {
       },
     });
     document.getElementById("providers_menuItems").innerHTML = rendered;
+
+    // Add extension's github url
+    var el = document.getElementById("extension_home_url");
+    el.setAttribute("href", MiscURLs.EXTENSION_HOME_URL);
+    el.innerHTML = MiscURLs.EXTENSION_HOME_URL;
 
     // Make list sortable.
     Sortable.create(

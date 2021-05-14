@@ -403,7 +403,7 @@ var ProvidersTab = {
             value: index + 1,
             name: group.name,
             checked: item.group & mask ? "checked" : "",
-            classes: group.enabled ? "" : "text-line-through",
+            classes: group.enabled ? "" : "text-muted",
           };
         });
       },

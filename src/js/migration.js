@@ -29,29 +29,32 @@ var OBSOLETES_CONFIG_URL = [
 // Wait for the page to be loaded to execute the initialization function.
 document.addEventListener("DOMContentLoaded", async function () {
   // Get default settings.
-  window.defaultFile = await ConfigFile.getDefaultJSON();
+  const defaultFile = await ConfigFile.getDefaultJSON();
 
   // Migrate data.
   await Promise.all([
-    migrateGeneralSettings(),
-    migrateSearchProviders(),
+    migrateGeneralSettings(defaultFile),
+    migrateSearchProviders(defaultFile),
     migrateSpecialProvider(
       StoreKey.CARBON_BLACK,
       "CBC",
       "_CBCConfig",
-      "_CBCallquery"
+      "_CBCallquery",
+      defaultFile
     ),
     migrateSpecialProvider(
       StoreKey.NET_WITNESS,
       "NWI",
       "_NWIConfig",
-      "_NWIallquery"
+      "_NWIallquery",
+      defaultFile
     ),
     migrateSpecialProvider(
       StoreKey.RSA_SECURITY,
       "RSA",
       "_RSAConfig",
-      "_RSAallquery"
+      "_RSAallquery",
+      defaultFile
     ),
     migrateOthers(),
   ]);
@@ -63,7 +66,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   window.open(MiscURLs.INSTALLED_URL, "_self");
 });
 
-function migrateGeneralSettings() {
+function migrateGeneralSettings(defaultFile) {
   var defaultBasic = ConfigFile.parseBasicSettings(defaultFile.config);
   var defaultGroups = ConfigFile.parseGroups(defaultFile.groups);
 
@@ -107,7 +110,7 @@ function migrateGeneralSettings() {
   });
 }
 
-function migrateSearchProviders() {
+function migrateSearchProviders(defaultFile) {
   return LocalStore.setOne(
     StoreKey.SEARCH_PROVIDERS,
     _.map(
@@ -118,7 +121,13 @@ function migrateSearchProviders() {
   );
 }
 
-function migrateSpecialProvider(storeKey, fileKey, configKey, queryKey) {
+function migrateSpecialProvider(
+  storeKey,
+  fileKey,
+  configKey,
+  queryKey,
+  defaultFile
+) {
   return LocalStore.setOne(storeKey, {
     config:
       tryJSONparse(Storage.getItem(configKey)) ||

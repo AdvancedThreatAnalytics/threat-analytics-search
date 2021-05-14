@@ -10,7 +10,5 @@
     "sourceType": "module"
   },
   "rules": {
-    "no-useless-escape": "off",
-    "no-undef": "off"
   }
 }

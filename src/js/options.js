@@ -124,7 +124,7 @@ var Header = {
     },
   ],
 
-  DEFAULT_TAB: "settings",
+  DEFAULT_TAB: "search-providers",
 
   update: function (params) {
     var current = _.get(params, "current") || Header.DEFAULT_TAB;
@@ -185,9 +185,9 @@ var Header = {
 
 // --- Settings tab --- //
 
-var editModal;
-
 var SettingsTab = {
+  editModal: null,
+
   initialize: function () {
     fetch("views/settings.html")
       .then((response) => response.text())
@@ -378,8 +378,8 @@ var SettingsTab = {
   openModal: async function () {
     // Update text Area
     await SettingsTab.updateJSONTextarea();
-    editModal = new BSN.Modal("#settings_editModal");
-    editModal.show();
+    SettingsTab.editModal = new BSN.Modal("#settings_editModal");
+    SettingsTab.editModal.show();
   },
 
   saveModalChanges: async function () {
@@ -393,7 +393,7 @@ var SettingsTab = {
   },
 
   closeModal() {
-    editModal.dispose();
+    SettingsTab.editModal.dispose();
   },
 };
 

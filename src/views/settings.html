@@ -89,7 +89,7 @@
             <div>
               <button
                 type="button"
-                class="btn btn-success btn-sm p-1"
+                class="btn btn-success"
                 id="settings_refreshNow"
               >
                 Refresh Now
@@ -169,25 +169,31 @@
     </div>
   </form>
 
-  <h2 class="text-center mt-3">Export/Import Search Options</h2>
 
-  <p>
-    Use Import and Export to share settings using a file. Otherwise, click Edit
-    to modify the settings manually. This requires knowing JSON formatting well.
-    We also recommend exporting a copy of your settings prior to doing this.
-  </p>
+  <div class="row">
+    <div class="col-md-10 offset-md-1">
+      <h2 class="text-center mt-3">Export/Import Search Options</h2>
 
-  <div class="d-flex justify-content-end">
-    <input class="d-none" id="settings_fileInput" , type="file" />
-    <button type="button" class="btn btn-success mr-2" id="settings_import">
-      <i class="fas fa-file-import mr-1"> </i> Import
-    </button>
-    <button class="btn btn-success mr-2" type="button" id="settings_export">
-      <i class="fas fa-file-export mr-1"></i> Export
-    </button>
-    <button class="btn btn-success mr-2" type="button" id="settings_edit">
-      <i class="fas fa-edit mr-1"></i> Edit manually
-    </button>
+      <p>
+        Use Import and Export to share settings using a file. Otherwise, click Edit
+        to modify the settings manually. This requires knowing JSON formatting well.
+        We also recommend exporting a copy of your settings prior to doing this.
+      </p>
+
+      <input class="d-none" id="settings_fileInput" type="file" />
+
+      <div class="text-right">
+        <button type="button" class="btn btn-primary mr-2" id="settings_import">
+          <i class="fas fa-file-import" aria-hidden="true"></i> Import
+        </button>
+        <button type="button" class="btn btn-primary mr-2" id="settings_export">
+          <i class="fas fa-file-export" aria-hidden="true"></i> Export
+        </button>
+        <button type="button" class="btn btn-secondary" id="settings_edit">
+          <i class="fas fa-edit" aria-hidden="true"></i> Edit manually
+        </button>
+      </div>
+    </div>
   </div>
 
   <div

@@ -10,6 +10,7 @@ import Notiflix from "notiflix";
 import beautify from "js-beautify";
 import { DateTime } from "luxon";
 import { Sortable } from "sortablejs";
+import BSN from "bootstrap.native/dist/bootstrap-native.esm.min.js";
 
 import {
   MiscURLs,
@@ -17,7 +18,9 @@ import {
   CBC_CONFIG,
   NWI_CONFIG,
   RSA_CONFIG,
+  EXPORT_FILE_NAME,
 } from "./shared/constants";
+
 import ConfigFile from "./shared/config_file";
 import LocalStore from "./shared/local_store";
 import providerTabHelper from "./shared/provider_helper";
@@ -64,10 +67,6 @@ function mainConfigurationUpdated(lazy) {
     CarbonBlackTab.updateForms();
     NetWitnessTab.updateForms();
     SearchAnalyticsTab.updateForms();
-  } else {
-    // When lazy is 'true' the forms don't need to be refreshed, just the textarea showing
-    // the configuration setting in JSON format must be updated.
-    SettingsTab.updateJSONTextarea();
   }
 
   chrome.runtime.sendMessage({ action: "updateContextualMenu" });
@@ -197,6 +196,8 @@ var Header = {
 // --- Settings tab --- //
 
 var SettingsTab = {
+  editModal: null,
+
   initialize: function () {
     fetch("views/settings.html")
       .then((response) => response.text())
@@ -207,11 +208,29 @@ var SettingsTab = {
 
         // Add click/change behaviors.
         document
-          .getElementById("settings_saveImport")
-          .addEventListener("click", SettingsTab.saveImport);
-        document
           .getElementById("settings_refreshNow")
           .addEventListener("click", SettingsTab.updateNow);
+        document
+          .getElementById("settings_import")
+          .addEventListener("click", SettingsTab.importFromFile);
+        document
+          .getElementById("settings_export")
+          .addEventListener("click", SettingsTab.exportToFile);
+        document
+          .getElementById("settings_edit")
+          .addEventListener("click", SettingsTab.openModal);
+        document
+          .getElementById("settings_fileInput")
+          .addEventListener("change", SettingsTab.fileImported);
+        document
+          .getElementById("settings_closeModal")
+          .addEventListener("click", SettingsTab.closeModal);
+        document
+          .getElementById("settings_saveChanges")
+          .addEventListener("click", SettingsTab.saveModalChanges);
+        document
+          .getElementById("settings_discardChanges")
+          .addEventListener("click", SettingsTab.closeModal);
 
         var inputs = document.querySelectorAll('form[name="settings"] input');
         _.each(inputs, function (input) {
@@ -238,7 +257,7 @@ var SettingsTab = {
           : event.target.value;
       await LocalStore.setOne(StoreKey.SETTINGS, newSettings);
 
-      // Update UI according to this change.
+      // Update context menu
       mainConfigurationUpdated(true);
     }
   },
@@ -259,9 +278,6 @@ var SettingsTab = {
 
     // Update 'last update' text.
     SettingsTab.updateLastConfigUpdate();
-
-    // Update import textarea.
-    SettingsTab.updateJSONTextarea();
   },
 
   updateLastConfigUpdate: async function () {
@@ -308,30 +324,86 @@ var SettingsTab = {
     }
   },
 
-  saveImport: async function () {
+  saveSearches: async function (data) {
     try {
-      var parsedImport = JSON.parse(
-        document.getElementById("settings_json").value
-      );
+      var parsedData = JSON.parse(data);
 
       if (
         confirm(
           "Are you sure you want to override your local settings with these values?"
         )
       ) {
-        await ConfigFile.parseJSONFile(parsedImport, true);
+        await ConfigFile.parseJSONFile(parsedData, true);
 
         // Update UI according to this change
         mainConfigurationUpdated();
 
         Notiflix.Notify.Success("New configuration saved");
+        return true;
       }
     } catch (err) {
       console.error(err);
       Notiflix.Notify.Failure(
         "Configuration couldn't be saved. Please verify that the file is valid."
       );
+      return false;
     }
+  },
+
+  importFromFile() {
+    document.getElementById("settings_fileInput").click();
+  },
+
+  fileImported(event) {
+    let selectedFile = _.first(this.files);
+    var reader = new FileReader();
+
+    reader.onload = function (event) {
+      SettingsTab.saveSearches(event.target.result);
+    };
+    reader.readAsText(selectedFile);
+
+    // Reset the value
+    event.target.value = "";
+  },
+
+  exportToFile: async function () {
+    // Generate the JSON
+    let data = await ConfigFile.generateJSONFile();
+
+    // Create a downloadable link with content. I have named the exported file to `Settings.json`
+    var downloadLink = document.createElement("a");
+    var blob = new Blob([JSON.stringify(data)], {
+      type: "text/plain;charset=utf-8",
+    });
+    var url = URL.createObjectURL(blob);
+    downloadLink.href = url;
+    downloadLink.download = EXPORT_FILE_NAME;
+
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  },
+
+  openModal: async function () {
+    // Update text Area
+    await SettingsTab.updateJSONTextarea();
+    SettingsTab.editModal = new BSN.Modal("#settings_editModal");
+    SettingsTab.editModal.show();
+  },
+
+  saveModalChanges: async function () {
+    var changes = document.getElementById("settings_json").value;
+    var success = await SettingsTab.saveSearches(changes);
+
+    // close Modal on success
+    if (success) {
+      SettingsTab.closeModal();
+    }
+  },
+
+  closeModal() {
+    SettingsTab.editModal.dispose();
   },
 };
 
@@ -514,7 +586,7 @@ var ProvidersTab = {
     providers[index] = item;
     await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, providers);
 
-    // Update UI according to this change.
+    // Update context menu
     mainConfigurationUpdated(true);
   },
 

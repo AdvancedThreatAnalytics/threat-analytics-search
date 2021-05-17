@@ -1,22 +1,21 @@
 <div>
   <form name="settings">
     <div class="row">
-
       <div class="col-lg-6">
         <h2 class="mb-3">Configuration File Options</h2>
 
         <ul class="list-group">
           <li class="list-group-item">
             <div class="form-group mb-0">
-              <label
-                class="mb-1"
-                for="settings_configurationURL"
-                >File URL</label>
+              <label class="mb-1" for="settings_configurationURL"
+                >File URL</label
+              >
               <input
                 type="text"
                 class="form-control"
                 name="configurationURL"
-                id="settings_configurationURL">
+                id="settings_configurationURL"
+              />
             </div>
           </li>
           <li class="list-group-item">
@@ -24,11 +23,10 @@
               <input
                 type="checkbox"
                 class="form-check-input"
-                name="useGroups" 
-                id="settings_useGroups">
-              <label
-                class="form-check-label"
-                for="settings_useGroups">
+                name="useGroups"
+                id="settings_useGroups"
+              />
+              <label class="form-check-label" for="settings_useGroups">
                 Enable groups
               </label>
             </div>
@@ -38,26 +36,25 @@
               <input
                 type="checkbox"
                 class="form-check-input"
-                name="configEncrypted" 
-                id="settings_configEncrypted">
-              <label
-                class="form-check-label"
-                for="settings_configEncrypted">
+                name="configEncrypted"
+                id="settings_configEncrypted"
+              />
+              <label class="form-check-label" for="settings_configEncrypted">
                 Encrypted
               </label>
             </div>
           </li>
           <li class="list-group-item">
             <div class="form-group mb-0">
-              <label
-                class="mb-1"
-                for="settings_configEncryptionKey"
-                >Encryption Key</label>
+              <label class="mb-1" for="settings_configEncryptionKey"
+                >Encryption Key</label
+              >
               <input
                 type="text"
                 class="form-control"
                 name="configEncryptionKey"
-                id="settings_configEncryptionKey">
+                id="settings_configEncryptionKey"
+              />
             </div>
           </li>
           <li class="list-group-item">
@@ -65,26 +62,38 @@
               <input
                 type="checkbox"
                 class="form-check-input"
-                name="autoUpdateConfig" 
-                id="settings_autoUpdateConfig">
-              <label
-                class="form-check-label"
-                for="settings_autoUpdateConfig">
+                name="autoUpdateConfig"
+                id="settings_autoUpdateConfig"
+              />
+              <label class="form-check-label" for="settings_autoUpdateConfig">
                 Refresh Automatically
               </label>
             </div>
           </li>
-          <li class="list-group-item d-flex justify-content-between align-items-center">
+          <li
+            class="
+              list-group-item
+              d-flex
+              justify-content-between
+              align-items-center
+            "
+          >
             <div>
               <label class="mb-1">Last Refreshed on:</label>
               <div id="settings_lastConfigUpdate"></div>
-              <div class="text-danger" id="settings_lastConfigUpdateError"></div>
+              <div
+                class="text-danger"
+                id="settings_lastConfigUpdateError"
+              ></div>
             </div>
             <div>
               <button
                 type="button"
-                class="btn btn-success btn-sm p-1"
-                id="settings_refreshNow">Refresh Now</button>
+                class="btn btn-success"
+                id="settings_refreshNow"
+              >
+                Refresh Now
+              </button>
             </div>
           </li>
         </ul>
@@ -99,11 +108,13 @@
               <input
                 type="checkbox"
                 class="form-check-input"
-                name="resultsInBackgroundTab" 
-                id="settings_resultsInBackgroundTab">
+                name="resultsInBackgroundTab"
+                id="settings_resultsInBackgroundTab"
+              />
               <label
                 class="form-check-label"
-                for="settings_resultsInBackgroundTab">
+                for="settings_resultsInBackgroundTab"
+              >
                 Open results in a background tab
               </label>
             </div>
@@ -113,11 +124,10 @@
               <input
                 type="checkbox"
                 class="form-check-input"
-                name="enableAdjacentTabs" 
-                id="settings_enableAdjacentTabs">
-              <label
-                class="form-check-label"
-                for="settings_enableAdjacentTabs">
+                name="enableAdjacentTabs"
+                id="settings_enableAdjacentTabs"
+              />
+              <label class="form-check-label" for="settings_enableAdjacentTabs">
                 The new tab should be next to the current tab
               </label>
             </div>
@@ -127,11 +137,13 @@
               <input
                 type="checkbox"
                 class="form-check-input"
-                name="openGroupsInNewWindow" 
-                id="settings_openGroupsInNewWindow">
+                name="openGroupsInNewWindow"
+                id="settings_openGroupsInNewWindow"
+              />
               <label
                 class="form-check-label"
-                for="settings_openGroupsInNewWindow">
+                for="settings_openGroupsInNewWindow"
+              >
                 Open group tabs in new window
               </label>
             </div>
@@ -141,29 +153,95 @@
               <input
                 type="checkbox"
                 class="form-check-input"
-                name="enableOptionsMenuItem" 
-                id="settings_enableOptionsMenuItem">
+                name="enableOptionsMenuItem"
+                id="settings_enableOptionsMenuItem"
+              />
               <label
                 class="form-check-label"
-                for="settings_enableOptionsMenuItem">
+                for="settings_enableOptionsMenuItem"
+              >
                 Show link to extension options at the end of context menu
               </label>
             </div>
           </li>
         </ul>
       </div>
-
     </div>
   </form>
 
-  <form name="import_settings">
-    <h2 class="text-center mt-3">Export/Import Search Options</h2>
 
-    <p>Use the text area bellow to transfer your search engine options from one install of Chrome to another effortlessly. Just copy the string from here to the options page in other install of Chrome (or vice-versa) and press 'Import'.</p>
+  <div class="row">
+    <div class="col-md-10 offset-md-1">
+      <h2 class="text-center mt-3">Export/Import Search Options</h2>
 
-    <textarea id="settings_json" class="form-control text-monospace text-small" rows="12"></textarea>
-    <div class="text-right">
-      <button class="btn btn-success" type="button" id="settings_saveImport">Import</button>        
+      <p>
+        Use Import and Export to share settings using a file. Otherwise, click Edit
+        to modify the settings manually. This requires knowing JSON formatting well.
+        We also recommend exporting a copy of your settings prior to doing this.
+      </p>
+
+      <input class="d-none" id="settings_fileInput" type="file" />
+
+      <div class="text-right">
+        <button type="button" class="btn btn-primary mr-2" id="settings_import">
+          <i class="fas fa-file-import" aria-hidden="true"></i> Import
+        </button>
+        <button type="button" class="btn btn-primary mr-2" id="settings_export">
+          <i class="fas fa-file-export" aria-hidden="true"></i> Export
+        </button>
+        <button type="button" class="btn btn-secondary" id="settings_edit">
+          <i class="fas fa-edit" aria-hidden="true"></i> Edit manually
+        </button>
+      </div>
     </div>
-  </form>
+  </div>
+
+  <div
+    class="modal fade"
+    id="settings_editModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="settingsEditModal"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Changes</h5>
+          <button
+            type="button"
+            class="close"
+            id="settings_closeModal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <textarea
+            id="settings_json"
+            class="form-control text-monospace text-small"
+            rows="24"
+          >
+          </textarea>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            id="settings_discardChanges"
+          >
+            Discard
+          </button>
+          <button
+            type="button"
+            class="btn btn-success mr-2"
+            id="settings_saveChanges"
+          >
+            Save changes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

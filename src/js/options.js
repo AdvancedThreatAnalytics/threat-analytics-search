@@ -5,6 +5,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../css/main.css";
 
 import _ from "lodash";
+import $ from "jquery";
+import "bootstrap/dist/js/bootstrap.bundle";
 import Mustache from "mustache";
 import Notiflix from "notiflix";
 import beautify from "js-beautify";
@@ -17,6 +19,7 @@ import {
   StoreKey,
   CBC_CONFIG,
   CONFIG_FILE_OPTIONS,
+  MERGE_OPTIONS,
   NWI_CONFIG,
   RSA_CONFIG,
   SEARCH_RESULT_OPTIONS,
@@ -218,6 +221,11 @@ var SettingsTab = {
           "template_search-results",
           "search-results"
         );
+        await SettingsTab.helper(
+          MERGE_OPTIONS,
+          "template_merge-options",
+          "merge-options"
+        );
 
         // Add click/change behaviors.
         document
@@ -268,6 +276,7 @@ var SettingsTab = {
           isCheckbox: item.type === "checkbox",
           isText: item.type === "text",
           isInput: item.type === "input",
+          isDropdowm: item.type === "dropdown",
           value: value || "",
           checked: value === true || value === "true" ? "checked" : "",
         },
@@ -869,3 +878,7 @@ var SearchAnalyticsTab = providerTabHelper(
     return null;
   }
 );
+
+$(function () {
+  $('[data-toggle="popover"]').popover();
+});

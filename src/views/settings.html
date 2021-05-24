@@ -104,6 +104,123 @@
         </script>
       </div>
     </div>
+    <div class="row">
+      <div class="col-md-6">
+        <h2 class="mb-3">Search Results Options</h2>
+        <div id="merge-options">Loading...</div>
+        <script id="template_merge-options" type="x-tmpl-mustache">
+          <ul class="list-group">
+            {{#items}}
+              {{!-- The checkbox fields --}}
+              {{#isCheckbox}}
+                <li class="list-group-item">
+                  <div class="form-check">
+                    <input
+                            type="checkbox"
+                            class="form-check-input"
+                            name="{{storeKey}}"
+                            id="settings_{{storeKey}}"
+                    />
+                    <label class="form-check-label" for="settings_{{storeKey}}">
+                      {{label}}
+                    </label>
+                  </div>
+                </li>
+              {{/isCheckbox}}
+
+              {{!-- The checkbox fields --}}
+              {{#isDropdown}}
+                <li class="list-group-item">
+                  <span class="dropdown">
+                    <button class="btn dropdown-toggle" type="button" id="settings_{{storeKey}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      {{value}}
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      {{#menuItems}}
+                        <a class="dropdown-item" id="{{storeKey}}_{{key}}" href="#">{{label}}</a>
+                      {{/menuItems}}
+                    </div>
+                  </span>
+                  <label
+                          class="form-check-label"
+                          for="settings_{{storeKey}}"
+                  >
+                    {{label}}
+                  </label>
+                  <a tabindex="0" class="btn" role="button" data-toggle="popover" data-trigger="focus" title="Dismissible popover" data-content="And here's some amazing content. It's very engaging. Right?"><i class="fas fa-info-circle" aria-hidden="true"></i></a>
+                </li>
+              {{/isDropdown}}
+            {{/items}}
+          </ul>
+        </script>
+        <ul class="list-group">
+          <li class="list-group-item">
+            <span class="dropdown">
+              <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Dropdown button
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="#">Action</a>
+                <a class="dropdown-item" href="#">Another action</a>
+                <a class="dropdown-item" href="#">Something else here</a>
+              </div>
+            </span>
+            <label
+                    class="form-check-label"
+                    for="settings_resultsInBackgroundTab"
+            >
+              Open results in a background tab
+            </label>
+            <a tabindex="0" class="btn" role="button" data-toggle="popover" data-trigger="focus" title="Dismissible popover" data-content="And here's some amazing content. It's very engaging. Right?"><i class="fas fa-info-circle" aria-hidden="true"></i></a>
+          </li>
+          <li class="list-group-item">
+            <div class="form-check">
+              <input
+                      type="checkbox"
+                      class="form-check-input"
+                      name="enableAdjacentTabs"
+                      id="settings_enableAdjacentTabs"
+              />
+              <label class="form-check-label" for="settings_enableAdjacentTabs">
+                The new tab should be next to the current tab
+              </label>
+            </div>
+          </li>
+          <li class="list-group-item">
+            <div class="form-check">
+              <input
+                      type="checkbox"
+                      class="form-check-input"
+                      name="openGroupsInNewWindow"
+                      id="settings_openGroupsInNewWindow"
+              />
+              <label
+                      class="form-check-label"
+                      for="settings_openGroupsInNewWindow"
+              >
+                Open group tabs in new window
+              </label>
+            </div>
+          </li>
+          <li class="list-group-item">
+            <div class="form-check">
+              <input
+                      type="checkbox"
+                      class="form-check-input"
+                      name="enableOptionsMenuItem"
+                      id="settings_enableOptionsMenuItem"
+              />
+              <label
+                      class="form-check-label"
+                      for="settings_enableOptionsMenuItem"
+              >
+                Show link to extension options at the end of context menu
+              </label>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
   </form>
 
     <div class="row">

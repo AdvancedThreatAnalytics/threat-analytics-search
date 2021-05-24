@@ -128,6 +128,68 @@ export const NWI_CONFIG = [
   },
 ];
 
+const MERGE_DROPDOWN_ITEMS = [
+  {
+    key: "merge",
+    label: "Merge",
+  },
+  {
+    key: "override",
+    label: "Override",
+  },
+  {
+    key: "ignore",
+    label: "Ignore",
+  },
+];
+
+export const MERGE_OPTIONS = [
+  {
+    storeKey: "mergeSearchProviders",
+    label: "Search Providers",
+    type: "dropdown",
+    menuItems: MERGE_DROPDOWN_ITEMS,
+  },
+  {
+    storeKey: "mergeGroups",
+    label: "Override Group names",
+    type: "checkbox",
+  },
+  {
+    storeKey: "mergeCBC.config",
+    label: "Override Carbon Black Configuration",
+    type: "checkbox",
+  },
+  {
+    storeKey: "mergeCBC.queries",
+    label: "Override Carbon Black Queries",
+    type: "dropdown",
+    menuItems: MERGE_DROPDOWN_ITEMS,
+  },
+  {
+    storeKey: "mergeSA.config",
+    label: "Override Security Analytics Configuration",
+    type: "checkbox",
+  },
+  {
+    storeKey: "mergeSA.queries",
+    label: "Override Security Analytics Queries",
+    type: "dropdown",
+    menuItems: MERGE_DROPDOWN_ITEMS,
+  },
+  {
+    storeKey: "mergeNW.config",
+    label: "Override Netwitness Configuration",
+    type: "checkbox",
+  },
+  {
+    storeKey: "mergeNW.queries",
+    label: "Override Netwitness Queries",
+    type: "dropdown",
+    menuItems: MERGE_DROPDOWN_ITEMS,
+  },
+];
+
 export const NWI_RANGE_LENGTH = 4;
 
 export const RSA_CONFIG = [
@@ -227,6 +289,7 @@ export default {
   StoreKey,
   CBC_CONFIG,
   CONFIG_FILE_OPTIONS,
+  MERGE_OPTIONS,
   NWI_CONFIG,
   NWI_RANGE_LENGTH,
   RSA_CONFIG,

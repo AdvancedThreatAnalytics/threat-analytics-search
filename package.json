@@ -30,6 +30,7 @@
     "bootstrap": "^4.6.0",
     "bootstrap.native": "^3.0.15",
     "gibberish-aes": "^1.0.0",
+    "jquery": "^3.6.0",
     "js-beautify": "^1.13.13",
     "lodash": "^4.17.21",
     "luxon": "^1.26.0",

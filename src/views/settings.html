@@ -3,89 +3,65 @@
     <div class="row">
       <div class="col-lg-6">
         <h2 class="mb-3">Configuration File Options</h2>
+        <div id="config">Loading...</div>
+        <script id="template_config" type="x-tmpl-mustache">
+          <ul class="list-group">
+            {{#items}}
+              {{!-- The checkbox fields --}}
+              {{#isCheckbox}}
+              <li class="list-group-item">
+                <div class="form-check">
+                  <input
+                    type="checkbox"
+                    class="form-check-input"
+                    name="{{key}}"
+                    id="settings_{{key}}"
+                  />
+                  <label class="form-check-label" for="settings_{{key}}">
+                    {{label}}
+                  </label>
+                </div>
+              </li>
+              {{/isCheckbox}}
 
-        <ul class="list-group">
-          <li class="list-group-item">
-            <div class="form-group mb-0">
-              <label class="mb-1" for="settings_configurationURL"
-                >File URL</label
-              >
-              <input
-                type="text"
-                class="form-control"
-                name="configurationURL"
-                id="settings_configurationURL"
-              />
-            </div>
-          </li>
-          <li class="list-group-item">
-            <div class="form-check">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                name="useGroups"
-                id="settings_useGroups"
-              />
-              <label class="form-check-label" for="settings_useGroups">
-                Enable groups
-              </label>
-            </div>
-          </li>
-          <li class="list-group-item">
-            <div class="form-check">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                name="configEncrypted"
-                id="settings_configEncrypted"
-              />
-              <label class="form-check-label" for="settings_configEncrypted">
-                Encrypted
-              </label>
-            </div>
-          </li>
-          <li class="list-group-item">
-            <div class="form-group mb-0">
-              <label class="mb-1" for="settings_configEncryptionKey"
-                >Encryption Key</label
-              >
-              <input
-                type="text"
-                class="form-control"
-                name="configEncryptionKey"
-                id="settings_configEncryptionKey"
-              />
-            </div>
-          </li>
-          <li class="list-group-item">
-            <div class="form-check">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                name="autoUpdateConfig"
-                id="settings_autoUpdateConfig"
-              />
-              <label class="form-check-label" for="settings_autoUpdateConfig">
-                Refresh Automatically
-              </label>
-            </div>
-          </li>
-          <li
-            class="
-              list-group-item
-              d-flex
-              justify-content-between
-              align-items-center
-            "
-          >
-            <div>
-              <label class="mb-1">Last Refreshed on:</label>
-              <div id="settings_lastConfigUpdate"></div>
-              <div
-                class="text-danger"
-                id="settings_lastConfigUpdateError"
-              ></div>
-            </div>
+              {{!-- The input fields --}}
+              {{#isInput}}
+                <li class="list-group-item">
+                  <div class="form-group mb-0">
+                    <label class="mb-1" for="settings_{{key}}"
+                      >{{label}}</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="{{key}}"
+                      id="settings_{{key}}"
+                    />
+                  </div>
+                </li>
+              {{/isInput}}
+
+              {{!-- The text fields --}}
+              {{#isText}}
+              <li
+                  class="
+                    list-group-item
+                    d-flex
+                    justify-content-between
+                    align-items-center
+                  "
+                >
+                <div>
+                  <label class="mb-1">{{label}}</label>
+                  <div id="settings_{{key}}"></div>
+                  <div
+                    class="text-danger"
+                    id="settings_{{key}}Error"
+                  ></div>
+                </div>
+
+              {{/isText}}
+            {{/items}}
             <div>
               <button
                 type="button"
@@ -95,76 +71,37 @@
                 <i class="fas fa-sync"></i> Refresh Now
               </button>
             </div>
-          </li>
-        </ul>
+            </li>
+          </ul>
+        </script>
       </div>
 
       <div class="col-lg-6">
         <h2 class="mb-3">Search Results Options</h2>
 
+        <div id="search-results">Loading...</div>
+        <script id="template_search-results" type="x-tmpl-mustache">
         <ul class="list-group">
-          <li class="list-group-item">
-            <div class="form-check">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                name="resultsInBackgroundTab"
-                id="settings_resultsInBackgroundTab"
-              />
-              <label
-                class="form-check-label"
-                for="settings_resultsInBackgroundTab"
-              >
-                Open results in a background tab
-              </label>
-            </div>
-          </li>
-          <li class="list-group-item">
-            <div class="form-check">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                name="enableAdjacentTabs"
-                id="settings_enableAdjacentTabs"
-              />
-              <label class="form-check-label" for="settings_enableAdjacentTabs">
-                The new tab should be next to the current tab
-              </label>
-            </div>
-          </li>
-          <li class="list-group-item">
-            <div class="form-check">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                name="openGroupsInNewWindow"
-                id="settings_openGroupsInNewWindow"
-              />
-              <label
-                class="form-check-label"
-                for="settings_openGroupsInNewWindow"
-              >
-                Open group tabs in new window
-              </label>
-            </div>
-          </li>
-          <li class="list-group-item">
-            <div class="form-check">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                name="enableOptionsMenuItem"
-                id="settings_enableOptionsMenuItem"
-              />
-              <label
-                class="form-check-label"
-                for="settings_enableOptionsMenuItem"
-              >
-                Show link to extension options at the end of context menu
-              </label>
-            </div>
-          </li>
-        </ul>
+          {{#items}}
+            <li class="list-group-item">
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  name="{{key}}"
+                  id="settings_{{key}}"
+                />
+                <label
+                  class="form-check-label"
+                  for="settings_{{key}}"
+                >
+                  {{label}}
+                </label>
+              </div>
+            </li>
+          {{/items}}
+          </ul>
+        </script>
       </div>
     </div>
   </form>

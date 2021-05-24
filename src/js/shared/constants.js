@@ -28,6 +28,22 @@ export const StoreKey = {
   SETTINGS: "settings",
 };
 
+export const CONFIG_FILE_OPTIONS = [
+  { key: "configurationURL", label: "File URL", type: "input" },
+  { key: "configEncrypted", label: "Encrypted", type: "checkbox" },
+  { key: "configEncryptionKey", label: "Encryption Key", type: "input" },
+  {
+    key: "autoUpdateConfig",
+    label: "Update periodically (once per week)",
+    type: "checkbox",
+  },
+  {
+    key: "lastConfigUpdate",
+    label: "Last Refreshed on:",
+    type: "text",
+  },
+];
+
 export const CBC_CONFIG = [
   {
     key: "CBCConfigEnable",
@@ -175,6 +191,34 @@ export const RSA_CONFIG = [
 
 export const RSA_RANGE_LENGTH = 4;
 
+export const SEARCH_RESULT_OPTIONS = [
+  {
+    key: "useGroups",
+    label: "Enable groups",
+    type: "checkbox",
+  },
+  {
+    key: "resultsInBackgroundTab",
+    label: "Open results in a background tab",
+    type: "checkbox",
+  },
+  {
+    key: "enableAdjacentTabs",
+    label: "The new tab should be next to the current tab",
+    type: "checkbox",
+  },
+  {
+    key: "openGroupsInNewWindow",
+    label: "Open group tabs in new window",
+    type: "checkbox",
+  },
+  {
+    key: "enableOptionsMenuItem",
+    label: "Show link to extension options at the end of context menu",
+    type: "checkbox",
+  },
+];
+
 export const EXPORT_FILE_NAME = "Settings.json";
 
 export default {
@@ -182,9 +226,11 @@ export default {
   BasicConfig,
   StoreKey,
   CBC_CONFIG,
+  CONFIG_FILE_OPTIONS,
   NWI_CONFIG,
   NWI_RANGE_LENGTH,
   RSA_CONFIG,
   RSA_RANGE_LENGTH,
+  SEARCH_RESULT_OPTIONS,
   EXPORT_FILE_NAME,
 };

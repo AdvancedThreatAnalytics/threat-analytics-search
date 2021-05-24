@@ -16,8 +16,10 @@ import {
   MiscURLs,
   StoreKey,
   CBC_CONFIG,
+  CONFIG_FILE_OPTIONS,
   NWI_CONFIG,
   RSA_CONFIG,
+  SEARCH_RESULT_OPTIONS,
   EXPORT_FILE_NAME,
 } from "./shared/constants";
 
@@ -201,10 +203,21 @@ var SettingsTab = {
   initialize: function () {
     fetch("views/settings.html")
       .then((response) => response.text())
-      .then((htmlData) => {
+      .then(async (htmlData) => {
         // Insert template file.
         document.querySelector('main section[data-tab="settings"]').innerHTML =
           htmlData;
+
+        await SettingsTab.helper(
+          CONFIG_FILE_OPTIONS,
+          "template_config",
+          "config"
+        );
+        await SettingsTab.helper(
+          SEARCH_RESULT_OPTIONS,
+          "template_search-results",
+          "search-results"
+        );
 
         // Add click/change behaviors.
         document
@@ -244,6 +257,29 @@ var SettingsTab = {
         // Update inputs with settings values.
         SettingsTab.updateForms();
       });
+  },
+
+  helper: async function (settings, templateId, divId) {
+    var data = (await LocalStore.getOne("settings")) || {};
+    const items = _.map(settings, function (item) {
+      var value = _.get(data, item.key);
+      return _.assignIn(
+        {
+          isCheckbox: item.type === "checkbox",
+          isText: item.type === "text",
+          isInput: item.type === "input",
+          value: value || "",
+          checked: value === true || value === "true" ? "checked" : "",
+        },
+        item
+      );
+    });
+    // Replace link template.
+    var template = document.getElementById(templateId).innerHTML;
+    var rendered = Mustache.render(template, {
+      items,
+    });
+    document.getElementById(divId).innerHTML = rendered;
   },
 
   onInputChanged: async function (event) {

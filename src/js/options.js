@@ -20,6 +20,7 @@ import {
   CBC_CONFIG,
   CONFIG_FILE_OPTIONS,
   MERGE_OPTIONS,
+  MERGE_DROPDOWN_ITEMS,
   NWI_CONFIG,
   RSA_CONFIG,
   SEARCH_RESULT_OPTIONS,
@@ -129,7 +130,7 @@ var Header = {
     },
   ],
 
-  DEFAULT_TAB: "search-providers",
+  DEFAULT_TAB: "settings",
 
   update: function (params) {
     var current = _.get(params, "current") || Header.DEFAULT_TAB;
@@ -262,6 +263,13 @@ var SettingsTab = {
           }
         });
 
+        var dropdownItems = document.querySelectorAll(
+          "form[name='settings'] .dropdown-item"
+        );
+        _.each(dropdownItems, function (item) {
+          item.addEventListener("click", SettingsTab.onInputChanged);
+        });
+
         // Update inputs with settings values.
         SettingsTab.updateForms();
       });
@@ -270,15 +278,22 @@ var SettingsTab = {
   helper: async function (settings, templateId, divId) {
     var data = (await LocalStore.getOne("settings")) || {};
     const items = _.map(settings, function (item) {
-      var value = _.get(data, item.key);
+      var value =
+        item.type === "dropdown"
+          ? item.menuItems[_.get(data, item.key, "0")]
+          : _.get(data, item.key);
+
       return _.assignIn(
         {
           isCheckbox: item.type === "checkbox",
           isText: item.type === "text",
           isInput: item.type === "input",
-          isDropdowm: item.type === "dropdown",
+          isDropdown: item.type === "dropdown",
           value: value || "",
           checked: value === true || value === "true" ? "checked" : "",
+          index: function () {
+            return item.menuItems.indexOf(this);
+          },
         },
         item
       );
@@ -292,6 +307,10 @@ var SettingsTab = {
   },
 
   onInputChanged: async function (event) {
+    if (_.get(event, "target.className") === "dropdown-item") {
+      event.preventDefault();
+    }
+
     var targetName = _.get(event, "target.name");
     if (!_.isEmpty(targetName)) {
       var newSettings =
@@ -303,7 +322,7 @@ var SettingsTab = {
       await LocalStore.setOne(StoreKey.SETTINGS, newSettings);
 
       // Update context menu
-      mainConfigurationUpdated(true);
+      mainConfigurationUpdated();
     }
   },
 
@@ -319,6 +338,14 @@ var SettingsTab = {
       } else {
         input.value = value;
       }
+    });
+
+    var dropdownItems = document.querySelectorAll(
+      'form[name="settings"] .dropdown-toggle'
+    );
+    _.each(dropdownItems, function (dropdown) {
+      var value = MERGE_DROPDOWN_ITEMS[_.get(settings, dropdown.name, "0")];
+      document.getElementById("settings_" + dropdown.name).innerHTML = value;
     });
 
     // Update 'last update' text.

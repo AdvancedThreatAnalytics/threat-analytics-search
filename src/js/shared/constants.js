@@ -128,20 +128,7 @@ export const NWI_CONFIG = [
   },
 ];
 
-const MERGE_DROPDOWN_ITEMS = [
-  {
-    key: "merge",
-    label: "Merge",
-  },
-  {
-    key: "override",
-    label: "Override",
-  },
-  {
-    key: "ignore",
-    label: "Ignore",
-  },
-];
+export const MERGE_DROPDOWN_ITEMS = ["Merge", "Override", "Ignore"];
 
 export const MERGE_OPTIONS = [
   {
@@ -289,6 +276,7 @@ export default {
   StoreKey,
   CBC_CONFIG,
   CONFIG_FILE_OPTIONS,
+  MERGE_DROPDOWN_ITEMS,
   MERGE_OPTIONS,
   NWI_CONFIG,
   NWI_RANGE_LENGTH,

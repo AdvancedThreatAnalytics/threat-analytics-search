@@ -228,6 +228,11 @@ var SettingsTab = {
           "merge-options"
         );
 
+        // Enable popovers.
+        $(function () {
+          $('[data-toggle="popover"]').popover();
+        });
+
         // Add click/change behaviors.
         document
           .getElementById("settings_refreshNow")
@@ -276,7 +281,7 @@ var SettingsTab = {
   },
 
   helper: async function (settings, templateId, divId) {
-    var data = (await LocalStore.getOne("settings")) || {};
+    var data = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
     const items = _.map(settings, function (item) {
       var value =
         item.type === "dropdown"
@@ -905,7 +910,3 @@ var SearchAnalyticsTab = providerTabHelper(
     return null;
   }
 );
-
-$(function () {
-  $('[data-toggle="popover"]').popover();
-});

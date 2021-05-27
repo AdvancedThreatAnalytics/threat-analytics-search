@@ -39,7 +39,7 @@ export const CONFIG_FILE_OPTIONS = [
   },
   {
     key: "lastConfigUpdate",
-    label: "Last Refreshed on:",
+    label: "Last Updated on:",
     type: "text",
   },
 ];
@@ -149,29 +149,29 @@ export const MERGE_OPTIONS = [
   },
   {
     storeKey: "mergeCBC.queries",
-    label: "Override Carbon Black Queries",
+    label: "Carbon Black Queries",
     type: "dropdown",
     menuItems: MERGE_DROPDOWN_ITEMS,
   },
   {
-    storeKey: "mergeSA.config",
+    storeKey: "mergeRSA.config",
     label: "Override Security Analytics Configuration",
     type: "checkbox",
   },
   {
-    storeKey: "mergeSA.queries",
-    label: "Override Security Analytics Queries",
+    storeKey: "mergeRSA.queries",
+    label: "Security Analytics Queries",
     type: "dropdown",
     menuItems: MERGE_DROPDOWN_ITEMS,
   },
   {
-    storeKey: "mergeNW.config",
+    storeKey: "mergeNWI.config",
     label: "Override Netwitness Configuration",
     type: "checkbox",
   },
   {
-    storeKey: "mergeNW.queries",
-    label: "Override Netwitness Queries",
+    storeKey: "mergeNWI.queries",
+    label: "Netwitness Queries",
     type: "dropdown",
     menuItems: MERGE_DROPDOWN_ITEMS,
   },

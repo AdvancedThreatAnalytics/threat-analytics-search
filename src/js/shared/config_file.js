@@ -129,7 +129,7 @@ const ConfigFile = {
 
     // - Update group names in the local store (if need).
     var groups = newData.groups;
-    if (settings.useGroups && !_.isEmpty(groups)) {
+    if (settings.useGroups && !_.isEmpty(groups) && settings.mergeGroups) {
       if (_.isEmpty(settings.providersGroups)) {
         settings.providersGroups = ConfigFile.parseGroups(groups);
       } else {
@@ -155,24 +155,45 @@ const ConfigFile = {
 
     // - Check if the new list of search providers are already included on the list of menu items.
     var newProviders = _.map(newData.searchproviders, ConfigFile.parseProvider);
-    for (var i = 0; i < newProviders.length; i++) {
-      // Check if the search provider wasn't already included (and add it if not).
-      if (
-        !_.find(searchProviders, function (provider) {
-          return provider.link === newProviders[i].link;
-        })
-      ) {
-        searchProviders.push(newProviders[i]);
+
+    if (
+      !settings.mergeSearchProviders ||
+      settings.mergeSearchProviders === "0"
+    ) {
+      for (var i = 0; i < newProviders.length; i++) {
+        // Check if the search provider wasn't already included (and add it if not).
+        if (
+          !_.find(searchProviders, function (provider) {
+            return provider.link === newProviders[i].link;
+          })
+        ) {
+          searchProviders.push(newProviders[i]);
+        }
       }
+
+      // - Add not existing providers to current list in case merge option is "merge".
+      await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, searchProviders);
+    } else if (settings.mergeSearchProviders === "1") {
+      // - Save list of new search providers in case merge option is "override".
+      await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, newProviders);
     }
 
-    // - Save list of search providers.
-    await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, searchProviders);
-
     // Update configuration values and queries for RSA, NWI and CBC.
-    await ConfigFile.parseSpecialProvider(StoreKey.RSA_SECURITY, newData.RSA);
-    await ConfigFile.parseSpecialProvider(StoreKey.NET_WITNESS, newData.NWI);
-    await ConfigFile.parseSpecialProvider(StoreKey.CARBON_BLACK, newData.CBC);
+    await ConfigFile.parseSpecialProvider(
+      StoreKey.RSA_SECURITY,
+      newData.RSA,
+      "mergeRSA"
+    );
+    await ConfigFile.parseSpecialProvider(
+      StoreKey.NET_WITNESS,
+      newData.NWI,
+      "mergeNWI"
+    );
+    await ConfigFile.parseSpecialProvider(
+      StoreKey.CARBON_BLACK,
+      newData.CBC,
+      "mergeCBC"
+    );
   },
 
   parseBasicSettings: function (configArray) {
@@ -212,11 +233,51 @@ const ConfigFile = {
     return [];
   },
 
-  parseSpecialProvider: function (storeKey, subData) {
-    return LocalStore.setOne(storeKey, {
-      config: _.get(subData, "Config", {}),
-      queries: _.map(_.get(subData, "Queries", []), ConfigFile.parseQuery),
-    });
+  parseSpecialProvider: async function (storeKey, subData, subKey) {
+    var config = _.get(
+      await LocalStore.getOne(StoreKey.SETTINGS),
+      subKey + ".config",
+      {}
+    );
+    var queries = _.get(
+      await LocalStore.getOne(StoreKey.SETTINGS),
+      subKey + ".queries",
+      {}
+    );
+
+    var data = (await LocalStore.getOne(storeKey)) || {};
+
+    // Update config if so in merge option.
+    if (config) {
+      data.config = _.get(subData, "Config", {});
+    }
+    // - Add not existing queries to current list in case merge option is "merge".
+    if (!queries || queries === "0") {
+      var newQueries = _.map(
+        _.get(subData, "Queries", []),
+        ConfigFile.parseQuery
+      );
+      for (var i = 0; i < newQueries.length; i++) {
+        // Check if the queries weren't already included (and add it if not).
+        if (
+          !_.find(data.queries, function (query) {
+            return query.query === newQueries[i].query;
+          })
+        ) {
+          data.queries.push(newQueries[i]);
+        }
+      }
+    }
+
+    // - Save list of new queries in case merge option is "override".
+    if (queries === "1") {
+      data.queries = _.map(
+        _.get(subData, "Queries", []),
+        ConfigFile.parseQuery
+      );
+    }
+
+    return LocalStore.setOne(storeKey, data);
   },
 
   parseProvider: function (item) {

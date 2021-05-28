@@ -305,7 +305,7 @@ var SettingsTab = {
 
   onInputChanged: async function (event) {
     var targetName = _.get(event, "target.name");
-    console.log(targetName);
+
     if (!_.isEmpty(targetName)) {
       var newSettings =
         _.clone(await LocalStore.getOne(StoreKey.SETTINGS)) || {};

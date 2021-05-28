@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:feature" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="d2472942-230d-4792-a7f7-d88a00a9faef" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/js/options.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/js/options.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/js/shared/constants.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/js/shared/constants.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/settings.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/settings.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="tsconfig.json" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="JsFlowSettings">
+    <service-enabled>true</service-enabled>
+    <exe-path />
+    <other-services-enabled>true</other-services-enabled>
+    <auto-save>true</auto-save>
+  </component>
+  <component name="ProjectId" id="1sA1NVdgO4ec6zKky9DMrZlipkR" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="TERMINAL_CUSTOM_COMMANDS_GOT_IT" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="js.linters.configure.manually.selectedeslint" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/views" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.standard" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.standard" value="project" />
+    <property name="node.js.selected.package.eslint" value="$PROJECT_DIR$/node_modules/eslint" />
+    <property name="node.js.selected.package.standard" value="" />
+    <property name="nodejs_package_manager_path" value="yarn" />
+    <property name="prettierjs.PrettierConfiguration.Package" value="$PROJECT_DIR$/node_modules/prettier" />
+    <property name="settings.editor.selected.configurable" value="settings.javascript.linters.eslint" />
+    <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/views" />
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d2472942-230d-4792-a7f7-d88a00a9faef" name="Default Changelist" comment="" />
+      <created>1620300539134</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1620300539134</updated>
+      <workItem from="1620300540571" duration="249000" />
+      <workItem from="1620300791137" duration="4432000" />
+      <workItem from="1620385048577" duration="16362000" />
+      <workItem from="1620646784046" duration="206000" />
+      <workItem from="1620647010157" duration="36124000" />
+      <workItem from="1621272585708" duration="5788000" />
+      <workItem from="1621512343906" duration="1350000" />
+      <workItem from="1621583038202" duration="604000" />
+      <workItem from="1621595278844" duration="158000" />
+      <workItem from="1621598375314" duration="6769000" />
+      <workItem from="1621843399107" duration="10000000" />
+      <workItem from="1621865878744" duration="4317000" />
+      <workItem from="1621871010513" duration="4121000" />
+      <workItem from="1622020941608" duration="39801000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="2505" y="-109" width="1082" height="655" key="#ESLint" timestamp="1620726176249">
+      <screen x="1680" y="-1030" width="3840" height="2135" />
+    </state>
+    <state x="2505" y="-109" width="1082" height="655" key="#ESLint/1680.-1030.3840.2135/0.25.1680.1025@1680.-1030.3840.2135" timestamp="1620726176249" />
+    <state x="2358" y="-121" key="#Prettier" timestamp="1621676505866">
+      <screen x="1680" y="-1030" width="3840" height="2135" />
+    </state>
+    <state x="2358" y="-121" key="#Prettier/1680.-1030.3840.2135/0.25.1680.1025@1680.-1030.3840.2135" timestamp="1621676505866" />
+    <state x="168" y="113" key="DiffContextDialog" timestamp="1621869400377">
+      <screen x="0" y="25" width="1680" height="1025" />
+    </state>
+    <state x="168" y="113" key="DiffContextDialog/0.25.1680.1025@0.25.1680.1025" timestamp="1621869400377" />
+    <state x="2141" y="-897" width="2344" height="1470" key="MergeDialog" timestamp="1620726150244">
+      <screen x="1680" y="-1030" width="3840" height="2135" />
+    </state>
+    <state x="2141" y="-897" width="2344" height="1470" key="MergeDialog/1680.-1030.3840.2135/0.25.1680.1025@1680.-1030.3840.2135" timestamp="1620726150244" />
+    <state x="2274" y="-246" width="1078" height="789" key="MultipleFileMergeDialog" timestamp="1620726150315">
+      <screen x="1680" y="-1030" width="3840" height="2135" />
+    </state>
+    <state x="2274" y="-246" width="1078" height="789" key="MultipleFileMergeDialog/1680.-1030.3840.2135/0.25.1680.1025@1680.-1030.3840.2135" timestamp="1620726150315" />
+    <state x="536" y="160" key="RollbackChangesDialog" timestamp="1621869401516">
+      <screen x="0" y="25" width="1680" height="1025" />
+    </state>
+    <state x="536" y="160" key="RollbackChangesDialog/0.25.1680.1025@0.25.1680.1025" timestamp="1621869401516" />
+    <state x="205" y="322" key="SettingsEditor" timestamp="1621862552508">
+      <screen x="0" y="25" width="1680" height="1025" />
+    </state>
+    <state x="205" y="322" key="SettingsEditor/0.25.1680.1025@0.25.1680.1025" timestamp="1621862552508" />
+    <state x="2149" y="-368" key="SettingsEditor/1680.-1030.3840.2135/0.25.1680.1025@1680.-1030.3840.2135" timestamp="1621276816793" />
+    <state x="868" y="202" width="684" height="580" key="find.popup" timestamp="1622208743199">
+      <screen x="0" y="25" width="1680" height="1025" />
+    </state>
+    <state x="868" y="202" width="684" height="580" key="find.popup/0.25.1680.1025@0.25.1680.1025" timestamp="1622208743199" />
+    <state x="2146" y="-506" width="1366" height="834" key="find.popup/1680.-1030.3840.2135/0.25.1680.1025@1680.-1030.3840.2135" timestamp="1620833572625" />
+    <state x="2146" y="-506" width="1366" height="834" key="find.popup/1680.-1055.3840.2160/0.0.1680.1050@1680.-1055.3840.2160" timestamp="1620640942530" />
+    <state x="273" y="257" width="670" height="325" key="search.everywhere.popup" timestamp="1622114657102">
+      <screen x="0" y="25" width="1680" height="1025" />
+    </state>
+    <state x="273" y="257" width="670" height="325" key="search.everywhere.popup/0.25.1680.1025@0.25.1680.1025" timestamp="1622114657102" />
+    <state x="2305" y="-546" width="670" height="676" key="search.everywhere.popup/1680.-1030.3840.2135/0.25.1680.1025@1680.-1030.3840.2135" timestamp="1620760630954" />
+  </component>
+</project>

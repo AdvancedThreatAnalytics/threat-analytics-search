@@ -212,23 +212,22 @@ var SettingsTab = {
         document.querySelector('main section[data-tab="settings"]').innerHTML =
           htmlData;
 
-        await SettingsTab.helper(
+        await SettingsTab.injectData(
           CONFIG_FILE_OPTIONS,
           "template_config",
           "config"
         );
-        await SettingsTab.helper(
+        await SettingsTab.injectData(
           SEARCH_RESULT_OPTIONS,
           "template_search-results",
           "search-results"
         );
-        await SettingsTab.helper(
+        await SettingsTab.injectData(
           MERGE_OPTIONS,
           "template_merge-options",
           "merge-options"
         );
 
-        // Enable popovers.
         $(function () {
           $('[data-toggle="popover"]').popover({
             trigger: "hover",
@@ -275,7 +274,7 @@ var SettingsTab = {
           "form[name='settings'] .dropdown-item"
         );
         _.each(dropdownItems, function (item) {
-          item.addEventListener("click", SettingsTab.onInputChanged);
+          item.addEventListener("click", SettingsTab.onDropdownSelect);
         });
 
         // Update inputs with settings values.
@@ -283,12 +282,12 @@ var SettingsTab = {
       });
   },
 
-  helper: async function (settings, templateId, divId) {
+  injectData: async function (settings, templateId, divId) {
     var data = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
     const items = _.map(settings, function (item) {
       var value =
         item.type === "dropdown"
-          ? item.menuItems[_.get(data, item.key, "0")]
+          ? item.menuItems[_.get(data, item.key, 0)]
           : _.get(data, item.key);
 
       return _.assignIn(
@@ -315,10 +314,6 @@ var SettingsTab = {
   },
 
   onInputChanged: async function (event) {
-    if (_.get(event, "target.className") === "dropdown-item") {
-      event.preventDefault();
-    }
-
     var targetName = _.get(event, "target.name");
     if (!_.isEmpty(targetName)) {
       var newSettings =
@@ -331,6 +326,21 @@ var SettingsTab = {
 
       // Update context menu
       mainConfigurationUpdated();
+    }
+  },
+
+  onDropdownSelect: async function (event) {
+    event.preventDefault();
+    var targetName = _.get(event, "target.name");
+
+    if (!_.isEmpty(targetName)) {
+      var newSettings =
+        _.clone(await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      newSettings[targetName] = event.target.value;
+      await LocalStore.setOne(StoreKey.SETTINGS, newSettings);
+
+      // Update The UI
+      SettingsTab.updateForms();
     }
   },
 

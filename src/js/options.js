@@ -5,8 +5,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../css/main.css";
 
 import _ from "lodash";
-import $ from "jquery";
-import "bootstrap/dist/js/bootstrap.bundle";
 import Mustache from "mustache";
 import Notiflix from "notiflix";
 import beautify from "js-beautify";
@@ -212,28 +210,19 @@ var SettingsTab = {
         document.querySelector('main section[data-tab="settings"]').innerHTML =
           htmlData;
 
-        await SettingsTab.injectData(
-          CONFIG_FILE_OPTIONS,
-          "template_config",
-          "config"
-        );
-        await SettingsTab.injectData(
-          SEARCH_RESULT_OPTIONS,
-          "template_search-results",
-          "search-results"
-        );
-        await SettingsTab.injectData(
-          MERGE_OPTIONS,
-          "template_merge-options",
-          "merge-options"
-        );
+        await SettingsTab.injectData(CONFIG_FILE_OPTIONS, "config");
+        await SettingsTab.injectData(SEARCH_RESULT_OPTIONS, "search-results");
+        await SettingsTab.injectData(MERGE_OPTIONS, "merge-options");
 
-        $(function () {
-          $('[data-toggle="popover"]').popover({
-            trigger: "hover",
-            html: true,
-          });
-        });
+        // Initialize popovers.
+        var popovers = document.querySelectorAll("[data-bs-content]");
+        _.each(popovers, (popover) => new BSN.Popover(popover));
+
+        // Initialize dropdowns.
+        var dropdowns = document.querySelectorAll(
+          "[data-bs-toggle='dropdown']"
+        );
+        _.each(dropdowns, (dropdown) => new BSN.Dropdown(dropdown));
 
         // Add click/change behaviors.
         document
@@ -282,7 +271,7 @@ var SettingsTab = {
       });
   },
 
-  injectData: async function (settings, templateId, divId) {
+  injectData: async function (settings, divId) {
     var data = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
     const items = _.map(settings, function (item) {
       var value =
@@ -293,7 +282,6 @@ var SettingsTab = {
       return _.assignIn(
         {
           isCheckbox: item.type === "checkbox",
-          isText: item.type === "text",
           isInput: item.type === "input",
           isDropdown: item.type === "dropdown",
           value: value || "",
@@ -306,7 +294,9 @@ var SettingsTab = {
       );
     });
     // Replace link template.
-    var template = document.getElementById(templateId).innerHTML;
+    var template = document.getElementById(
+      "template_generic-settings"
+    ).innerHTML;
     var rendered = Mustache.render(template, {
       items,
     });
@@ -315,6 +305,7 @@ var SettingsTab = {
 
   onInputChanged: async function (event) {
     var targetName = _.get(event, "target.name");
+    console.log(targetName);
     if (!_.isEmpty(targetName)) {
       var newSettings =
         _.clone(await LocalStore.getOne(StoreKey.SETTINGS)) || {};

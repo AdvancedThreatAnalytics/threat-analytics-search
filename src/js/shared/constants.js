@@ -132,45 +132,45 @@ export const MERGE_DROPDOWN_ITEMS = ["Merge", "Override", "Ignore"];
 
 export const MERGE_OPTIONS = [
   {
-    storeKey: "mergeSearchProviders",
+    key: "mergeSearchProviders",
     label: "Search Providers",
     type: "dropdown",
     menuItems: MERGE_DROPDOWN_ITEMS,
   },
   {
-    storeKey: "mergeGroups",
+    key: "mergeGroups",
     label: "Override Group names",
     type: "checkbox",
   },
   {
-    storeKey: "mergeCBC.config",
+    key: "mergeCBC.config",
     label: "Override Carbon Black Configuration",
     type: "checkbox",
   },
   {
-    storeKey: "mergeCBC.queries",
+    key: "mergeCBC.queries",
     label: "Carbon Black Queries",
     type: "dropdown",
     menuItems: MERGE_DROPDOWN_ITEMS,
   },
   {
-    storeKey: "mergeRSA.config",
+    key: "mergeRSA.config",
     label: "Override Security Analytics Configuration",
     type: "checkbox",
   },
   {
-    storeKey: "mergeRSA.queries",
+    key: "mergeRSA.queries",
     label: "Security Analytics Queries",
     type: "dropdown",
     menuItems: MERGE_DROPDOWN_ITEMS,
   },
   {
-    storeKey: "mergeNWI.config",
+    key: "mergeNWI.config",
     label: "Override Netwitness Configuration",
     type: "checkbox",
   },
   {
-    storeKey: "mergeNWI.queries",
+    key: "mergeNWI.queries",
     label: "Netwitness Queries",
     type: "dropdown",
     menuItems: MERGE_DROPDOWN_ITEMS,

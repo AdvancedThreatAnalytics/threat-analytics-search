@@ -1,5 +1,5 @@
 import _ from "lodash";
-import GibberishAES from "gibberish-aes/dist/gibberish-aes-1.0.0.min";
+import aesjs from "aes-js";
 
 import { BasicConfig, StoreKey } from "./constants";
 import LocalStore from "./local_store";
@@ -30,6 +30,21 @@ const SearchProv = {
 };
 
 const ConfigFile = {
+  decrypt: function (data, key) {
+    // Convert string key to bytes and make it multiple of 16 bytes.
+    key = aesjs.padding.pkcs7.pad(aesjs.utils.utf8.toBytes(key));
+
+    // Convert data to bytes and add padding unless multiple of 16 bytes.
+    var textBytes = aesjs.utils.hex.toBytes(data);
+    if (textBytes.length % 16 !== 0) {
+      textBytes = aesjs.padding.pkcs7.pad(textBytes);
+    }
+    var aesCbc = new aesjs.ModeOfOperation.cbc(key);
+    var decryptedBytes = aesCbc.decrypt(textBytes);
+
+    return aesjs.utils.utf8.fromBytes(decryptedBytes);
+  },
+
   updateNow: async function () {
     var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
     var errMsg = null;
@@ -45,7 +60,7 @@ const ConfigFile = {
         if (settings.configEncrypted) {
           var k1 = settings.configEncryptionKey;
           try {
-            dataRaw = GibberishAES.dec(dataRaw, k1);
+            dataRaw = ConfigFile.decrypt(dataRaw, k1);
           } catch (decErr) {
             console.error(decErr);
             errMsg = "Update failed - Decryption Error";

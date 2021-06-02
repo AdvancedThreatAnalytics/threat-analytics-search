@@ -1,5 +1,6 @@
 import _ from "lodash";
 import aesjs from "aes-js";
+import md5 from "md5";
 
 import { BasicConfig, StoreKey } from "./constants";
 import LocalStore from "./local_store";
@@ -31,18 +32,45 @@ const SearchProv = {
 
 const ConfigFile = {
   decrypt: function (data, key) {
-    // Convert string key to bytes and make it multiple of 16 bytes.
-    key = aesjs.padding.pkcs7.pad(aesjs.utils.utf8.toBytes(key));
+    // Decode the ciphertext and remove the salt part.
+    data = Array.from(atob(data), (c) => c.charCodeAt(0));
+    var salt = data.slice(8, 16),
+      s2a = Array.from(unescape(encodeURIComponent(key)), (c) =>
+        c.charCodeAt(0)
+      ),
+      pbe = ConfigFile.openSSLKey(s2a, salt);
+    data = data.slice(16, data.length);
 
-    // Convert data to bytes and add padding unless multiple of 16 bytes.
-    var textBytes = aesjs.utils.hex.toBytes(data);
-    if (textBytes.length % 16 !== 0) {
-      textBytes = aesjs.padding.pkcs7.pad(textBytes);
+    // Decrypt the ciphertext using aesjs.
+    var aesCbc = new aesjs.ModeOfOperation.cbc(pbe.key, pbe.iv);
+    var decryptedBytes = aesCbc.decrypt(data);
+
+    // Remove pre added paddings and parse from byte to utf8.
+    return aesjs.utils.utf8.fromBytes(
+      aesjs.padding.pkcs7.strip(decryptedBytes)
+    );
+  },
+
+  // This function is needed to provide backward compatibility
+  // and calculate the key and iv in the same way as GibberishAes.
+  openSSLKey: function (passwordArr, saltArr) {
+    var rounds = 3,
+      md5_hash = [],
+      result = [],
+      data00 = passwordArr.concat(saltArr);
+    md5_hash[0] = aesjs.utils.hex.toBytes(md5(data00));
+    result = md5_hash[0];
+    for (let i = 1; i < rounds; i++) {
+      md5_hash[i] = aesjs.utils.hex.toBytes(
+        md5(md5_hash[i - 1].concat(data00))
+      );
+      result = result.concat(md5_hash[i]);
     }
-    var aesCbc = new aesjs.ModeOfOperation.cbc(key);
-    var decryptedBytes = aesCbc.decrypt(textBytes);
 
-    return aesjs.utils.utf8.fromBytes(decryptedBytes);
+    return {
+      key: result.slice(0, 32),
+      iv: result.slice(32, 48),
+    };
   },
 
   updateNow: async function () {

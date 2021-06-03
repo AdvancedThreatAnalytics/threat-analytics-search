@@ -1,6 +1,6 @@
 import _ from "lodash";
-import GibberishAES from "gibberish-aes/dist/gibberish-aes-1.0.0.min";
 
+import { decryptAES } from "./encryption";
 import { BasicConfig, StoreKey } from "./constants";
 import LocalStore from "./local_store";
 
@@ -45,7 +45,7 @@ const ConfigFile = {
         if (settings.configEncrypted) {
           var k1 = settings.configEncryptionKey;
           try {
-            dataRaw = GibberishAES.dec(dataRaw, k1);
+            dataRaw = decryptAES(dataRaw, k1);
           } catch (decErr) {
             console.error(decErr);
             errMsg = "Update failed - Decryption Error";

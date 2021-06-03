@@ -26,11 +26,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2472942-230d-4792-a7f7-d88a00a9faef" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/js/options.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/js/options.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/js/shared/constants.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/js/shared/constants.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/settings.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/settings.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,7 +73,7 @@
     <property name="node.js.selected.package.standard" value="" />
     <property name="nodejs_package_manager_path" value="yarn" />
     <property name="prettierjs.PrettierConfiguration.Package" value="$PROJECT_DIR$/node_modules/prettier" />
-    <property name="settings.editor.selected.configurable" value="settings.javascript.linters.eslint" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
     <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
   </component>
   <component name="RecentsManager">
@@ -145,24 +144,24 @@
       <screen x="1680" y="-1030" width="3840" height="2135" />
     </state>
     <state x="2141" y="-897" width="2344" height="1470" key="MergeDialog/1680.-1030.3840.2135/0.25.1680.1025@1680.-1030.3840.2135" timestamp="1620726150244" />
-    <state x="2274" y="-246" width="1078" height="789" key="MultipleFileMergeDialog" timestamp="1620726150315">
+    <state x="2274" y="-246" width="1078" height="789" key="MultipleFileMergeDialog" timestamp="1622659263163">
       <screen x="1680" y="-1030" width="3840" height="2135" />
     </state>
-    <state x="2274" y="-246" width="1078" height="789" key="MultipleFileMergeDialog/1680.-1030.3840.2135/0.25.1680.1025@1680.-1030.3840.2135" timestamp="1620726150315" />
+    <state x="2274" y="-246" width="1078" height="789" key="MultipleFileMergeDialog/1680.-1030.3840.2135/0.25.1680.1025@1680.-1030.3840.2135" timestamp="1622659263163" />
     <state x="536" y="160" key="RollbackChangesDialog" timestamp="1621869401516">
       <screen x="0" y="25" width="1680" height="1025" />
     </state>
     <state x="536" y="160" key="RollbackChangesDialog/0.25.1680.1025@0.25.1680.1025" timestamp="1621869401516" />
-    <state x="205" y="322" key="SettingsEditor" timestamp="1621862552508">
-      <screen x="0" y="25" width="1680" height="1025" />
+    <state x="2149" y="-368" key="SettingsEditor" timestamp="1622654850549">
+      <screen x="1680" y="-1030" width="3840" height="2135" />
     </state>
     <state x="205" y="322" key="SettingsEditor/0.25.1680.1025@0.25.1680.1025" timestamp="1621862552508" />
-    <state x="2149" y="-368" key="SettingsEditor/1680.-1030.3840.2135/0.25.1680.1025@1680.-1030.3840.2135" timestamp="1621276816793" />
-    <state x="868" y="202" width="684" height="580" key="find.popup" timestamp="1622208743199">
-      <screen x="0" y="25" width="1680" height="1025" />
+    <state x="2149" y="-368" key="SettingsEditor/1680.-1030.3840.2135/0.25.1680.1025@1680.-1030.3840.2135" timestamp="1622654850549" />
+    <state x="2146" y="-506" width="1366" height="834" key="find.popup" timestamp="1622649571366">
+      <screen x="1680" y="-1030" width="3840" height="2135" />
     </state>
     <state x="868" y="202" width="684" height="580" key="find.popup/0.25.1680.1025@0.25.1680.1025" timestamp="1622208743199" />
-    <state x="2146" y="-506" width="1366" height="834" key="find.popup/1680.-1030.3840.2135/0.25.1680.1025@1680.-1030.3840.2135" timestamp="1620833572625" />
+    <state x="2146" y="-506" width="1366" height="834" key="find.popup/1680.-1030.3840.2135/0.25.1680.1025@1680.-1030.3840.2135" timestamp="1622649571366" />
     <state x="2146" y="-506" width="1366" height="834" key="find.popup/1680.-1055.3840.2160/0.0.1680.1050@1680.-1055.3840.2160" timestamp="1620640942530" />
     <state x="273" y="257" width="670" height="325" key="search.everywhere.popup" timestamp="1622114657102">
       <screen x="0" y="25" width="1680" height="1025" />

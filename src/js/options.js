@@ -215,14 +215,18 @@ var SettingsTab = {
         await SettingsTab.injectData(MERGE_OPTIONS, "merge-options");
 
         // Initialize popovers.
-        var popovers = document.querySelectorAll("[data-bs-content]");
-        _.each(popovers, (popover) => new BSN.Popover(popover));
+        var popovers = document.querySelectorAll("[data-title]");
+        _.each(popovers, (popover) => new BSN.Tooltip(popover));
 
         // Initialize dropdowns.
         var dropdowns = document.querySelectorAll(
-          "[data-bs-toggle='dropdown']"
+          "[data-bs-toggle='dropdown']",
+          false
         );
-        _.each(dropdowns, (dropdown) => new BSN.Dropdown(dropdown));
+        var dropdownObjects = [];
+        _.each(dropdowns, (dropdown) =>
+          dropdownObjects.push(new BSN.Dropdown(dropdown))
+        );
 
         // Add click/change behaviors.
         document
@@ -262,8 +266,11 @@ var SettingsTab = {
         var dropdownItems = document.querySelectorAll(
           "form[name='settings'] .dropdown-item"
         );
-        _.each(dropdownItems, function (item) {
-          item.addEventListener("click", SettingsTab.onDropdownSelect);
+        _.each(dropdownItems, function (item, index) {
+          item.addEventListener("click", function (event) {
+            SettingsTab.onDropdownSelect(event);
+            dropdownObjects[index].toggle();
+          });
         });
 
         // Update inputs with settings values.

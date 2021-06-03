@@ -143,17 +143,6 @@ export const MERGE_OPTIONS = [
     type: "checkbox",
   },
   {
-    key: "mergeCBC.config",
-    label: "Override Carbon Black Configuration",
-    type: "checkbox",
-  },
-  {
-    key: "mergeCBC.queries",
-    label: "Carbon Black Queries",
-    type: "dropdown",
-    menuItems: MERGE_DROPDOWN_ITEMS,
-  },
-  {
     key: "mergeRSA.config",
     label: "Override Security Analytics Configuration",
     type: "checkbox",
@@ -172,6 +161,17 @@ export const MERGE_OPTIONS = [
   {
     key: "mergeNWI.queries",
     label: "Netwitness Queries",
+    type: "dropdown",
+    menuItems: MERGE_DROPDOWN_ITEMS,
+  },
+  {
+    key: "mergeCBC.config",
+    label: "Override Carbon Black Configuration",
+    type: "checkbox",
+  },
+  {
+    key: "mergeCBC.queries",
+    label: "Carbon Black Queries",
     type: "dropdown",
     menuItems: MERGE_DROPDOWN_ITEMS,
   },

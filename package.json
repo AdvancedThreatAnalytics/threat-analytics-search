@@ -7,11 +7,14 @@
   "private": true,
   "scripts": {
     "build": "webpack --config webpack.config.js",
+    "build-zip": "yarn run build && yarn run zip",
     "lint": "eslint --ext js src",
     "lint:fix": "eslint --ext js src --fix",
-    "live": "webpack --config webpack.config.js --watch"
+    "live": "webpack --config webpack.config.js --watch",
+    "zip": "bestzip dist.zip dist/*"
   },
   "devDependencies": {
+    "bestzip": "^2.2.0",
     "copy-webpack-plugin": "^8.1.1",
     "css-loader": "^5.2.4",
     "eslint": "^7.25.0",
@@ -27,12 +30,13 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.3",
+    "aes-js": "^3.1.2",
     "bootstrap": "^4.6.0",
     "bootstrap.native": "^3.0.15",
-    "gibberish-aes": "^1.0.0",
     "js-beautify": "^1.13.13",
     "lodash": "^4.17.21",
     "luxon": "^1.26.0",
+    "md5": "^2.3.0",
     "mustache": "^4.2.0",
     "notiflix": "^2.7.0",
     "sortablejs": "^1.13.0"

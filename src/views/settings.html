@@ -79,7 +79,7 @@
           {{#isDropdown}}
             <li class="list-group-item">
               <span class="dropdown">
-                <button class="btn dropdown-toggle" type="button" name="{{key}}" id="settings_{{key}}" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button class="btn btn-outline-dark dropdown-toggle" type="button" name="{{key}}" id="settings_{{key}}" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   {{value}}
                 </button>
                 <div class="dropdown-menu" tabindex="1" aria-labelledby="settings_{{key}}">
@@ -91,7 +91,7 @@
               <label class="form-check-label">
                 {{label}}
               </label>
-              <a data-placement="top" data-toggle="popover" data-bs-content="<ul class='pl-3'><li class='text-left'><strong>Merge</strong> - adds search providers that aren't already in current list of search providers </li><li class='text-left'><strong>Override</strong> - replaces local search providers with new settings </li><li class='text-left'><strong>Ignore</strong> - keeps current list and ignores any incoming changes</li></ul>"><i class="fas fa-info-circle" aria-hidden="true"></i></a>
+              <a data-placement="right" data-toggle="tooltip" data-title="<div class='text-left'><div><strong>Merge:</strong> Adds search providers that aren't already in current list of search providers.</div><div><strong>Override:</strong> Replaces local search providers with new settings.</div><div><strong>Ignore:</strong> Keeps current list and ignores any incoming changes.</div></div>"><i class="fas fa-info-circle text-info" aria-hidden="true"></i></a>
             </li>
           {{/isDropdown}}
         {{/items}}

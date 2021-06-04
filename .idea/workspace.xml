@@ -28,7 +28,6 @@
     <list default="true" id="d2472942-230d-4792-a7f7-d88a00a9faef" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/js/options.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/js/options.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/js/shared/constants.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/js/shared/constants.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/settings.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/settings.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

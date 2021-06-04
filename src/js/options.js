@@ -215,18 +215,26 @@ var SettingsTab = {
         await SettingsTab.injectData(MERGE_OPTIONS, "merge-options");
 
         // Initialize popovers.
-        var popovers = document.querySelectorAll("[data-title]");
-        _.each(popovers, (popover) => new BSN.Tooltip(popover));
+        var popovers = document.querySelectorAll("[data-bs-content]");
+        _.each(popovers, (popover) => new BSN.Popover(popover));
 
         // Initialize dropdowns.
         var dropdowns = document.querySelectorAll(
           "[data-bs-toggle='dropdown']",
           false
         );
-        var dropdownObjects = [];
-        _.each(dropdowns, (dropdown) =>
-          dropdownObjects.push(new BSN.Dropdown(dropdown))
-        );
+        _.each(dropdowns, (dropdown) => {
+          var dropdownItems =
+            dropdown.parentElement.querySelectorAll(".dropdown-item");
+          dropdown = new BSN.Dropdown(dropdown);
+          _.each(dropdownItems, function (item) {
+            item.addEventListener("click", function (event) {
+              SettingsTab.onDropdownSelect(event);
+              dropdown.toggle();
+            });
+          });
+          return dropdown;
+        });
 
         // Add click/change behaviors.
         document
@@ -261,16 +269,6 @@ var SettingsTab = {
           } else {
             input.addEventListener("change", SettingsTab.onInputChanged);
           }
-        });
-
-        var dropdownItems = document.querySelectorAll(
-          "form[name='settings'] .dropdown-item"
-        );
-        _.each(dropdownItems, function (item, index) {
-          item.addEventListener("click", function (event) {
-            SettingsTab.onDropdownSelect(event);
-            dropdownObjects[index].toggle();
-          });
         });
 
         // Update inputs with settings values.
@@ -328,6 +326,7 @@ var SettingsTab = {
   },
 
   onDropdownSelect: async function (event) {
+    console.log(event);
     event.preventDefault();
     var targetName = _.get(event, "target.name");
 

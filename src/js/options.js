@@ -214,17 +214,17 @@ var SettingsTab = {
         await SettingsTab.injectData(SEARCH_RESULT_OPTIONS, "search-results");
         await SettingsTab.injectData(MERGE_OPTIONS, "merge-options");
 
-        // Initialize popovers.
-        var popovers = document.querySelectorAll("[data-bs-content]");
-        _.each(popovers, (popover) => new BSN.Popover(popover));
+        // Initialize tooltips.
+        let popovers = document.querySelectorAll("[data-title]");
+        _.each(popovers, (popover) => new BSN.Tooltip(popover));
 
         // Initialize dropdowns.
-        var dropdowns = document.querySelectorAll(
+        let dropdowns = document.querySelectorAll(
           "[data-bs-toggle='dropdown']",
           false
         );
         _.each(dropdowns, (dropdown) => {
-          var dropdownItems =
+          let dropdownItems =
             dropdown.parentElement.querySelectorAll(".dropdown-item");
           dropdown = new BSN.Dropdown(dropdown);
           _.each(dropdownItems, function (item) {

@@ -11,6 +11,7 @@ import beautify from "js-beautify";
 import { DateTime } from "luxon";
 import { Sortable } from "sortablejs";
 import BSN from "bootstrap.native/dist/bootstrap-native.esm.min.js";
+import Analytics from "./shared/analytics";
 
 import {
   MiscURLs,

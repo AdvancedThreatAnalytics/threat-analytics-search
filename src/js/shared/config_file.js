@@ -156,8 +156,8 @@ const ConfigFile = {
     var newProviders = _.map(newData.searchproviders, ConfigFile.parseProvider);
 
     // - Check if the new list of search providers are already included on the list of menu items.
-    var mergeProviderOption = _.get(settings, "mergeSearchProviders", "0");
-    if (mergeProviderOption === "0") {
+    var mergeProviderOption = _.get(settings, "mergeSearchProviders", "merge");
+    if (mergeProviderOption === "merge") {
       // merge new providers based on `link`
       for (var i = 0; i < newProviders.length; i++) {
         // Check if the search provider wasn't already included (and add it if not).
@@ -169,11 +169,9 @@ const ConfigFile = {
           searchProviders.push(newProviders[i]);
         }
       }
-    } else if (mergeProviderOption === "1") {
+    } else if (mergeProviderOption === "override") {
       // override
       searchProviders = newProviders;
-    } else {
-      // ignore
     }
     await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, searchProviders);
 
@@ -235,7 +233,7 @@ const ConfigFile = {
   parseSpecialProvider: async function (storeKey, newData, mergeKey) {
     var settings = await LocalStore.getOne(StoreKey.SETTINGS);
     var shouldOverrideConfig = _.get(settings, mergeKey + ".config", false);
-    var queriesMergeOption = _.get(settings, mergeKey + ".queries", "0");
+    var queriesMergeOption = _.get(settings, mergeKey + ".queries", "merge");
 
     var provData = (await LocalStore.getOne(storeKey)) || {};
 
@@ -243,7 +241,7 @@ const ConfigFile = {
       provData.config = _.get(newData, "Config", {});
     }
 
-    if (queriesMergeOption === "0") {
+    if (queriesMergeOption === "merge") {
       // merge based on `query`
       var newQueries = _.map(
         _.get(newData, "Queries", []),
@@ -259,7 +257,7 @@ const ConfigFile = {
           provData.queries.push(newQueries[i]);
         }
       }
-    } else if (queriesMergeOption === "1") {
+    } else if (queriesMergeOption === "override") {
       // override
       provData.queries = _.map(
         _.get(newData, "Queries", []),

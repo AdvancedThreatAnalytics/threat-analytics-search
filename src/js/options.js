@@ -215,7 +215,9 @@ var SettingsTab = {
         await SettingsTab.injectData(MERGE_OPTIONS, "merge-options");
 
         // Initialize tooltips.
-        let popovers = document.querySelectorAll("[data-title]");
+        let popovers = document.querySelectorAll(
+          "main section[data-tab='settings'] [data-title]"
+        );
         _.each(popovers, (popover) => new BSN.Tooltip(popover));
 
         // Initialize dropdowns.
@@ -281,7 +283,9 @@ var SettingsTab = {
     const items = _.map(settings, function (item) {
       var value =
         item.type === "dropdown"
-          ? item.menuItems[_.get(data, item.key, 0)]
+          ? MERGE_DROPDOWN_ITEMS.find(
+              (menuItem) => menuItem.itemKey === _.get(data, item.key, "merge")
+            ).itemLabel
           : _.get(data, item.key);
 
       return _.assignIn(
@@ -291,9 +295,6 @@ var SettingsTab = {
           isDropdown: item.type === "dropdown",
           value: value || "",
           checked: value === true || value === "true" ? "checked" : "",
-          index: function () {
-            return item.menuItems.indexOf(this);
-          },
         },
         item
       );
@@ -321,12 +322,11 @@ var SettingsTab = {
       await LocalStore.setOne(StoreKey.SETTINGS, newSettings);
 
       // Update context menu
-      mainConfigurationUpdated();
+      mainConfigurationUpdated(true);
     }
   },
 
   onDropdownSelect: async function (event) {
-    console.log(event);
     event.preventDefault();
     var targetName = _.get(event, "target.name");
 
@@ -359,7 +359,10 @@ var SettingsTab = {
       'form[name="settings"] .dropdown-toggle'
     );
     _.each(dropdownItems, function (dropdown) {
-      var value = MERGE_DROPDOWN_ITEMS[_.get(settings, dropdown.name, "0")];
+      var value = MERGE_DROPDOWN_ITEMS.find(
+        (menuItem) =>
+          menuItem.itemKey === _.get(settings, dropdown.name, "merge")
+      ).itemLabel;
       document.getElementById("settings_" + dropdown.name).innerHTML = value;
     });
 

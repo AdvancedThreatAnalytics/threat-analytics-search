@@ -128,7 +128,11 @@ export const NWI_CONFIG = [
   },
 ];
 
-export const MERGE_DROPDOWN_ITEMS = ["Merge", "Override", "Ignore"];
+export const MERGE_DROPDOWN_ITEMS = [
+  { itemKey: "merge", itemLabel: "Merge" },
+  { itemKey: "override", itemLabel: "Override" },
+  { itemKey: "ignore", itemLabel: "Ignore" },
+];
 
 export const MERGE_OPTIONS = [
   {

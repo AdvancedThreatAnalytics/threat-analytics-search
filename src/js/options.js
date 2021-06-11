@@ -216,9 +216,15 @@ var SettingsTab = {
 
         // Initialize tooltips.
         let popovers = document.querySelectorAll(
-          "main section[data-tab='settings'] [data-title]"
+          "main section[data-tab='settings'] [data-toggle='tooltip']"
         );
-        _.each(popovers, (popover) => new BSN.Tooltip(popover));
+        _.each(popovers, (popover) => {
+          const providers = popover.id === "mergeSearchProviders" ? "search providers" : "queries";
+          new BSN.Tooltip(popover, {
+            customClass: "ml-1",
+            title: `<div class='text-left'><div><strong>Merge:</strong> Adds ${providers} that aren't already in current list of ${providers}.</div><div><strong>Override:</strong> Replaces local ${providers} with new settings.</div><div><strong>Ignore:</strong> Keeps current list and ignores any incoming changes.</div></div>`
+          })
+        });
 
         // Initialize dropdowns.
         let dropdowns = document.querySelectorAll(

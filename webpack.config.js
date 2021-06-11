@@ -2,10 +2,9 @@ const path = require("path");
 const bomPlugin = require("webpack-utf8-bom");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const webpack = require("webpack");
+const Dotenv = require('dotenv-webpack');
 
-module.exports = {
-  mode: "production",
+module.exports = (env) => ({
   entry: {
     background: "./src/background.js",
     "js/migration": "./src/js/migration.js",
@@ -66,10 +65,8 @@ module.exports = {
       ],
     }),
     new bomPlugin(true),
-    new webpack.DefinePlugin({
-      "process.env.MIXPANEL_TOKEN": JSON.stringify(
-        "bf3d97d87d23b7e6cc636c5159c1e90d"
-      ),
+    new Dotenv({
+      path: `./${env.mode}.env`,
     }),
   ],
   optimization: {
@@ -81,4 +78,4 @@ module.exports = {
       },
     },
   },
-};
+});

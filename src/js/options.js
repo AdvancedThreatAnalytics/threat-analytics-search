@@ -128,7 +128,7 @@ var Header = {
     },
   ],
 
-  DEFAULT_TAB: "settings",
+  DEFAULT_TAB: "search-providers",
 
   update: function (params) {
     var current = _.get(params, "current") || Header.DEFAULT_TAB;
@@ -219,11 +219,14 @@ var SettingsTab = {
           "main section[data-tab='settings'] [data-toggle='tooltip']"
         );
         _.each(popovers, (popover) => {
-          const providers = popover.id === "mergeSearchProviders" ? "search providers" : "queries";
+          const providers =
+            popover.id === "mergeSearchProviders"
+              ? "search providers"
+              : "queries";
           new BSN.Tooltip(popover, {
             customClass: "ml-1",
-            title: `<div class='text-left'><div><strong>Merge:</strong> Adds ${providers} that aren't already in current list of ${providers}.</div><div><strong>Override:</strong> Replaces local ${providers} with new settings.</div><div><strong>Ignore:</strong> Keeps current list and ignores any incoming changes.</div></div>`
-          })
+            title: `<div class='text-left'><div><strong>Merge:</strong> Adds ${providers} that aren't already in current list of ${providers}.</div><div><strong>Override:</strong> Replaces local ${providers} with new settings.</div><div><strong>Ignore:</strong> Keeps current list and ignores any incoming changes.</div></div>`,
+          });
         });
 
         // Initialize dropdowns.

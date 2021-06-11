@@ -8,8 +8,14 @@ const analytics = {
     });
   },
 
-  track: function (name, properties) {
-    mixpanel.track(name, properties);
+  initAndTrack: function (name, properties) {
+    mixpanel.init("bf3d97d87d23b7e6cc636c5159c1e90d", {
+      api_host: "https://api.mixpanel.com",
+      ignore_dnt: true,
+      loaded: function (mixpanel) {
+        mixpanel.track(name, properties);
+      },
+    });
   },
 
   register: function (properties) {

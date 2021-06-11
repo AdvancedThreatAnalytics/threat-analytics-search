@@ -19,8 +19,8 @@ chrome.runtime.onInstalled.addListener(async function (details) {
   var previous = _.get(details, "previousVersion");
   var properties = { "Current Version": chrome.runtime.getManifest().version };
 
-  Analytics.init();
-  Analytics.register(properties);
+  //Analytics.init();
+  //Analytics.register(properties);
 
   if (!_.isEmpty(previous) && previous.split(".")[0] === "4") {
     // Open migration screen.
@@ -48,7 +48,7 @@ chrome.runtime.onInstalled.addListener(async function (details) {
     ContextualMenu.update();
   }
 
-  Analytics.track("install", properties);
+  Analytics.initAndTrack("install", properties);
 });
 
 // Startup handler.
@@ -331,7 +331,7 @@ var ContextualMenu = {
 
       var index = settings.enableAdjacentTabs ? tab.index + 1 : null;
 
-      Analytics.track("menuitem", {
+      Analytics.initAndTrack("menuitem", {
         Type: "provider",
         Url: targetURL,
         "Selection Text": info.selectionText,

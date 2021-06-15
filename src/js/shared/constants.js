@@ -28,6 +28,22 @@ export const StoreKey = {
   SETTINGS: "settings",
 };
 
+export const CONFIG_FILE_OPTIONS = [
+  { key: "configurationURL", label: "File URL", type: "input" },
+  { key: "configEncrypted", label: "Encrypted", type: "checkbox" },
+  { key: "configEncryptionKey", label: "Encryption Key", type: "input" },
+  {
+    key: "autoUpdateConfig",
+    label: "Update periodically (once per week)",
+    type: "checkbox",
+  },
+  {
+    key: "lastConfigUpdate",
+    label: "Last Updated on:",
+    type: "text",
+  },
+];
+
 export const CBC_CONFIG = [
   {
     key: "CBCConfigEnable",
@@ -112,6 +128,60 @@ export const NWI_CONFIG = [
   },
 ];
 
+// TODO: Should rename field names to just 'key' and 'label'.
+export const MERGE_DROPDOWN_ITEMS = [
+  { itemKey: "merge", itemLabel: "Merge" },
+  { itemKey: "override", itemLabel: "Override" },
+  { itemKey: "ignore", itemLabel: "Ignore" },
+];
+
+export const MERGE_OPTIONS = [
+  {
+    key: "mergeSearchProviders",
+    label: "Search Providers",
+    type: "dropdown",
+    menuItems: MERGE_DROPDOWN_ITEMS,
+  },
+  {
+    key: "mergeGroups",
+    label: "Override Group names",
+    type: "checkbox",
+  },
+  {
+    key: "mergeRSA.config",
+    label: "Override Security Analytics Configuration",
+    type: "checkbox",
+  },
+  {
+    key: "mergeRSA.queries",
+    label: "Security Analytics Queries",
+    type: "dropdown",
+    menuItems: MERGE_DROPDOWN_ITEMS,
+  },
+  {
+    key: "mergeNWI.config",
+    label: "Override Netwitness Configuration",
+    type: "checkbox",
+  },
+  {
+    key: "mergeNWI.queries",
+    label: "Netwitness Queries",
+    type: "dropdown",
+    menuItems: MERGE_DROPDOWN_ITEMS,
+  },
+  {
+    key: "mergeCBC.config",
+    label: "Override Carbon Black Configuration",
+    type: "checkbox",
+  },
+  {
+    key: "mergeCBC.queries",
+    label: "Carbon Black Queries",
+    type: "dropdown",
+    menuItems: MERGE_DROPDOWN_ITEMS,
+  },
+];
+
 export const NWI_RANGE_LENGTH = 4;
 
 export const RSA_CONFIG = [
@@ -175,6 +245,34 @@ export const RSA_CONFIG = [
 
 export const RSA_RANGE_LENGTH = 4;
 
+export const SEARCH_RESULT_OPTIONS = [
+  {
+    key: "useGroups",
+    label: "Enable groups",
+    type: "checkbox",
+  },
+  {
+    key: "resultsInBackgroundTab",
+    label: "Open results in a background tab",
+    type: "checkbox",
+  },
+  {
+    key: "enableAdjacentTabs",
+    label: "The new tab should be next to the current tab",
+    type: "checkbox",
+  },
+  {
+    key: "openGroupsInNewWindow",
+    label: "Open group tabs in new window",
+    type: "checkbox",
+  },
+  {
+    key: "enableOptionsMenuItem",
+    label: "Show link to extension options at the end of context menu",
+    type: "checkbox",
+  },
+];
+
 export const EXPORT_FILE_NAME = "Settings.json";
 
 export default {
@@ -182,9 +280,13 @@ export default {
   BasicConfig,
   StoreKey,
   CBC_CONFIG,
+  CONFIG_FILE_OPTIONS,
+  MERGE_DROPDOWN_ITEMS,
+  MERGE_OPTIONS,
   NWI_CONFIG,
   NWI_RANGE_LENGTH,
   RSA_CONFIG,
   RSA_RANGE_LENGTH,
+  SEARCH_RESULT_OPTIONS,
   EXPORT_FILE_NAME,
 };

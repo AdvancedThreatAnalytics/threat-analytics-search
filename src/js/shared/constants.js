@@ -128,6 +128,7 @@ export const NWI_CONFIG = [
   },
 ];
 
+// TODO: Should rename field names to just 'key' and 'label'.
 export const MERGE_DROPDOWN_ITEMS = [
   { itemKey: "merge", itemLabel: "Merge" },
   { itemKey: "override", itemLabel: "Override" },

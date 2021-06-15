@@ -120,7 +120,7 @@ const ConfigFile = {
 
   parseJSONFile: async function (newData, overrideConfig) {
     // Update main settings.
-    var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+    const settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
 
     // - Update basic settings (if need).
     if (overrideConfig && !_.isEmpty(newData.config)) {
@@ -128,13 +128,13 @@ const ConfigFile = {
     }
 
     // - Update group names in the local store (if need).
-    var groups = newData.groups;
-    if (settings.useGroups && !_.isEmpty(groups) && settings.mergeGroups) {
+    const groups = newData.groups;
+    if (settings.mergeGroups && !_.isEmpty(groups)) {
       if (_.isEmpty(settings.providersGroups)) {
         settings.providersGroups = ConfigFile.parseGroups(groups);
       } else {
         for (
-          var k = 0;
+          let k = 0;
           k < groups.length && k < settings.providersGroups.length;
           k++
         ) {
@@ -150,17 +150,23 @@ const ConfigFile = {
 
     // Update search providers.
     // - Get menu items (with current search providers).
-    var searchProviders =
+    let searchProviders =
       (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
 
-    var newProviders = _.map(newData.searchproviders, ConfigFile.parseProvider);
-
-    // - Check if the new list of search providers are already included on the list of menu items.
-    var mergeProviderOption = _.get(settings, "mergeSearchProviders", "merge");
+    // - Check if the new list of search providers should be merged or should override current values.
+    const newProviders = _.map(
+      newData.searchproviders,
+      ConfigFile.parseProvider
+    );
+    const mergeProviderOption = _.get(
+      settings,
+      "mergeSearchProviders",
+      "merge"
+    );
     if (mergeProviderOption === "merge") {
-      // merge new providers based on `link`
-      for (var i = 0; i < newProviders.length; i++) {
-        // Check if the search provider wasn't already included (and add it if not).
+      1;
+      for (let i = 0; i < newProviders.length; i++) {
+        // Check if the search provider isn't already included by comparing the 'link' (and add it if not).
         if (
           !_.find(searchProviders, function (provider) {
             return provider.link === newProviders[i].link;
@@ -170,9 +176,11 @@ const ConfigFile = {
         }
       }
     } else if (mergeProviderOption === "override") {
-      // override
+      // Override current providers with new ones.
       searchProviders = newProviders;
     }
+
+    // - Save list of search providers.
     await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, searchProviders);
 
     // Update configuration values and queries for RSA, NWI and CBC.
@@ -231,24 +239,25 @@ const ConfigFile = {
   },
 
   parseSpecialProvider: async function (storeKey, newData, mergeKey) {
-    var settings = await LocalStore.getOne(StoreKey.SETTINGS);
-    var shouldOverrideConfig = _.get(settings, mergeKey + ".config", false);
-    var queriesMergeOption = _.get(settings, mergeKey + ".queries", "merge");
+    const settings = await LocalStore.getOne(StoreKey.SETTINGS);
+    const shouldOverrideConfig = _.get(settings, mergeKey + ".config", false);
+    const queriesMergeOption = _.get(settings, mergeKey + ".queries", "merge");
 
-    var provData = (await LocalStore.getOne(storeKey)) || {};
+    const provData = (await LocalStore.getOne(storeKey)) || {};
 
+    // Override configuration (if need)
     if (shouldOverrideConfig) {
       provData.config = _.get(newData, "Config", {});
     }
 
+    // Check if queries should be merged or overriden.
+    const newQueries = _.map(
+      _.get(newData, "Queries", []),
+      ConfigFile.parseQuery
+    );
     if (queriesMergeOption === "merge") {
-      // merge based on `query`
-      var newQueries = _.map(
-        _.get(newData, "Queries", []),
-        ConfigFile.parseQuery
-      );
-
-      for (var i = 0; i < newQueries.length; i++) {
+      for (let i = 0; i < newQueries.length; i++) {
+        // Check if the query isn't already included by comparing the 'query' (and add it if not).
         if (
           !_.find(provData.queries, function (data) {
             return data.query === newQueries[i].query;
@@ -258,13 +267,7 @@ const ConfigFile = {
         }
       }
     } else if (queriesMergeOption === "override") {
-      // override
-      provData.queries = _.map(
-        _.get(newData, "Queries", []),
-        ConfigFile.parseQuery
-      );
-    } else {
-      // ignore
+      provData.queries = newQueries;
     }
 
     return LocalStore.setOne(storeKey, provData);

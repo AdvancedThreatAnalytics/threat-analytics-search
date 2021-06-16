@@ -202,13 +202,15 @@ const ConfigFile = {
   },
 
   parseBasicSettings: function (configArray) {
-    var config = _.get(configArray, "0");
+    const config = _.get(configArray, "0");
     if (!_.isEmpty(config) && config.length >= 5) {
+      const useGroups =
+        config[BasicConfig.USE_GROUPS] === true ||
+        config[BasicConfig.USE_GROUPS] === "true";
+
       return {
         configurationURL: config[BasicConfig.CONFIG_URL],
-        useGroups:
-          config[BasicConfig.USE_GROUPS] === true ||
-          config[BasicConfig.USE_GROUPS] === "true",
+        useGroups: useGroups,
         configEncrypted:
           config[BasicConfig.ENCRYPTED] === true ||
           config[BasicConfig.ENCRYPTED] === "true",
@@ -221,6 +223,12 @@ const ConfigFile = {
         enableAdjacentTabs: true,
         openGroupsInNewWindow: true,
         enableOptionsMenuItem: true,
+
+        mergeGroups: useGroups,
+        mergeSearchProviders: "merge",
+        mergeCBC: { config: false, queries: "merge" },
+        mergeNWI: { config: false, queries: "merge" },
+        mergeRSA: { config: false, queries: "merge" },
       };
     }
     return {};

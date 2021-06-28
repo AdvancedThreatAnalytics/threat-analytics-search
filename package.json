@@ -39,7 +39,6 @@
     "lodash": "^4.17.21",
     "luxon": "^1.26.0",
     "md5": "^2.3.0",
-    "mixpanel-browser": "^2.41.0",
     "mustache": "^4.2.0",
     "notiflix": "^2.7.0",
     "sortablejs": "^1.13.0"

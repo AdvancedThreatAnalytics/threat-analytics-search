@@ -1,25 +1,30 @@
-import mixpanel from "mixpanel-browser";
+import { MiscURLs } from "./constants";
 
 const analytics = {
-  init: function () {
-    mixpanel.init(process.env.MIXPANEL_TOKEN, {
-      api_host: "https://api.mixpanel.com",
-      ignore_dnt: true,
-    });
-  },
-
-  initAndTrack: function (name, properties) {
-    mixpanel.init("bf3d97d87d23b7e6cc636c5159c1e90d", {
-      api_host: "https://api.mixpanel.com",
-      ignore_dnt: true,
-      loaded: function (mixpanel) {
-        mixpanel.track(name, properties);
+  track: function (event, properties) {
+    const encodedParams = new URLSearchParams();
+    encodedParams.set(
+      "data",
+      JSON.stringify({
+        event,
+        properties: {
+          ...properties,
+          distinct_id: "" + chrome.runtime.id,
+          token: "" + process.env.MIXPANEL_TOKEN,
+        },
+      })
+    );
+    const options = {
+      method: "POST",
+      headers: {
+        Accept: "text/plain",
+        "Content-Type": "application/x-www-form-urlencoded",
       },
-    });
-  },
-
-  register: function (properties) {
-    mixpanel.register(properties);
+      body: encodedParams,
+    };
+    fetch(MiscURLs.MIXPANEL_TRACK_URL, options).catch((err) =>
+      console.error("error:" + err)
+    );
   },
 };
 

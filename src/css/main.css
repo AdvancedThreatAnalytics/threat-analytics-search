@@ -46,13 +46,13 @@ html.page-options h3 {
 }
 
 .sortable:nth-child(even) {
-  background-color: #F4F4F4;
+  background-color: #f4f4f4;
 }
 .sortable-chosen,
 .sortable.sortable-chosen {
-  background-color: #DFD;
+  background-color: #dfd;
 }
 .sortable-ghost,
 .sortable.sortable-ghost {
-  background-color: #DDF;
+  background-color: #ddf;
 }

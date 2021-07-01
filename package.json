@@ -7,16 +7,18 @@
   "private": true,
   "scripts": {
     "build": "webpack --config webpack.config.js",
+    "build:dev": "webpack --env mode=dev --mode=development --config webpack.config.js",
     "build:zip": "yarn run build && yarn run zip",
     "lint": "eslint src",
     "lint:fix": "prettier --write src && eslint src --fix",
-    "live": "webpack --config webpack.config.js --watch",
+    "live": "webpack --env mode=dev --mode=development --config webpack.config.js --watch",
     "zip": "bestzip dist.zip dist/*"
   },
   "devDependencies": {
     "bestzip": "^2.2.0",
     "copy-webpack-plugin": "^8.1.1",
     "css-loader": "^5.2.4",
+    "dotenv-webpack": "^7.0.3",
     "eslint": "^7.25.0",
     "eslint-config-prettier": "^8.3.0",
     "file-loader": "^6.2.0",

@@ -1,10 +1,10 @@
 const path = require("path");
-const bomPlugin = require('webpack-utf8-bom');
+const bomPlugin = require("webpack-utf8-bom");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const Dotenv = require('dotenv-webpack');
 
-module.exports = {
-  mode: "production",
+module.exports = (env) => ({
   entry: {
     background: "./src/background.js",
     "js/migration": "./src/js/migration.js",
@@ -31,19 +31,19 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/options.html',
+      template: "./src/options.html",
       filename: "options.html",
-      chunks: ['js/options']
+      chunks: ["js/options"],
     }),
     new HtmlWebpackPlugin({
-      template: './src/postHandler.html',
+      template: "./src/postHandler.html",
       filename: "postHandler.html",
-      chunks: ['js/postHandler']
+      chunks: ["js/postHandler"],
     }),
     new HtmlWebpackPlugin({
-      template: './src/migration.html',
+      template: "./src/migration.html",
       filename: "migration.html",
-      chunks: ['js/migration']
+      chunks: ["js/migration"],
     }),
     new CopyWebpackPlugin({
       patterns: [
@@ -51,7 +51,12 @@ module.exports = {
           // Copy assets from 'src/' and settings file to 'dist/' folder.
           from: path.join(__dirname, "src/"),
           globOptions: {
-            ignore: ["**/*.+(css|js)", '**/migration.html', '**/options.html', '**/postHandler.html'],
+            ignore: [
+              "**/*.+(css|js)",
+              "**/migration.html",
+              "**/options.html",
+              "**/postHandler.html",
+            ],
           },
         },
         {
@@ -59,7 +64,10 @@ module.exports = {
         },
       ],
     }),
-    new bomPlugin(true)
+    new bomPlugin(true),
+    new Dotenv({
+      path: `./${env.mode}.env`,
+    }),
   ],
   optimization: {
     minimize: true,
@@ -70,4 +78,4 @@ module.exports = {
       },
     },
   },
-};
+});

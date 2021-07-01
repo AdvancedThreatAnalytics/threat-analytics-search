@@ -17,7 +17,6 @@ import Analytics from "./js/shared/analytics";
 chrome.runtime.onInstalled.addListener(async function (details) {
   // Check if migration script should be run.
   var previous = _.get(details, "previousVersion");
-  var properties = { "Current Version": chrome.runtime.getManifest().version };
 
   if (!_.isEmpty(previous) && previous.split(".")[0] === "4") {
     // Open migration screen.
@@ -25,7 +24,6 @@ chrome.runtime.onInstalled.addListener(async function (details) {
       url: "migration.html?previous=" + previous,
       selected: true,
     });
-    properties["Previous Version"] = previous;
   } else {
     // Open welcome screen.
     chrome.tabs.create({
@@ -45,7 +43,10 @@ chrome.runtime.onInstalled.addListener(async function (details) {
     ContextualMenu.update();
   }
 
-  Analytics.track("install", properties);
+  Analytics.track("install", {
+    "Current Version": chrome.runtime.getManifest().version,
+    "Previous Version": previous,
+  });
 });
 
 // Startup handler.

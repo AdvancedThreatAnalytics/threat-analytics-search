@@ -121,10 +121,9 @@ function migrateGeneralSettings(defaultFile) {
 function migrateSearchProviders(defaultFile) {
   return LocalStore.setOne(
     StoreKey.SEARCH_PROVIDERS,
-    _.map(
+    ConfigFile.parseProviders(
       tryJSONparse(Storage.getItem("_allsearch")) ||
-        _.get(defaultFile, "searchproviders", []),
-      ConfigFile.parseProvider
+        _.get(defaultFile, "searchproviders", [])
     )
   );
 }
@@ -140,10 +139,9 @@ function migrateSpecialProvider(
     config:
       tryJSONparse(Storage.getItem(configKey)) ||
       _.get(defaultFile, `${fileKey}.Config`, {}),
-    queries: _.map(
+    queries: ConfigFile.parseQueries(
       tryJSONparse(Storage.getItem(queryKey)) ||
-        _.get(defaultFile, `${fileKey}.Queries`, []),
-      ConfigFile.parseQuery
+        _.get(defaultFile, `${fileKey}.Queries`, [])
     ),
   });
 }

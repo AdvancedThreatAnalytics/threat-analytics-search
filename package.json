@@ -6,7 +6,7 @@
   "repository": "https://github.com/AdvancedThreatAnalytics/threat-analytics-search.git",
   "private": true,
   "scripts": {
-    "build": "webpack --config webpack.config.js",
+    "build": "webpack --env mode=prod --mode=production --config webpack.config.js",
     "build:dev": "webpack --env mode=dev --mode=development --config webpack.config.js",
     "build:zip": "yarn run build && yarn run zip",
     "lint": "eslint src",

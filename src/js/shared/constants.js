@@ -12,14 +12,6 @@ export const MiscURLs = {
   MIXPANEL_TRACK_URL: "https://api.mixpanel.com/track#live-event",
 };
 
-export const BasicConfig = {
-  CONFIG_URL: 0,
-  USE_GROUPS: 1,
-  ENCRYPTED: 2,
-  ENCRIPTION_KEY: 3,
-  AUTO_UPDATE: 4,
-};
-
 export const StoreKey = {
   CARBON_BLACK: "carbon_black",
   LAST_CONFIG_DATA: "last_config_data",
@@ -278,7 +270,6 @@ export const EXPORT_FILE_NAME = "Settings.json";
 
 export default {
   MiscURLs,
-  BasicConfig,
   StoreKey,
   CBC_CONFIG,
   CONFIG_FILE_OPTIONS,

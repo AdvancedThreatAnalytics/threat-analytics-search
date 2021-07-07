@@ -16,8 +16,12 @@ import {
   MiscURLs,
   StoreKey,
   CBC_CONFIG,
+  CONFIG_FILE_OPTIONS,
+  MERGE_OPTIONS,
+  MERGE_DROPDOWN_ITEMS,
   NWI_CONFIG,
   RSA_CONFIG,
+  SEARCH_RESULT_OPTIONS,
   EXPORT_FILE_NAME,
 } from "./shared/constants";
 
@@ -201,10 +205,47 @@ var SettingsTab = {
   initialize: function () {
     fetch("views/settings.html")
       .then((response) => response.text())
-      .then((htmlData) => {
+      .then(async (htmlData) => {
         // Insert template file.
         document.querySelector('main section[data-tab="settings"]').innerHTML =
           htmlData;
+
+        await SettingsTab.injectData(CONFIG_FILE_OPTIONS, "config");
+        await SettingsTab.injectData(SEARCH_RESULT_OPTIONS, "search-results");
+        await SettingsTab.injectData(MERGE_OPTIONS, "merge-options");
+
+        // Initialize tooltips.
+        let popovers = document.querySelectorAll(
+          "main section[data-tab='settings'] [data-toggle='tooltip']"
+        );
+        _.each(popovers, (popover) => {
+          const providers =
+            popover.id === "mergeSearchProviders"
+              ? "search providers"
+              : "queries";
+          new BSN.Tooltip(popover, {
+            customClass: "ml-1",
+            title: `<div class='text-left'><div><strong>Merge:</strong> Adds ${providers} that aren't already in current list of ${providers}.</div><div><strong>Override:</strong> Replaces local ${providers} with new settings.</div><div><strong>Ignore:</strong> Keeps current list and ignores any incoming changes.</div></div>`,
+          });
+        });
+
+        // Initialize dropdowns.
+        let dropdowns = document.querySelectorAll(
+          "[data-bs-toggle='dropdown']",
+          false
+        );
+        _.each(dropdowns, (dropdown) => {
+          let dropdownItems =
+            dropdown.parentElement.querySelectorAll(".dropdown-item");
+          dropdown = new BSN.Dropdown(dropdown);
+          _.each(dropdownItems, function (item) {
+            item.addEventListener("click", function (event) {
+              SettingsTab.onDropdownSelect(event);
+              dropdown.toggle();
+            });
+          });
+          return dropdown;
+        });
 
         // Add click/change behaviors.
         document
@@ -246,8 +287,40 @@ var SettingsTab = {
       });
   },
 
+  injectData: async function (settings, divId) {
+    var data = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+    const items = _.map(settings, function (item) {
+      var value =
+        item.type === "dropdown"
+          ? MERGE_DROPDOWN_ITEMS.find(
+              (menuItem) => menuItem.itemKey === _.get(data, item.key, "merge")
+            ).itemLabel
+          : _.get(data, item.key);
+
+      return _.assignIn(
+        {
+          isCheckbox: item.type === "checkbox",
+          isInput: item.type === "input",
+          isDropdown: item.type === "dropdown",
+          value: value || "",
+          checked: value === true || value === "true" ? "checked" : "",
+        },
+        item
+      );
+    });
+    // Replace link template.
+    var template = document.getElementById(
+      "template_generic-settings"
+    ).innerHTML;
+    var rendered = Mustache.render(template, {
+      items,
+    });
+    document.getElementById(divId).innerHTML = rendered;
+  },
+
   onInputChanged: async function (event) {
     var targetName = _.get(event, "target.name");
+
     if (!_.isEmpty(targetName)) {
       var newSettings =
         _.clone(await LocalStore.getOne(StoreKey.SETTINGS)) || {};
@@ -259,6 +332,21 @@ var SettingsTab = {
 
       // Update context menu
       mainConfigurationUpdated(true);
+    }
+  },
+
+  onDropdownSelect: async function (event) {
+    event.preventDefault();
+    var targetName = _.get(event, "target.name");
+
+    if (!_.isEmpty(targetName)) {
+      var newSettings =
+        _.clone(await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      newSettings[targetName] = event.target.value;
+      await LocalStore.setOne(StoreKey.SETTINGS, newSettings);
+
+      // Update The UI
+      SettingsTab.updateForms();
     }
   },
 
@@ -274,6 +362,17 @@ var SettingsTab = {
       } else {
         input.value = value;
       }
+    });
+
+    var dropdownItems = document.querySelectorAll(
+      'form[name="settings"] .dropdown-toggle'
+    );
+    _.each(dropdownItems, function (dropdown) {
+      var value = MERGE_DROPDOWN_ITEMS.find(
+        (menuItem) =>
+          menuItem.itemKey === _.get(settings, dropdown.name, "merge")
+      ).itemLabel;
+      document.getElementById("settings_" + dropdown.name).innerHTML = value;
     });
 
     // Update 'last update' text.

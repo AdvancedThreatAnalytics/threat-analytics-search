@@ -67,20 +67,22 @@ document.addEventListener("DOMContentLoaded", async function () {
 });
 
 function migrateGeneralSettings(defaultFile) {
-  var defaultBasic = ConfigFile.parseBasicSettings(defaultFile.config);
-  var defaultGroups = ConfigFile.parseGroups(defaultFile.groups);
+  const defaultBasic = ConfigFile.parseBasicSettings(defaultFile.config);
+  const defaultGroups = ConfigFile.parseGroups(defaultFile.groups);
 
   // If previous URL is empty or has a deprecated value change it to default.
-  var configUrl = Storage.getItem("_configUrl");
+  let configUrl = Storage.getItem("_configUrl");
   if (_.isEmpty(configUrl) || OBSOLETES_CONFIG_URL.indexOf(configUrl) >= 0) {
     configUrl = defaultBasic.configurationURL;
   }
 
+  const useGroups =
+    Storage.getItem("_configUseGroups") === "true" ||
+    _.get(defaultBasic, "useGroups", false);
+
   return LocalStore.setOne(StoreKey.SETTINGS, {
     configurationURL: configUrl,
-    useGroups:
-      Storage.getItem("_configUseGroups") === "true" ||
-      _.get(defaultBasic, "useGroups", false),
+    useGroups: useGroups,
     configEncrypted: Storage.getItem("_configEnc") === "true",
     configEncryptionKey: Storage.getItem("_configEncKey") || null,
     autoUpdateConfig:
@@ -107,16 +109,21 @@ function migrateGeneralSettings(defaultFile) {
     enableAdjacentTabs: Storage.getItem("_asknext") !== "false",
     openGroupsInNewWindow: Storage.getItem("_asknewwindow") !== "false",
     enableOptionsMenuItem: Storage.getItem("_askoptions") !== "false",
+
+    mergeGroups: useGroups,
+    mergeSearchProviders: "merge",
+    mergeCBC: { config: false, queries: "merge" },
+    mergeNWI: { config: false, queries: "merge" },
+    mergeRSA: { config: false, queries: "merge" },
   });
 }
 
 function migrateSearchProviders(defaultFile) {
   return LocalStore.setOne(
     StoreKey.SEARCH_PROVIDERS,
-    _.map(
+    ConfigFile.parseProviders(
       tryJSONparse(Storage.getItem("_allsearch")) ||
-        _.get(defaultFile, "searchproviders", []),
-      ConfigFile.parseProvider
+        _.get(defaultFile, "searchproviders", [])
     )
   );
 }
@@ -132,10 +139,9 @@ function migrateSpecialProvider(
     config:
       tryJSONparse(Storage.getItem(configKey)) ||
       _.get(defaultFile, `${fileKey}.Config`, {}),
-    queries: _.map(
+    queries: ConfigFile.parseQueries(
       tryJSONparse(Storage.getItem(queryKey)) ||
-        _.get(defaultFile, `${fileKey}.Queries`, []),
-      ConfigFile.parseQuery
+        _.get(defaultFile, `${fileKey}.Queries`, [])
     ),
   });
 }

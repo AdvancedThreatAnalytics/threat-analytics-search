@@ -11,11 +11,13 @@ import {
 import { getGroupProviders, getProviderTargetURL } from "./js/shared/misc";
 import ConfigFile from "./js/shared/config_file";
 import LocalStore from "./js/shared/local_store";
+import Analytics from "./js/shared/analytics";
 
 // Install handler.
 chrome.runtime.onInstalled.addListener(async function (details) {
   // Check if migration script should be run.
   var previous = _.get(details, "previousVersion");
+
   if (!_.isEmpty(previous) && previous.split(".")[0] === "4") {
     // Open migration screen.
     chrome.tabs.create({
@@ -40,6 +42,11 @@ chrome.runtime.onInstalled.addListener(async function (details) {
     // Update contextual menu.
     ContextualMenu.update();
   }
+
+  Analytics.track("install", {
+    "Current Version": chrome.runtime.getManifest().version,
+    "Previous Version": previous,
+  });
 });
 
 // Startup handler.
@@ -322,6 +329,12 @@ var ContextualMenu = {
 
       var index = settings.enableAdjacentTabs ? tab.index + 1 : null;
 
+      Analytics.track("menuitem", {
+        Type: "provider",
+        Url: targetURL,
+        "Selection Text": info.selectionText,
+      });
+
       chrome.tabs.create({
         url: targetURL,
         selected: !settings.resultsInBackgroundTab,
@@ -338,6 +351,13 @@ var ContextualMenu = {
     var groupItems = getGroupProviders(groupIndex, providers);
     var urls = _.map(groupItems, function (provider) {
       return getProviderTargetURL(provider, info.selectionText);
+    });
+
+    // Send mixpanel event.
+    Analytics.track("menuitem", {
+      Type: "group",
+      Urls: urls,
+      "Selection Text": info.selectionText,
     });
 
     if (settings.openGroupsInNewWindow) {
@@ -383,6 +403,13 @@ var ContextualMenu = {
         "&" +
         query +
         "&sort=start%20desc&rows=10&start=0";
+
+      // Send mixpanel event.
+      Analytics.track("menuitem", {
+        Type: "cbc",
+        Query: query,
+        "Selection Text": info.selectionText,
+      });
 
       if (config.CBCConfigPopup) {
         showPopupMessage("Carbon Black", url);
@@ -461,6 +488,13 @@ var ContextualMenu = {
         showPopupMessage("NetWitness Investigator", url);
       }
 
+      // Send mixpanel event.
+      Analytics.track("menuitem", {
+        Type: "nwi",
+        Query: query,
+        "Selection Text": info.selectionText,
+      });
+
       chrome.tabs.create({
         url: url,
       });
@@ -507,6 +541,13 @@ var ContextualMenu = {
       if (config.RSAConfigPopup) {
         showPopupMessage("RSA Security Analytics", url);
       }
+
+      // Send mixpanel event.
+      Analytics.track("menuitem", {
+        Type: "rsa",
+        Query: query,
+        "Selection Text": info.selectionText,
+      });
 
       chrome.tabs.create({
         url: url,

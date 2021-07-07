@@ -2,14 +2,17 @@
   "env": {
     "browser": true,
     "es2021": true,
+    "webextensions": true,
     "node": true,
-    "webextensions": true
+    "jest": true
   },
-  "extends": ["eslint:recommended", "prettier"],
+  "extends": [
+    "eslint:recommended",
+    "prettier"
+  ],
   "parserOptions": {
     "ecmaVersion": 12,
     "sourceType": "module"
   },
-  "rules": {
-  }
+  "rules": {}
 }

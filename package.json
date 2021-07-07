@@ -12,6 +12,7 @@
     "lint": "eslint src",
     "lint:fix": "prettier --write src && eslint src --fix",
     "live": "webpack --env mode=dev --mode=development --config webpack.config.js --watch",
+    "test:e2e": "jest e2e",
     "zip": "bestzip dist.zip dist/*"
   },
   "devDependencies": {
@@ -34,12 +35,15 @@
     "aes-js": "^3.1.2",
     "bootstrap": "^4.6.0",
     "bootstrap.native": "^3.0.15",
+    "jest": "^27.0.6",
+    "jest-puppeteer": "^5.0.4",
     "js-beautify": "^1.13.13",
     "lodash": "^4.17.21",
     "luxon": "^1.26.0",
     "md5": "^2.3.0",
     "mustache": "^4.2.0",
     "notiflix": "^2.7.0",
+    "puppeteer": "^10.1.0",
     "sortablejs": "^1.13.0"
   }
 }

@@ -3,7 +3,7 @@
     [
       -1,
       "Google",
-      "https://www.google.com/search?q=TESTSEARCH",
+      "http://www.google.com/search?q=TESTSEARCH",
       true,
       true,
       3,
@@ -27,7 +27,7 @@
     [
       -1,
       "D - VirusTotal Domain Info",
-      "https://www.virustotal.com/gui/domain/%s/detection",
+      "https://www.virustotal.com/en/domain/%s/information/",
       true,
       true,
       2,
@@ -39,7 +39,7 @@
     [
       -1,
       "D - WHOIS DNS Info",
-      "https://who.is/whois/TESTSEARCH",
+      "http://who.is/whois/TESTSEARCH",
       true,
       true,
       2,
@@ -50,8 +50,8 @@
     ],
     [
       -1,
-      "D - McAfee TIE",
-      "https://www.mcafee.com/enterprise/en-in/search.html?q=TESTSEARCH",
+      "D - McAfee TI",
+      "http://www.mcafee.com/threat-intelligence/domain/default.aspx?domain=TESTSEARCH",
       true,
       true,
       2,
@@ -75,7 +75,7 @@
     [
       -1,
       "D - TotalHash",
-      "https://totalhash.cymru.com/search/dnsrr:TESTSEARCH",
+      "http://totalhash.com/search/dnsrr:TESTSEARCH",
       true,
       true,
       2,
@@ -87,7 +87,7 @@
     [
       -1,
       "D - Robtex DNS",
-      "https://www.robtex.com/TESTSEARCH",
+      "https://www.robtex.com/q/y?q=TESTSEARCH",
       true,
       true,
       2,
@@ -147,7 +147,7 @@
     [
       -1,
       "H - TotalHash",
-      "https://totalhash.com/search/av:TESTSEARCH",
+      "http://totalhash.com/search/av:TESTSEARCH",
       true,
       true,
       4,
@@ -207,7 +207,7 @@
     [
       -1,
       "I - VirusTotal IP Info",
-      "https://www.virustotal.com/gui/ip-address/%s/detection/",
+      "https://www.virustotal.com/en/ip-address/%s/information/",
       true,
       true,
       1,
@@ -231,7 +231,7 @@
     [
       -1,
       "I - Anti-Hacker",
-      "https://anti-hacker-alliance.com/index.php?ip=TESTSEARCH",
+      "http://anti-hacker-alliance.com/index.php?ip=TESTSEARCH",
       true,
       true,
       1,
@@ -267,7 +267,7 @@
     [
       -1,
       "RIPE",
-      "https://stat.ripe.net/app/launchpad/TESTSEARCH",
+      "https://stat.ripe.net/TESTSEARCH#tabId=at-a-glance",
       true,
       true,
       3,
@@ -279,7 +279,7 @@
     [
       -1,
       "Google Safe Browsing",
-      "https://transparencyreport.google.com/safe-browsing/search?url=TESTSEARCH",
+      "http://www.google.com/safebrowsing/diagnostic?site=TESTSEARCH",
       true,
       true,
       3,
@@ -382,6 +382,61 @@
       [-1, "Hostname (Has CB Sensor)", "cb.q.hostname=TESTSEARCH", true],
       [-1, "Process or EXE", "cb.q.process_name=TESTSEARCH", true],
       [-1, "MD5 Hash Search", "cb.q.md5=TESTSEARCH", true]
+    ]
+  },
+  "update": {
+    "providers": [
+      {
+        "target": ["http://www.google.com/search?q=TESTSEARCH"],
+        "link": "https://www.google.com/search?q=TESTSEARCH"
+      },
+      {
+        "target": ["https://www.virustotal.com/en/domain/%s/information/"],
+        "link": "https://www.virustotal.com/gui/domain/%s/detection"
+      },
+      {
+        "target": ["http://who.is/whois/TESTSEARCH"],
+        "link": "https://who.is/whois/TESTSEARCH"
+      },
+      {
+        "target": [
+          "http://www.mcafee.com/threat-intelligence/domain/default.aspx?domain=TESTSEARCH"
+        ],
+        "link": "https://www.mcafee.com/enterprise/en-in/search.html?q=TESTSEARCH",
+        "label": "D - McAfee TIE"
+      },
+      {
+        "target": ["http://totalhash.com/search/dnsrr:TESTSEARCH"],
+        "link": "https://totalhash.cymru.com/search/dnsrr:TESTSEARCH"
+      },
+      {
+        "target": ["https://www.robtex.com/q/y?q=TESTSEARCH"],
+        "link": "https://www.robtex.com/TESTSEARCH"
+      },
+
+      {
+        "target": ["http://totalhash.com/search/av:TESTSEARCH"],
+        "link": "https://totalhash.com/search/av:TESTSEARCH"
+      },
+      {
+        "target": ["https://www.virustotal.com/en/ip-address/%s/information/"],
+        "link": "https://www.virustotal.com/gui/ip-address/%s/detection/"
+      },
+
+      {
+        "target": ["http://anti-hacker-alliance.com/index.php?ip=TESTSEARCH"],
+        "link": "https://anti-hacker-alliance.com/index.php?ip=TESTSEARCH"
+      },
+      {
+        "target": ["https://stat.ripe.net/TESTSEARCH#tabId=at-a-glance"],
+        "link": "https://stat.ripe.net/app/launchpad/TESTSEARCH"
+      },
+      {
+        "target": [
+          "http://www.google.com/safebrowsing/diagnostic?site=TESTSEARCH"
+        ],
+        "link": "https://transparencyreport.google.com/safe-browsing/search?url=TESTSEARCH"
+      }
     ]
   }
 }

@@ -16,6 +16,41 @@ import Analytics from "./js/shared/analytics";
 // Install handler.
 chrome.runtime.onInstalled.addListener(installedListener);
 
+export async function installedListener(details) {
+  // Check if migration script should be run.
+  var previous = _.get(details, "previousVersion");
+
+  if (!_.isEmpty(previous) && previous.split(".")[0] === "4") {
+    // Open migration screen.
+    chrome.tabs.create({
+      url: "migration.html?previous=" + previous,
+      selected: true,
+    });
+  } else {
+    // Open welcome screen.
+    chrome.tabs.create({
+      url: MiscURLs.INSTALLED_URL,
+      selected: true,
+    });
+
+    // Sanitize settings with default values.
+    await ConfigFile.sanitizeSettings();
+
+    // If the user is installing for the first time, update settings with newer values.
+    if (_.get(details, "reason") === "install") {
+      await ConfigFile.updateNow();
+    }
+
+    // Update contextual menu.
+    ContextualMenu.update();
+  }
+
+  Analytics.track("install", {
+    "Current Version": _.get(chrome.runtime.getManifest(), "version"),
+    "Previous Version": previous,
+  });
+}
+
 // Startup handler.
 chrome.runtime.onStartup.addListener(function () {
   // Update contextual menu.
@@ -538,39 +573,4 @@ function showPopupMessage(title, message) {
   }
 }
 
-export async function installedListener (details) {
-  // Check if migration script should be run.
-  var previous = _.get(details, "previousVersion");
-
-  if (!_.isEmpty(previous) && previous.split(".")[0] === "4") {
-    // Open migration screen.
-    chrome.tabs.create({
-      url: "migration.html?previous=" + previous,
-      selected: true,
-    });
-  } else {
-    // Open welcome screen.
-    chrome.tabs.create({
-      url: MiscURLs.INSTALLED_URL,
-      selected: true,
-    });
-
-    // Sanitize settings with default values.
-    await ConfigFile.sanitizeSettings();
-
-    // If the user is installing for the first time, update settings with newer values.
-    if (_.get(details, "reason") === "install") {
-      await ConfigFile.updateNow();
-    }
-
-    // Update contextual menu.
-    ContextualMenu.update();
-  }
-
-  Analytics.track("install", {
-    "Current Version": _.get(chrome.runtime.getManifest(), "version"),
-    "Previous Version": previous,
-  });
-}
-
-export default {installedListener}
+export default { installedListener };

@@ -1,9 +1,8 @@
 const chrome = require("sinon-chrome");
+global.chrome = chrome;
+
 const ConfigFile = require("../../src/js/shared/config_file");
 const {MiscURLs} = require("../../src/js/shared/constants");
-// NOTE: this global variable should be declared here,
-// because below files try to access chrome which is not defined.
-global.chrome = chrome;
 const {installedListener} = require("../../src/background");
 
 const sanitizeSettings = jest.spyOn(ConfigFile.default, "sanitizeSettings");

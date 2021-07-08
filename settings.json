@@ -1,5 +1,5 @@
 {
-  "searchproviders":[
+  "searchproviders": [
     [
       -1,
       "Google",
@@ -313,21 +313,12 @@
       ""
     ]
   ],
-  "groups":[
-    [
-      "1",
-      "IP Lookup"
-    ],
-    [
-      "2",
-      "Domain"
-    ],
-    [
-      "3",
-      "Hash"
-    ]
+  "groups": [
+    ["1", "IP Lookup"],
+    ["2", "Domain"],
+    ["3", "Hash"]
   ],
-  "config":[
+  "config": [
     [
       "https://raw.githubusercontent.com/AdvancedThreatAnalytics/threat-analytics-search/main/settings.json",
       "true",
@@ -336,116 +327,116 @@
       "false"
     ]
   ],
-  "RSA":{
-    "Config":{
-      "RSAConfigEnable":false,
-      "RSAConfigPopup":false,
-      "RSAConfigUseHttps":true,
-      "RSAConfigNewTab":true,
-      "RSAConfigHost":"192.168.1.10",
-      "RSAConfigPort":"",
-      "RSAConfigDevId":"2",
-      "RSAConfigRange1":"1",
-      "RSAConfigRange2":"24",
-      "RSAConfigRange3":"48",
-      "RSAConfigRange4":"720"
+  "RSA": {
+    "Config": {
+      "RSAConfigEnable": false,
+      "RSAConfigPopup": false,
+      "RSAConfigUseHttps": true,
+      "RSAConfigNewTab": true,
+      "RSAConfigHost": "192.168.1.10",
+      "RSAConfigPort": "",
+      "RSAConfigDevId": "2",
+      "RSAConfigRange1": "1",
+      "RSAConfigRange2": "24",
+      "RSAConfigRange3": "48",
+      "RSAConfigRange4": "720"
     },
-    "Queries":[
-      [
-        -1,
-        "Search Hostname",
-        "alias.host='TESTSEARCH'",
-        true
-      ],
-      [
-        -1,
-        "Search Source IP",
-        "ip.src=TESTSEARCH",
-        true
-      ],
-      [
-        -1,
-        "Search Destination IP",
-        "ip.dst=TESTSEARCH",
-        true
-      ]
+    "Queries": [
+      [-1, "Search Hostname", "alias.host='TESTSEARCH'", true],
+      [-1, "Search Source IP", "ip.src=TESTSEARCH", true],
+      [-1, "Search Destination IP", "ip.dst=TESTSEARCH", true]
     ]
   },
-  "NWI":{
-    "Config":{
-      "NWIConfigEnable":false,
-      "NWIConfigPopup":false,
-      "NWIConfigGMT":false,
-      "NWIConfigHost":"",
-      "NWIConfigPort":"",
-      "NWIConfigCollectionName":"",
-      "NWIConfigRange1":"1",
-      "NWIConfigRange2":"24",
-      "NWIConfigRange3":"48",
-      "NWIConfigRange4":"720"
+  "NWI": {
+    "Config": {
+      "NWIConfigEnable": false,
+      "NWIConfigPopup": false,
+      "NWIConfigGMT": false,
+      "NWIConfigHost": "",
+      "NWIConfigPort": "",
+      "NWIConfigCollectionName": "",
+      "NWIConfigRange1": "1",
+      "NWIConfigRange2": "24",
+      "NWIConfigRange3": "48",
+      "NWIConfigRange4": "720"
     },
-    "Queries":[
-      [
-        -1,
-        "Search Hostname",
-        "alias.host='TESTSEARCH'",
-        true
-      ],
-      [
-        -1,
-        "Search Source IP",
-        "ip.src=TESTSEARCH",
-        true
-      ],
-      [
-        -1,
-        "Search Destination IP",
-        "ip.dst=TESTSEARCH",
-        true
-      ]
+    "Queries": [
+      [-1, "Search Hostname", "alias.host='TESTSEARCH'", true],
+      [-1, "Search Source IP", "ip.src=TESTSEARCH", true],
+      [-1, "Search Destination IP", "ip.dst=TESTSEARCH", true]
     ]
   },
-  "CBC":{
-    "Config":{
-      "CBCConfigEnable":false,
-      "CBCConfigPopup":false,
-      "CBCConfigUseHttps":true,
-      "CBCConfigNewTab":true,
-      "CBCConfigHost":"192.168.1.10",
-      "CBCConfigPort":"",
-      "CBCConfigURLVersion":"1"
+  "CBC": {
+    "Config": {
+      "CBCConfigEnable": false,
+      "CBCConfigPopup": false,
+      "CBCConfigUseHttps": true,
+      "CBCConfigNewTab": true,
+      "CBCConfigHost": "192.168.1.10",
+      "CBCConfigPort": "",
+      "CBCConfigURLVersion": "1"
     },
-    "Queries":[
-      [
-        -1,
-        "Search All (Mostly Use This)",
-        "q=TESTSEARCH",
-        true
-      ],
-      [
-        -1,
-        "Domain Name (FQDN)",
-        "cb.q.domain=TESTSEARCH",
-        true
-      ],
-      [
-        -1,
-        "Hostname (Has CB Sensor)",
-        "cb.q.hostname=TESTSEARCH",
-        true
-      ],
-      [
-        -1,
-        "Process or EXE",
-        "cb.q.process_name=TESTSEARCH",
-        true
-      ],
-      [
-        -1,
-        "MD5 Hash Search",
-        "cb.q.md5=TESTSEARCH",
-        true
-      ]
+    "Queries": [
+      [-1, "Search All (Mostly Use This)", "q=TESTSEARCH", true],
+      [-1, "Domain Name (FQDN)", "cb.q.domain=TESTSEARCH", true],
+      [-1, "Hostname (Has CB Sensor)", "cb.q.hostname=TESTSEARCH", true],
+      [-1, "Process or EXE", "cb.q.process_name=TESTSEARCH", true],
+      [-1, "MD5 Hash Search", "cb.q.md5=TESTSEARCH", true]
+    ]
+  },
+  "update": {
+    "providers": [
+      {
+        "target": ["http://www.google.com/search?q=TESTSEARCH"],
+        "link": "https://www.google.com/search?q=TESTSEARCH"
+      },
+      {
+        "target": ["https://www.virustotal.com/en/domain/%s/information/"],
+        "link": "https://www.virustotal.com/gui/domain/%s/detection"
+      },
+      {
+        "target": ["http://who.is/whois/TESTSEARCH"],
+        "link": "https://who.is/whois/TESTSEARCH"
+      },
+      {
+        "target": [
+          "http://www.mcafee.com/threat-intelligence/domain/default.aspx?domain=TESTSEARCH"
+        ],
+        "link": "https://www.mcafee.com/enterprise/en-in/search.html?q=TESTSEARCH",
+        "label": "D - McAfee TIE"
+      },
+      {
+        "target": ["http://totalhash.com/search/dnsrr:TESTSEARCH"],
+        "link": "https://totalhash.cymru.com/search/dnsrr:TESTSEARCH"
+      },
+      {
+        "target": ["https://www.robtex.com/q/y?q=TESTSEARCH"],
+        "link": "https://www.robtex.com/TESTSEARCH"
+      },
+
+      {
+        "target": ["http://totalhash.com/search/av:TESTSEARCH"],
+        "link": "https://totalhash.com/search/av:TESTSEARCH"
+      },
+      {
+        "target": ["https://www.virustotal.com/en/ip-address/%s/information/"],
+        "link": "https://www.virustotal.com/gui/ip-address/%s/detection/"
+      },
+
+      {
+        "target": ["http://anti-hacker-alliance.com/index.php?ip=TESTSEARCH"],
+        "link": "https://anti-hacker-alliance.com/index.php?ip=TESTSEARCH"
+      },
+      {
+        "target": ["https://stat.ripe.net/TESTSEARCH#tabId=at-a-glance"],
+        "link": "https://stat.ripe.net/app/launchpad/TESTSEARCH"
+      },
+      {
+        "target": [
+          "http://www.google.com/safebrowsing/diagnostic?site=TESTSEARCH"
+        ],
+        "link": "https://transparencyreport.google.com/safe-browsing/search?url=TESTSEARCH"
+      }
     ]
   }
 }

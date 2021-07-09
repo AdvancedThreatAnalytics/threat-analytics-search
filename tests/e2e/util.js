@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require("puppeteer");
 
 const EXTENSION_ID = "eliokoocofjemjjohafbmhmgjmedomko";
 
@@ -11,8 +11,11 @@ module.exports = {
       args: [
         `--disable-extensions-except=${process.cwd()}/dist`,
         `--load-extension=${process.cwd()}/dist`,
-      ]
+      ],
     });
+
+    // Wait for some time to allow extension to load options
+    await new Promise((func) => setTimeout(func, 500));
 
     return this.browser;
   },
@@ -21,5 +24,5 @@ module.exports = {
     const page = await this.browser.newPage();
     await page.goto(`chrome-extension://${EXTENSION_ID}/${url}.html`);
     return page;
-  }
-}
+  },
+};

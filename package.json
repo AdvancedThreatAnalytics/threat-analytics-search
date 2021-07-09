@@ -9,8 +9,8 @@
     "build": "webpack --config webpack.config.js",
     "build:dev": "webpack --env mode=dev --mode=development --config webpack.config.js",
     "build:zip": "yarn run build && yarn run zip",
-    "lint": "eslint src",
-    "lint:fix": "prettier --write src && eslint src --fix",
+    "lint": "eslint src tests",
+    "lint:fix": "prettier --write src tests && eslint src tests --fix",
     "live": "webpack --env mode=dev --mode=development --config webpack.config.js --watch",
     "test:e2e": "jest e2e",
     "zip": "bestzip dist.zip dist/*"

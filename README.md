@@ -31,15 +31,14 @@ If configured, the extension also defines three special sections on the contextu
 
 ## Development
 
-The extension is implemented with JavaScript, using the following libraries
+The extension is implemented with JavaScript. The full list of dependencies can be found on the [package.json](./package.json) file, but the most relevant ones are:
 
-| Library                                  | Used for                      |
-|------------------------------------------|-------------------------------|
-| [Mustache](https://mustache.github.io/)  | UI                            |
-| AES-CBC                                  | Configuration file encryption |
-| [Luxon](https://moment.github.io/luxon/) | Utility                       |
-| [Lodash](https://lodash.com/)            | Utility                       |
-| [Bootstrap](https://getbootstrap.com/)   | UI                            |
+| Library                                    | Used for   |
+|--------------------------------------------|------------|
+| [Mustache](https://mustache.github.io/)    | Templates  |
+| [aes-js](https://github.com/ricmoo/aes-js) | Encryption |
+| [Bootstrap](https://getbootstrap.com/)     | UI         |
+| [Font Awesome](https://fontawesome.com/)   | Icons      |
 
 ### Code structure
 
@@ -59,7 +58,17 @@ Additionally, there is a migration page that is used to relocate the user's sett
 
 ### Building
 
-Building is done using [Webpack](https://webpack.js.org/). To build the "distribution" code, you first have to execute `yarn`, to install all dependencies, and then execute `yarn run build`(for production mode) or `yarn run build:dev`(for development mode) to build once or `yarn run live` to watch file changes (in development mode) and rebuild on file change. These commands will create `dist` directory and copies all files into it and minifies them. Optionally, you can do `yarn run zip` for compress the content of the `dist` directory into a zip file (you can also do `yarn run build:zip` to execute both the build and zipping actions with a single command).
+Building is done using [Webpack](https://webpack.js.org/).  
+To build the "distribution" code, you first have to execute `yarn`, to install all dependencies, and then execute `yarn run build` (for production mode), or `yarn run build:dev` (for development mode) to build once, or `yarn run live` to watch file changes (in development mode) and rebuild on file change.  
+These commands will create `dist` directory and copies all files into it and minifies them. 
+
+> Optionally, you can do `yarn run zip` for compress the content of the `dist` directory into a zip file (you can also do `yarn run build:zip` to execute both the build and zipping actions with a single command).
+
+### Testing
+
+Tesing is done using [Jest](https://jestjs.io/) and all test files are located inside `tests/` folder.
+
+  - Unit tests are located on the `tests/unit` folder, and can be fun using the `yarn run test:unit` command.
 
 ### Packaging
 

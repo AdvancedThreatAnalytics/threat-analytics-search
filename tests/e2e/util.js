@@ -20,8 +20,8 @@ module.exports = {
     return this.browser;
   },
 
-  async goto(url) {
-    const page = await this.browser.newPage();
+  async goto(url, page = null) {
+    page = page || (await this.browser.newPage());
     await page.goto(`chrome-extension://${EXTENSION_ID}/${url}.html`);
     return page;
   },

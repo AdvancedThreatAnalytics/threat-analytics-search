@@ -1,33 +1,142 @@
 import _ from "lodash";
 
 import { decryptAES } from "./encryption";
-import { BasicConfig, StoreKey } from "./constants";
+import { StoreKey } from "./constants";
 import LocalStore from "./local_store";
 
-const ProvGroups = {
-  NUMBER: 0,
-  NAME: 1,
+// --- Constants --- //
+
+const CONFIG_MAPPING = [
+  { index: 0, field: "configurationURL" },
+  { index: 1, field: "useGroups", type: "bool" },
+  { index: 2, field: "configEncrypted", type: "bool" },
+  { index: 3, field: "configEncryptionKey" },
+  { index: 4, field: "autoUpdateConfig", type: "bool" },
+];
+
+const GROUP_INDEXES = {
+  number: 0,
+  name: 1,
 };
 
-const ProvQuery = {
-  MENU_INDEX: 0,
-  LABEL: 1,
-  QUERY: 2,
-  ENABLED: 3,
-};
+const QUERY_MAPPING = [
+  { index: 0, field: "menuIndex" },
+  { index: 1, field: "label" },
+  { index: 2, field: "query" },
+  { index: 3, field: "enabled", type: "bool" },
+];
 
-const SearchProv = {
-  MENU_INDEX: 0,
-  LABEL: 1,
-  LINK: 2,
-  ENABLED: 3,
-  FROM_CONFIG: 4,
-  GROUP: 5,
-  IS_POST: 6,
-  POST_REQUEST: 7,
-  PROXY_ENABLED: 8,
-  PROXY_URL: 9,
-};
+const PROVIDER_MAPPING = [
+  { index: 0, field: "menuIndex" },
+  { index: 1, field: "label" },
+  { index: 2, field: "link" },
+  { index: 3, field: "enabled", type: "bool" },
+  { index: 4, field: "fromConfig", type: "bool" },
+  { index: 5, field: "group" },
+  { index: 6, field: "postEnabled", type: "bool" },
+  { index: 7, field: "postValue" },
+  { index: 8, field: "proxyEnabled", type: "bool" },
+  { index: 9, field: "proxyUrl" },
+];
+
+// --- Utility functions --- //
+
+function mapArrayToObject(array, mapping) {
+  return _.mapValues(_.keyBy(mapping, "field"), (meta) => {
+    const value = _.get(array, meta.index);
+    return meta.type === "bool" ? value === true || value === "true" : value;
+  });
+}
+
+function mapObjectToArray(object, mapping) {
+  // NOTE: this method assumes that for all items in mapping: "mapping.indexOf(item) === item.index".
+  return _.map(mapping, (meta) => _.get(object, meta.field));
+}
+
+async function updateSearchProviders(settings, newProviders, updateActions) {
+  // Get menu items (with current search providers).
+  let searchProviders =
+    (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
+
+  // Execute update actions.
+  _.each(updateActions, (action) => {
+    _.each(searchProviders, (provider) => {
+      if (action.target.indexOf(provider.link) >= 0) {
+        if (action.link) {
+          provider.link = action.link;
+        }
+        if (action.label) {
+          provider.label = action.label;
+        }
+      }
+    });
+  });
+
+  // Check if the new list of search providers should be merged or should override current values.
+  const mergeProviderOption = _.get(settings, "mergeSearchProviders", "merge");
+  if (mergeProviderOption === "merge") {
+    for (let i = 0; i < newProviders.length; i++) {
+      const newProvider = newProviders[i];
+
+      // Add provider if isn't on the current list.
+      if (
+        !_.find(
+          searchProviders,
+          (provider) => provider.link === newProvider.link
+        )
+      ) {
+        searchProviders.push(newProvider);
+      }
+    }
+  } else if (mergeProviderOption === "override") {
+    searchProviders = newProviders;
+  }
+
+  // Save list of search providers.
+  await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, searchProviders);
+}
+
+async function updateSpecialProvider(storeKey, newData, mergeKey) {
+  const settings = await LocalStore.getOne(StoreKey.SETTINGS);
+  const shouldOverrideConfig = _.get(settings, mergeKey + ".config", false);
+  const queriesMergeOption = _.get(settings, mergeKey + ".queries", "merge");
+
+  const provData = (await LocalStore.getOne(storeKey)) || {};
+
+  // Override configuration (if need)
+  if (shouldOverrideConfig) {
+    provData.config = _.get(newData, "Config", {});
+  }
+
+  // Check if queries should be merged ,overriden or ignored.
+  const newQueries = ConfigFile.parseQueries(_.get(newData, "Queries", []));
+  if (queriesMergeOption === "merge") {
+    for (let i = 0; i < newQueries.length; i++) {
+      const newQuery = newQueries[i];
+
+      // Update values from outdated queries.
+      const aliases = _.get(newQuery, "metadata.alias");
+      if (_.isArray(aliases)) {
+        _.each(provData.queries, (item) => {
+          if (aliases.indexOf(item.query) >= 0) {
+            item.query = newQuery.query;
+          }
+        });
+      }
+
+      // Add query if isn't on the current list.
+      if (!_.find(provData.queries, (item) => item.query === newQuery.query)) {
+        provData.queries.push(newQuery);
+      }
+    }
+  } else if (queriesMergeOption === "override") {
+    provData.queries = newQueries;
+  }
+
+  return LocalStore.setOne(storeKey, provData);
+}
+
+// --- Main functions --- //
 
 const ConfigFile = {
   updateNow: async function () {
@@ -93,7 +202,7 @@ const ConfigFile = {
     if (_.isEmpty(providers)) {
       await LocalStore.setOne(
         StoreKey.SEARCH_PROVIDERS,
-        _.map(defaultFile.searchproviders, ConfigFile.parseProvider)
+        ConfigFile.parseProviders(defaultFile.searchproviders)
       );
     }
 
@@ -109,9 +218,8 @@ const ConfigFile = {
         data.config = _.get(defaultFile, `${special.fileKey}.Config`) || {};
       }
       if (!_.isArray(data.queries)) {
-        data.queries = _.map(
-          _.get(defaultFile, `${special.fileKey}.Queries`),
-          ConfigFile.parseQuery
+        data.queries = ConfigFile.parseQueries(
+          _.get(defaultFile, `${special.fileKey}.Queries`)
         );
       }
       LocalStore.setOne(special.storeKey, data);
@@ -139,7 +247,7 @@ const ConfigFile = {
           k++
         ) {
           if (groups[k]) {
-            settings.providersGroups[k].name = groups[k][ProvGroups.NAME];
+            settings.providersGroups[k].name = groups[k][GROUP_INDEXES.name];
           }
         }
       }
@@ -149,184 +257,85 @@ const ConfigFile = {
     await LocalStore.setOne(StoreKey.SETTINGS, settings);
 
     // Update search providers.
-    // - Get menu items (with current search providers).
-    let searchProviders =
-      (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
-
-    // - Check if the new list of search providers should be merged or should override current values.
-    const newProviders = _.map(
-      newData.searchproviders,
-      ConfigFile.parseProvider
-    );
-    const mergeProviderOption = _.get(
+    const newProviders = ConfigFile.parseProviders(newData.searchproviders);
+    await updateSearchProviders(
       settings,
-      "mergeSearchProviders",
-      "merge"
+      newProviders,
+      _.get(newData, "update.providers")
     );
-    if (mergeProviderOption === "merge") {
-      1;
-      for (let i = 0; i < newProviders.length; i++) {
-        // Check if the search provider isn't already included by comparing the 'link' (and add it if not).
-        if (
-          !_.find(searchProviders, function (provider) {
-            return provider.link === newProviders[i].link;
-          })
-        ) {
-          searchProviders.push(newProviders[i]);
-        }
-      }
-    } else if (mergeProviderOption === "override") {
-      // Override current providers with new ones.
-      searchProviders = newProviders;
-    }
-
-    // - Save list of search providers.
-    await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, searchProviders);
 
     // Update configuration values and queries for RSA, NWI and CBC.
-    await ConfigFile.parseSpecialProvider(
-      StoreKey.RSA_SECURITY,
-      newData.RSA,
-      "mergeRSA"
-    );
-    await ConfigFile.parseSpecialProvider(
-      StoreKey.NET_WITNESS,
-      newData.NWI,
-      "mergeNWI"
-    );
-    await ConfigFile.parseSpecialProvider(
-      StoreKey.CARBON_BLACK,
-      newData.CBC,
-      "mergeCBC"
-    );
+    await updateSpecialProvider(StoreKey.RSA_SECURITY, newData.RSA, "mergeRSA");
+    await updateSpecialProvider(StoreKey.NET_WITNESS, newData.NWI, "mergeNWI");
+    await updateSpecialProvider(StoreKey.CARBON_BLACK, newData.CBC, "mergeCBC");
   },
 
-  parseBasicSettings: function (configArray) {
-    const config = _.get(configArray, "0");
-    if (!_.isEmpty(config) && config.length >= 5) {
-      const useGroups =
-        config[BasicConfig.USE_GROUPS] === true ||
-        config[BasicConfig.USE_GROUPS] === "true";
+  parseBasicSettings: function (settingsRaw) {
+    const settingsArray = _.get(settingsRaw, 0, []);
+    const settingsObj = mapArrayToObject(settingsArray, CONFIG_MAPPING);
 
-      return {
-        configurationURL: config[BasicConfig.CONFIG_URL],
-        useGroups: useGroups,
-        configEncrypted:
-          config[BasicConfig.ENCRYPTED] === true ||
-          config[BasicConfig.ENCRYPTED] === "true",
-        configEncryptionKey: config[BasicConfig.ENCRIPTION_KEY] || null,
-        autoUpdateConfig:
-          config[BasicConfig.AUTO_UPDATE] === true ||
-          config[BasicConfig.AUTO_UPDATE] === "true",
+    return {
+      ...settingsObj,
 
-        resultsInBackgroundTab: true,
-        enableAdjacentTabs: true,
-        openGroupsInNewWindow: true,
-        enableOptionsMenuItem: true,
+      resultsInBackgroundTab: true,
+      enableAdjacentTabs: true,
+      openGroupsInNewWindow: true,
+      enableOptionsMenuItem: true,
 
-        mergeGroups: useGroups,
-        mergeSearchProviders: "merge",
-        mergeCBC: { config: false, queries: "merge" },
-        mergeNWI: { config: false, queries: "merge" },
-        mergeRSA: { config: false, queries: "merge" },
-      };
-    }
-    return {};
+      mergeGroups: settingsObj.useGroups,
+      mergeSearchProviders: "merge",
+      mergeCBC: { config: false, queries: "merge" },
+      mergeNWI: { config: false, queries: "merge" },
+      mergeRSA: { config: false, queries: "merge" },
+    };
+  },
+
+  prepareBasicSettings: function (settings) {
+    return [mapObjectToArray(settings, CONFIG_MAPPING)];
   },
 
   parseGroups: function (groupsArray) {
     if (_.isArray(groupsArray) && groupsArray.length >= 3) {
       return _.map(groupsArray, function (group, index) {
         return {
-          name: _.get(group, "1"),
+          name: _.get(group, GROUP_INDEXES.name),
           enabled: index < 2,
         };
       });
     }
+
     return [];
   },
 
-  parseSpecialProvider: async function (storeKey, newData, mergeKey) {
-    const settings = await LocalStore.getOne(StoreKey.SETTINGS);
-    const shouldOverrideConfig = _.get(settings, mergeKey + ".config", false);
-    const queriesMergeOption = _.get(settings, mergeKey + ".queries", "merge");
-
-    const provData = (await LocalStore.getOne(storeKey)) || {};
-
-    // Override configuration (if need)
-    if (shouldOverrideConfig) {
-      provData.config = _.get(newData, "Config", {});
-    }
-
-    // Check if queries should be merged or overriden.
-    const newQueries = _.map(
-      _.get(newData, "Queries", []),
-      ConfigFile.parseQuery
-    );
-    if (queriesMergeOption === "merge") {
-      for (let i = 0; i < newQueries.length; i++) {
-        // Check if the query isn't already included by comparing the 'query' (and add it if not).
-        if (
-          !_.find(provData.queries, function (data) {
-            return data.query === newQueries[i].query;
-          })
-        ) {
-          provData.queries.push(newQueries[i]);
-        }
-      }
-    } else if (queriesMergeOption === "override") {
-      provData.queries = newQueries;
-    }
-
-    return LocalStore.setOne(storeKey, provData);
+  prepareGroups: function (groups) {
+    return _.map([0, 1, 2], function (index) {
+      const number = index + 1 + "";
+      return [number, _.get(groups, `${index}.name`)];
+    });
   },
 
-  parseProvider: function (item) {
-    return {
-      menuIndex: item[SearchProv.MENU_INDEX],
-      label: item[SearchProv.LABEL],
-      link: item[SearchProv.LINK],
-      enabled: item[SearchProv.ENABLED],
-      fromConfig: item[SearchProv.FROM_CONFIG],
-      group: item[SearchProv.GROUP],
-      postEnabled: item[SearchProv.IS_POST],
-      postValue: item[SearchProv.POST_REQUEST],
-      proxyEnabled: item[SearchProv.PROXY_ENABLED],
-      proxyUrl: item[SearchProv.PROXY_URL],
-    };
+  parseProviders: function (providers) {
+    return _.map(providers, function (providerArray) {
+      return mapArrayToObject(providerArray, PROVIDER_MAPPING);
+    });
   },
 
-  parseProviderInverse: function (item) {
-    var res = new Array(10);
-    res[SearchProv.MENU_INDEX] = item.menuIndex;
-    res[SearchProv.LABEL] = item.label;
-    res[SearchProv.LINK] = item.link;
-    res[SearchProv.ENABLED] = item.enabled;
-    res[SearchProv.FROM_CONFIG] = item.fromConfig;
-    res[SearchProv.GROUP] = item.group;
-    res[SearchProv.IS_POST] = item.postEnabled;
-    res[SearchProv.POST_REQUEST] = item.postValue;
-    res[SearchProv.PROXY_ENABLED] = item.proxyEnabled;
-    res[SearchProv.PROXY_URL] = item.proxyUrl;
-    return res;
+  prepareProviders: function (providers) {
+    return _.map(providers, function (providerObject) {
+      return mapObjectToArray(providerObject, PROVIDER_MAPPING);
+    });
   },
 
-  parseQuery: function (item) {
-    return {
-      menuIndex: item[ProvQuery.MENU_INDEX],
-      label: item[ProvQuery.LABEL],
-      query: item[ProvQuery.QUERY],
-      enabled: item[ProvQuery.ENABLED],
-    };
+  parseQueries: function (queries) {
+    return _.map(queries, function (queryArray) {
+      return mapArrayToObject(queryArray, QUERY_MAPPING);
+    });
   },
 
-  parseQueryInverse: function (item) {
-    var res = new Array(4);
-    res[ProvQuery.MENU_INDEX] = item.menuIndex;
-    res[ProvQuery.LABEL] = item.label;
-    res[ProvQuery.QUERY] = item.query;
-    res[ProvQuery.ENABLED] = item.enabled;
-    return res;
+  prepareQueries: function (queries) {
+    return _.map(queries, function (queryObject) {
+      return mapObjectToArray(queryObject, QUERY_MAPPING);
+    });
   },
 
   getDefaultJSON: async function () {
@@ -345,35 +354,22 @@ const ConfigFile = {
     var cbc = (await LocalStore.getOne(StoreKey.CARBON_BLACK)) || {};
     var providers = (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
 
-    var basicConfig = new Array(5);
-    basicConfig[BasicConfig.CONFIG_URL] = settings.configurationURL;
-    basicConfig[BasicConfig.USE_GROUPS] = settings.useGroups;
-    basicConfig[BasicConfig.ENCRYPTED] = settings.configEncrypted;
-    basicConfig[BasicConfig.ENCRIPTION_KEY] = settings.configEncryptionKey;
-    basicConfig[BasicConfig.AUTO_UPDATE] = settings.autoUpdateConfig;
-
     return {
-      searchproviders: _.map(providers, ConfigFile.parseProviderInverse),
-
-      groups: [
-        ["1", settings.providersGroups[0].name],
-        ["2", settings.providersGroups[1].name],
-        ["3", settings.providersGroups[2].name],
-      ],
-
-      config: [basicConfig],
+      searchproviders: ConfigFile.prepareProviders(providers),
+      groups: ConfigFile.prepareGroups(settings.providersGroups),
+      config: ConfigFile.prepareBasicSettings(settings),
 
       RSA: {
         Config: rsa.config,
-        Queries: _.map(rsa.queries, ConfigFile.parseQueryInverse),
+        Queries: ConfigFile.prepareQueries(rsa.queries),
       },
       NWI: {
         Config: nwi.config,
-        Queries: _.map(nwi.queries, ConfigFile.parseQueryInverse),
+        Queries: ConfigFile.prepareQueries(nwi.queries),
       },
       CBC: {
         Config: cbc.config,
-        Queries: _.map(cbc.queries, ConfigFile.parseQueryInverse),
+        Queries: ConfigFile.prepareQueries(cbc.queries),
       },
     };
   },

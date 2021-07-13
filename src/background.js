@@ -14,7 +14,9 @@ import LocalStore from "./js/shared/local_store";
 import Analytics from "./js/shared/analytics";
 
 // Install handler.
-chrome.runtime.onInstalled.addListener(async function (details) {
+chrome.runtime.onInstalled.addListener(installedListener);
+
+export async function installedListener(details) {
   // Check if migration script should be run.
   var previous = _.get(details, "previousVersion");
 
@@ -44,10 +46,10 @@ chrome.runtime.onInstalled.addListener(async function (details) {
   }
 
   Analytics.track("install", {
-    "Current Version": chrome.runtime.getManifest().version,
+    "Current Version": _.get(chrome.runtime.getManifest(), "version"),
     "Previous Version": previous,
   });
-});
+}
 
 // Startup handler.
 chrome.runtime.onStartup.addListener(function () {
@@ -570,3 +572,5 @@ function showPopupMessage(title, message) {
     // Do nothing.
   }
 }
+
+export default { installedListener };

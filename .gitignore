@@ -4,6 +4,8 @@ node_modules
 dist
 dist.zip
 
+# Editor files
 .idea
+.vscode
 
 yarn-error.log*

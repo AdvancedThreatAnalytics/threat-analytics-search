@@ -1,4 +1,5 @@
 const ExtensionUtil = require("./util");
+jest.setTimeout(30000);
 
 describe("Options page", () => {
   let browser;

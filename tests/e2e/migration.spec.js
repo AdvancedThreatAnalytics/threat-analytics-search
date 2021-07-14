@@ -1,8 +1,10 @@
 const _ = require("lodash");
+
 const ExtensionUtil = require("./util");
 const { MiscURLs, StoreKey } = require("../../src/js/shared/constants");
 const ConfigFile = require("../../src/js/shared/config_file").default;
 const SETTINGS = require("../../settings.json");
+
 jest.setTimeout(30000);
 
 describe("Migration", () => {
@@ -23,9 +25,9 @@ describe("Migration", () => {
       _configEnc: true,
       _configEncKey: "value",
       _configAutoRefresh: true,
-      _group1Name: "Group 1",
-      _group2Name: "Group 2",
-      _group3Name: "Group 3",
+      _group1Name: "Group A",
+      _group2Name: "Group B",
+      _group3Name: "Group C",
       _enableGroup3: true,
       _askbg: false,
       _asknext: false,

@@ -124,9 +124,9 @@
   <form name="manage_providers">
     <div class="mt-3" id="providers_menuItems"></div>
     <script id="template_menuItemsManager" type="x-tmpl-mustache">
-      <ul class="list-group">
+      <ul role="list" class="list-group">
         {{#menuItems}}
-          <li class="list-group-item sortable pl-1 pr-2 py-3" data-index="{{ index }}">
+          <li role="listitem" class="list-group-item sortable pl-1 pr-2 py-3" data-index="{{ index }}">
             <div class="d-flex align-items-center">
 
               <div class="sortable-handle px-2 py-3 mr-1">

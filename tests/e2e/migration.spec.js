@@ -5,8 +5,6 @@ const { MiscURLs, StoreKey } = require("../../src/js/shared/constants");
 const ConfigFile = require("../../src/js/shared/config_file").default;
 const SETTINGS = require("../../settings.json");
 
-jest.setTimeout(30000);
-
 describe("Migration", () => {
   let browser;
   let page;
@@ -17,7 +15,7 @@ describe("Migration", () => {
 
   test("Data from local storage is copied to chrome's storage", async () => {
     // Go to options page to set sample data to local storage
-    page = await ExtensionUtil.goto("options");
+    page = await ExtensionUtil.goto("options.html");
 
     const sampleData = {
       _configUrl: "https://www.criticalstart.com/",
@@ -67,14 +65,14 @@ describe("Migration", () => {
     }, sampleData);
 
     // Go to migration page
-    await ExtensionUtil.goto("migration", page);
+    await ExtensionUtil.goto("migration.html", page);
 
     // Check if page is redirected
     const nav = await page.waitForRequest(MiscURLs.INSTALLED_URL);
     expect(nav.url()).toEqual(MiscURLs.INSTALLED_URL);
 
     // Go back to options page
-    await ExtensionUtil.goto("options", page);
+    await ExtensionUtil.goto("options.html", page);
 
     // Get data from chrome storage
     const chromeData = await page.evaluate(
@@ -156,20 +154,20 @@ describe("Migration", () => {
 
   test("Chrome's storage is populated from settings.json", async () => {
     // Go to options page
-    page = await ExtensionUtil.goto("options");
+    page = await ExtensionUtil.goto("options.html");
 
     // Clear local storage
     await page.evaluate(() => window.localStorage.clear());
 
     // Go to migration page
-    await ExtensionUtil.goto("migration", page);
+    await ExtensionUtil.goto("migration.html", page);
 
     // Check if page is redirected
     const nav = await page.waitForRequest(MiscURLs.INSTALLED_URL);
     expect(nav.url()).toEqual(MiscURLs.INSTALLED_URL);
 
     // Go back to options page
-    await ExtensionUtil.goto("options", page);
+    await ExtensionUtil.goto("options.html", page);
 
     // Get data from chrome storage
     const chromeData = await page.evaluate(

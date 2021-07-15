@@ -1,5 +1,4 @@
 const ExtensionUtil = require("./util");
-jest.setTimeout(30000);
 
 describe("Options page", () => {
   let browser;
@@ -7,7 +6,7 @@ describe("Options page", () => {
 
   beforeAll(async () => {
     browser = await ExtensionUtil.load();
-    page = await ExtensionUtil.goto("options");
+    page = await ExtensionUtil.goto("options.html");
   });
 
   test("Option name changed successfully", async () => {

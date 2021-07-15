@@ -133,7 +133,7 @@ async function makeRequest(targetURL, reqData, proxyURL) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: _.isObject(reqData) ? JSON.stringify(reqData) : null,
+      body: reqData,
     });
   } else {
     response = await fetch(proxyURL, {

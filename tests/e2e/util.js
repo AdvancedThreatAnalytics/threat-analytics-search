@@ -15,7 +15,7 @@ module.exports = {
     });
 
     // Wait for some time to allow extension to load options
-    await new Promise((func) => setTimeout(func, 500));
+    await new Promise((func) => setTimeout(func, 2000));
 
     return this.browser;
   },

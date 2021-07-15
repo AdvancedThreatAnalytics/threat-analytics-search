@@ -2,11 +2,12 @@ const ExtensionUtil = require("./util");
 const { StoreKey } = require("../../src/js/shared/constants");
 
 const INTERCEPT_URL = "https://criticalstart.com";
-const SUCCESS_KEY = "success";
+const SUCCESS = "success";
+const FAIL = "fail";
 
 function interceptor(request) {
   if (request.url().includes(INTERCEPT_URL)) {
-    if (request.url().includes(SUCCESS_KEY)) {
+    if (request.url().includes(SUCCESS)) {
       request.respond({
         status: 200,
         body: "Success",
@@ -22,6 +23,7 @@ function interceptor(request) {
   }
 }
 
+// HACK: the 'text' is used to indicate if the request should succeed or fail.
 async function testPostHandler(sample, text) {
   // Go to options page
   const page = await ExtensionUtil.goto("options.html");
@@ -74,7 +76,7 @@ describe("Post Handler", () => {
     browser = await ExtensionUtil.load();
   });
 
-  test("Post handler with successful response", async () => {
+  test("POST handler with successful response", async () => {
     const SAMPLE_PROVIDER = {
       menuIndex: -1,
       enabled: true,
@@ -82,16 +84,16 @@ describe("Post Handler", () => {
       group: 0,
       label: "Test",
       link: `${INTERCEPT_URL}/TESTSEARCH`,
-      postEnabled: true,
-      postValue: '{ "key": "value" }',
+      postEnabled: false,
+      postValue: "",
       proxyEnabled: false,
       proxyUrl: "",
     };
 
-    await testPostHandler(SAMPLE_PROVIDER, SUCCESS_KEY);
+    await testPostHandler(SAMPLE_PROVIDER, SUCCESS);
   });
 
-  test("Post handler with unsuccessful response", async () => {
+  test("POST handler with unsuccessful response", async () => {
     const SAMPLE_PROVIDER = {
       menuIndex: -1,
       enabled: true,
@@ -105,10 +107,10 @@ describe("Post Handler", () => {
       proxyUrl: "",
     };
 
-    await testPostHandler(SAMPLE_PROVIDER, "fail");
+    await testPostHandler(SAMPLE_PROVIDER, FAIL);
   });
 
-  test("Post handler with proxy url", async () => {
+  test("POST handler with Proxy URL and POST values", async () => {
     const SAMPLE_PROVIDER = {
       menuIndex: -1,
       enabled: true,
@@ -119,10 +121,10 @@ describe("Post Handler", () => {
       postEnabled: true,
       postValue: '{ "key": "value" }',
       proxyEnabled: true,
-      proxyUrl: `${INTERCEPT_URL}/proxy/${SUCCESS_KEY}`,
+      proxyUrl: `${INTERCEPT_URL}/proxy/${SUCCESS}`,
     };
 
-    await testPostHandler(SAMPLE_PROVIDER, SUCCESS_KEY);
+    await testPostHandler(SAMPLE_PROVIDER, SUCCESS);
   });
 
   afterAll(async () => {

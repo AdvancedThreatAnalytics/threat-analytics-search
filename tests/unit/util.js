@@ -17,6 +17,9 @@ const chromeStorageMock = (function () {
       _.assign(store, object);
       callback();
     },
+    getStore: function () {
+      return store;
+    },
     clear: function (callback) {
       store = {};
       callback();

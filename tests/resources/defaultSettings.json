@@ -321,10 +321,10 @@
   "config": [
     [
       "https://raw.githubusercontent.com/AdvancedThreatAnalytics/threat-analytics-search/main/settings.json",
-      "true",
-      "false",
+      true,
+      false,
       "",
-      "false"
+      false
     ]
   ],
   "RSA": {

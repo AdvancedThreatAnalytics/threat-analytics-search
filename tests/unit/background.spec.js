@@ -1,5 +1,4 @@
-const chrome = require("sinon-chrome");
-global.chrome = chrome;
+require("./util");
 
 const ConfigFile = require("../../src/js/shared/config_file");
 const { MiscURLs } = require("../../src/js/shared/constants");
@@ -18,7 +17,6 @@ describe("background.js", () => {
         selected: true,
       }).calledOnce
     ).toBe(true);
-    chrome.flush();
   });
 
   it("should call sanitizeSettings if previous version was not 4", () => {
@@ -31,17 +29,11 @@ describe("background.js", () => {
     ).toBe(true);
     expect(sanitizeSettings).toHaveBeenCalled();
     expect(updateNow).not.toHaveBeenCalled();
-    chrome.flush();
   });
 
   it("should call updateNow if installing for the first time", async () => {
-    installedListener({ reason: "install" }).finally(() => {
-      expect(sanitizeSettings).toHaveReturned();
-      expect(updateNow).toHaveBeenCalled();
-    });
-  });
-
-  afterAll(function () {
-    delete global.chrome;
+    await installedListener({ reason: "install" });
+    expect(sanitizeSettings).toHaveReturned();
+    expect(updateNow).toHaveBeenCalled();
   });
 });

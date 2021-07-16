@@ -6,7 +6,7 @@ describe("Options page", () => {
 
   beforeAll(async () => {
     browser = await ExtensionUtil.load();
-    page = await ExtensionUtil.goto("options");
+    page = await ExtensionUtil.goto("options.html");
   });
 
   test("Option name changed successfully", async () => {

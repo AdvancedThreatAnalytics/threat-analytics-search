@@ -19,6 +19,9 @@ const updateNow = jest.spyOn(ConfigFile.default, "updateNow");
 describe("configFile.js", () => {
   beforeEach(async () => {
     await sanitizeSettings();
+
+    // Disable console's errors (used on 'updatedNow').
+    jest.spyOn(console, 'error').mockImplementation(() => {});
   });
   describe("updateNow function", () => {
     it("parseJSONFile should be called with the file content and return true", async () => {

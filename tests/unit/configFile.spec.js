@@ -1,8 +1,9 @@
+const _ = require("lodash");
+
 import LocalStore from "../../src/js/shared/local_store";
 import { StoreKey } from "../../src/js/shared/constants";
 
 require("./util");
-const _ = require("lodash");
 const ConfigFile = require("../../src/js/shared/config_file");
 const defaultSettings = require("../resources/defaultSettings.json");
 const encryptedSettings = require("../resources/encryptedSettings.json");
@@ -10,10 +11,6 @@ const encryptedSettings = require("../resources/encryptedSettings.json");
 const generateJSONFile = jest.spyOn(ConfigFile.default, "generateJSONFile");
 const parseJSONFile = jest.spyOn(ConfigFile.default, "parseJSONFile");
 const sanitizeSettings = jest.spyOn(ConfigFile.default, "sanitizeSettings");
-const sanitizeSpecialProviders = jest.spyOn(
-  ConfigFile.default,
-  "sanitizeSpecialProviders"
-);
 const updateNow = jest.spyOn(ConfigFile.default, "updateNow");
 
 describe("configFile.js", () => {
@@ -21,8 +18,9 @@ describe("configFile.js", () => {
     await sanitizeSettings();
 
     // Disable console's errors (used on 'updatedNow').
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => {});
   });
+
   describe("updateNow function", () => {
     it("parseJSONFile should be called with the file content and return true", async () => {
       await updateNow();
@@ -91,18 +89,17 @@ describe("configFile.js", () => {
   describe("generateJSONFile function", () => {
     it("generateJSONFile result should be equal to simple configuration file", async () => {
       await LocalStore.clear();
-      await sanitizeSpecialProviders();
       await parseJSONFile(defaultSettings, true);
+
       const result = await generateJSONFile();
       expect(result).toStrictEqual(_.omit(defaultSettings, "update"));
     });
 
     it("generateJSONFile result should be equal to changed configuration file", async () => {
       await LocalStore.clear();
-      await sanitizeSpecialProviders();
       await parseJSONFile(defaultSettings, true);
 
-      // change data in local storage.
+      // Change data in local storage.
       var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       settings.configEncrypted = true;
       await LocalStore.setOne(StoreKey.SETTINGS, settings);

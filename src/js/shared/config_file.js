@@ -210,7 +210,12 @@ const ConfigFile = {
       );
     }
 
-    // Sanitize special providers.
+    ConfigFile.sanitizeSpecialProviders();
+  },
+
+  sanitizeSpecialProviders: async function () {
+    var defaultFile = await ConfigFile.getDefaultJSON();
+
     var specialProviders = [
       { storeKey: StoreKey.CARBON_BLACK, fileKey: "CBC" },
       { storeKey: StoreKey.NET_WITNESS, fileKey: "NWI" },

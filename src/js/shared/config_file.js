@@ -104,13 +104,17 @@ async function updateSpecialProvider(storeKey, newData, mergeKey) {
   const provData = (await LocalStore.getOne(storeKey)) || {};
 
   // Override configuration (if need)
-  if (shouldOverrideConfig) {
+  if (shouldOverrideConfig || _.isNil(provData.config)) {
     provData.config = _.get(newData, "Config", {});
   }
 
   // Check if queries should be merged ,overriden or ignored.
   const newQueries = ConfigFile.parseQueries(_.get(newData, "Queries", []));
   if (queriesMergeOption === "merge") {
+    if (!_.isArray(provData.queries)) {
+      provData.queries = [];
+    }
+
     for (let i = 0; i < newQueries.length; i++) {
       const newQuery = newQueries[i];
 
@@ -206,7 +210,12 @@ const ConfigFile = {
       );
     }
 
-    // Sanitize special providers.
+    ConfigFile.sanitizeSpecialProviders();
+  },
+
+  sanitizeSpecialProviders: async function () {
+    var defaultFile = await ConfigFile.getDefaultJSON();
+
     var specialProviders = [
       { storeKey: StoreKey.CARBON_BLACK, fileKey: "CBC" },
       { storeKey: StoreKey.NET_WITNESS, fileKey: "NWI" },

@@ -1,8 +1,9 @@
+const _ = require("lodash");
+
 import LocalStore from "../../src/js/shared/local_store";
 import { StoreKey } from "../../src/js/shared/constants";
 
 require("./util");
-const _ = require("lodash");
 const ConfigFile = require("../../src/js/shared/config_file");
 const defaultSettings = require("../resources/defaultSettings.json");
 const encryptedSettings = require("../resources/encryptedSettings.json");
@@ -17,6 +18,7 @@ describe("configFile.js", () => {
     // Disable console's errors (used on 'updatedNow').
     jest.spyOn(console, "error").mockImplementation(() => {});
   });
+
   describe("updateNow function", () => {
     it("parseJSONFile should be called with the file content and return true", async () => {
       await updateNow();
@@ -96,7 +98,7 @@ describe("configFile.js", () => {
       await ConfigFile.default.sanitizeSpecialProviders();
       await ConfigFile.default.parseJSONFile(defaultSettings, true);
 
-      // change data in local storage.
+      // Change data in local storage.
       var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       var providers =
         (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || {};

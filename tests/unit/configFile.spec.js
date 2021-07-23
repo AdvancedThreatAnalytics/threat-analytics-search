@@ -11,7 +11,7 @@ const encryptedSettings = require("../resources/encryptedSettings.json");
 const parseJSONFile = jest.spyOn(ConfigFile.default, "parseJSONFile");
 const updateNow = jest.spyOn(ConfigFile.default, "updateNow");
 
-describe.skip("configFile.js", () => {
+describe("configFile.js", () => {
   beforeEach(async () => {
     await ConfigFile.default.sanitizeSettings();
 

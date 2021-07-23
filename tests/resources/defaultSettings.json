@@ -329,7 +329,7 @@
   ],
   "RSA": {
     "Config": {
-      "RSAConfigEnable": false,
+      "RSAConfigEnable": true,
       "RSAConfigPopup": false,
       "RSAConfigUseHttps": true,
       "RSAConfigNewTab": true,
@@ -349,7 +349,7 @@
   },
   "NWI": {
     "Config": {
-      "NWIConfigEnable": false,
+      "NWIConfigEnable": true,
       "NWIConfigPopup": false,
       "NWIConfigGMT": false,
       "NWIConfigHost": "",
@@ -368,7 +368,7 @@
   },
   "CBC": {
     "Config": {
-      "CBCConfigEnable": false,
+      "CBCConfigEnable": true,
       "CBCConfigPopup": false,
       "CBCConfigUseHttps": true,
       "CBCConfigNewTab": true,

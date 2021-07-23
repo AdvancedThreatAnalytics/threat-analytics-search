@@ -135,7 +135,7 @@ describe("configFile.js", () => {
   });
 
   describe("sanitizeSettings function", () => {
-    it("settings and groups should be initialized with default values if some fields are missing", async () => {
+    it("Settings and groups should be initialized with default values if some fields are missing", async () => {
       // Initialize settings sample with some missings fields
       const sampleConfig = {
         resultsInBackgroundTab: true,
@@ -171,7 +171,7 @@ describe("configFile.js", () => {
       expect(settings).toEqual(expectedSettings);
     });
 
-    it("settings should not be modified if values are valid", async () => {
+    it("Settings should not be modified if values are valid", async () => {
       // Initialize settings with valid sample
       const sampleConfig = {
         configurationURL: "https://criticalstart.com",
@@ -206,7 +206,7 @@ describe("configFile.js", () => {
       expect(settings).toEqual(sampleConfig);
     });
 
-    it("search providers should be initialized with default values if not defined", async () => {
+    it("Search providers should be initialized with default values if not defined", async () => {
       // Set empty search providers to chrome's storage
       await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, []);
 
@@ -222,7 +222,7 @@ describe("configFile.js", () => {
       expect(providers).toEqual(expectedProviders);
     });
 
-    it("special providers should be initialized with default values if not defined", async () => {
+    it("Special providers should be initialized with default values if not defined", async () => {
       const specialProviders = [
         { storeKey: StoreKey.CARBON_BLACK, fileKey: "CBC" },
         { storeKey: StoreKey.NET_WITNESS, fileKey: "NWI" },

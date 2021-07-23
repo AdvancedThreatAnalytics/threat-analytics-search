@@ -210,7 +210,7 @@ const ConfigFile = {
       );
     }
 
-    ConfigFile.sanitizeSpecialProviders();
+    await ConfigFile.sanitizeSpecialProviders();
   },
 
   sanitizeSpecialProviders: async function () {

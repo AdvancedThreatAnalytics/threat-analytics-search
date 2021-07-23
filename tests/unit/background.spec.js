@@ -8,7 +8,7 @@ const sanitizeSettings = jest.spyOn(ConfigFile.default, "sanitizeSettings");
 const updateNow = jest.spyOn(ConfigFile.default, "updateNow");
 
 describe("background.js", () => {
-  it("should open migration.html if previous version was 4", () => {
+  it("Should open 'migration.html' if previous version was 4", () => {
     installedListener({ previousVersion: "4" });
     expect(chrome.tabs.create.calledOnce).toBe(true);
     expect(
@@ -19,7 +19,7 @@ describe("background.js", () => {
     ).toBe(true);
   });
 
-  it("should call sanitizeSettings if previous version was not 4", () => {
+  it("Should call 'sanitizeSettings' if previous version was not 4", () => {
     installedListener({ previousVersion: "5" });
     expect(
       chrome.tabs.create.withArgs({
@@ -31,7 +31,7 @@ describe("background.js", () => {
     expect(updateNow).not.toHaveBeenCalled();
   });
 
-  it("should call updateNow if installing for the first time", async () => {
+  it("Should call 'updateNow' if installing for the first time", async () => {
     await installedListener({ reason: "install" });
     expect(sanitizeSettings).toHaveReturned();
     expect(updateNow).toHaveBeenCalled();

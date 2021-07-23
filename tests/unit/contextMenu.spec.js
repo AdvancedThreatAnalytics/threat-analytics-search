@@ -15,18 +15,22 @@ describe("ContextualMenu", () => {
     await ConfigFile.sanitizeSettings();
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("Groups should be added if 'useGroups' is enabled", async () => {
-    // Get and enable useGroups
+    // Get and enable groups.
     const settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
-    const searchProviders =
-      (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
     settings.useGroups = true;
     await LocalStore.setOne(StoreKey.SETTINGS, settings);
 
-    // Call update
+    // Update contextual menu.
     await ContextualMenu.update();
 
-    // Check if non-disabled groups are added
+    // Check if non-disabled groups are added.
+    const searchProviders =
+      (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
     settings.providersGroups.forEach((group, index) => {
       if (
         group.enabled &&
@@ -42,40 +46,23 @@ describe("ContextualMenu", () => {
   });
 
   it("One menu item should be added for each non-disabled search provider", async () => {
-    const sampleData = [
-      {
-        menuIndex: "searchprovider-0",
-        label: "Test 1",
-        link: "http://www.test.com/?q=TESTSEARCH",
-        enabled: true,
-        fromConfig: true,
-        group: 3,
-        postEnabled: false,
-        postValue: "",
-        proxyEnabled: false,
-        proxyUrl: "",
-      },
-      {
-        menuIndex: "searchprovider-1",
-        label: "Test 2",
-        link: "http://www.test.com/?q=TESTSEARCH",
-        enabled: false,
-        fromConfig: true,
-        group: 3,
-        postEnabled: false,
-        postValue: "",
-        proxyEnabled: false,
-        proxyUrl: "",
-      },
-    ];
-    // Set search providers
-    await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, sampleData);
+    const searchProviders =
+      (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
 
-    // Call update
+    // Ensure that there is at least one provider enabled and one disabled.
+    if (searchProviders.length >= 2) {
+      searchProviders[0].enabled = true;
+      searchProviders[1].enabled = false;
+    }
+
+    // Set search providers.
+    await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, searchProviders);
+
+    // Update contextual menu.
     await ContextualMenu.update();
 
-    // Check if only non-disabled providers are added
-    sampleData.forEach((provider, index) => {
+    // Check if only non-disabled providers are added.
+    searchProviders.forEach((provider, index) => {
       if (provider.enabled) {
         expect(createContextMenu).toBeCalledWith({
           id: MenuPreffix.PROVIDER + index,
@@ -93,78 +80,22 @@ describe("ContextualMenu", () => {
   });
 
   it("One menu item should be added for each non-disabled special provider", async () => {
-    const sampleData = {
-      [StoreKey.CARBON_BLACK]: {
-        config: {
-          CBCConfigEnable: false,
-          CBCConfigPopup: false,
-          CBCConfigUseHttps: true,
-          CBCConfigNewTab: true,
-          CBCConfigHost: "192.168.1.10",
-          CBCConfigPort: "",
-          CBCConfigURLVersion: "1",
-        },
-        queries: [
-          {
-            menuIndex: -1,
-            label: "Search All (Mostly Use This)",
-            query: "q=TESTSEARCH",
-            enabled: true,
-          },
-          {
-            menuIndex: -1,
-            label: "Domain Name (FQDN)",
-            query: "cb.q.domain=TESTSEARCH",
-            enabled: false,
-          },
-        ],
-      },
-      [StoreKey.NET_WITNESS]: {
-        config: {
-          NWIConfigEnable: true,
-          NWIConfigPopup: false,
-          NWIConfigGMT: false,
-          NWIConfigHost: "",
-          NWIConfigPort: "",
-          NWIConfigCollectionName: "",
-          NWIConfigRange1: "1",
-          NWIConfigRange2: "24",
-          NWIConfigRange3: "48",
-          NWIConfigRange4: "720",
-        },
-        queries: [],
-      },
-      [StoreKey.RSA_SECURITY]: {
-        config: {
-          RSAConfigEnable: true,
-          RSAConfigPopup: false,
-          RSAConfigUseHttps: true,
-          RSAConfigNewTab: true,
-          RSAConfigHost: "192.168.1.10",
-          RSAConfigPort: "",
-          RSAConfigDevId: "2",
-          RSAConfigRange1: "1",
-          RSAConfigRange2: "24",
-          RSAConfigRange3: "48",
-          RSAConfigRange4: "720",
-        },
-        queries: [
-          {
-            menuIndex: -1,
-            label: "Search Hostname",
-            query: "alias.host='TESTSEARCH'",
-            enabled: true,
-          },
-          {
-            menuIndex: -1,
-            label: "Search Source IP",
-            query: "ip.src=TESTSEARCH",
-            enabled: false,
-          },
-        ],
-      },
-    };
+    // Ensure that there is at least one provider enabled and one disabled, same for queries.
+    const carbonBlack = (await LocalStore.getOne(StoreKey.CARBON_BLACK)) || {};
+    carbonBlack.CBCConfigEnable = false;
+    await LocalStore.setOne(StoreKey.CARBON_BLACK, carbonBlack);
+    const netWitness = (await LocalStore.getOne(StoreKey.NET_WITNESS)) || {};
+    netWitness.NWIConfigEnable = true;
+    if (netWitness.queries.length >= 2) {
+      netWitness.queries[0].enabled = false;
+      netWitness.queries[1].enabled = true;
+    }
+    await LocalStore.setOne(StoreKey.NET_WITNESS, netWitness);
 
+    // Update contextual menu.
+    await ContextualMenu.update();
+
+    // Check if only non-disabled providers are added.
     const providers = [
       {
         storeKey: StoreKey.CARBON_BLACK,
@@ -183,15 +114,6 @@ describe("ContextualMenu", () => {
       },
     ];
 
-    // Set special providers
-    for (const storeKey in sampleData) {
-      await LocalStore.setOne(storeKey, sampleData[storeKey]);
-    }
-
-    // Call update
-    await ContextualMenu.update();
-
-    // Check if only non-disabled providers are added
     for (const provider of providers) {
       const settings = await LocalStore.getOne(provider.storeKey);
       const config = _.get(settings, "config", {});
@@ -213,7 +135,7 @@ describe("ContextualMenu", () => {
         );
       }
 
-      // Check if only non-disabled query items from non-disabled providers are added
+      // Check if only non-disabled query items from non-disabled providers are added.
       for (const index in queries) {
         const query = queries[index];
         if (config[provider.enableKey] && query.enabled) {

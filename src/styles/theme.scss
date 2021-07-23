@@ -1,0 +1,30 @@
+$color-dark: #343741;
+$color-light: #f7f7f7;
+$color-primary: #005a9b;
+$color-primary-light: #0096d6;
+$color-secondary: #ed6c26;
+$color-red: #d14a51;
+
+// Re-define bootstrap variables using theme variables.
+$body-color: $color-dark;
+
+$primary: $color-primary;
+$secondary: rgba($color-dark, 0.8);
+$info: $color-primary-light;
+$warning: rgba($color-secondary, 0.8);
+$danger: $color-red;
+$light: $color-light;
+$dark: $color-dark;
+
+$input-color: $color-dark;
+$input-border-color: rgba($color-dark, 0.2);
+$input-border-focus: $color-primary;
+$input-placeholder-color: rgba($color-dark, 0.6);
+
+// Load and define fonts.
+@import url("https://fonts.googleapis.com/css?family=Roboto");
+
+$font-family-sans-serif: "Roboto", sans-serif;
+
+// Add files.
+@import "node_modules/bootstrap/scss/bootstrap";

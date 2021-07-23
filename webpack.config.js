@@ -2,7 +2,7 @@ const path = require("path");
 const bomPlugin = require("webpack-utf8-bom");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const Dotenv = require('dotenv-webpack');
+const Dotenv = require("dotenv-webpack");
 
 module.exports = (env) => ({
   entry: {
@@ -22,6 +22,10 @@ module.exports = (env) => ({
       {
         test: /\.css$/i,
         use: ["style-loader", "css-loader"],
+      },
+      {
+        test: /\.scss$/i,
+        use: ["style-loader", "css-loader", "sass-loader"],
       },
       {
         test: /\.(svg|eot|woff|woff2|ttf)$/,
@@ -74,7 +78,7 @@ module.exports = (env) => ({
     splitChunks: {
       chunks(chunk) {
         // Dont split background file, otherwise won't be loaded completely by Chrome.
-        return chunk.name !== 'background';
+        return chunk.name !== "background";
       },
     },
   },

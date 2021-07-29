@@ -137,6 +137,15 @@ describe("configFile.js", () => {
   describe("parseBasicSettings function", () => {
     it("data should be parsed correctly", async () => {
       await LocalStore.clear();
+      const rawData = [
+        [
+          "https://raw.githubusercontent.com/AdvancedThreatAnalytics/threat-analytics-search/main/settings.json",
+          "true",
+          "false",
+          "",
+          "false",
+        ],
+      ];
       const expectedParsedData = {
         configurationURL:
           "https://raw.githubusercontent.com/AdvancedThreatAnalytics/threat-analytics-search/main/settings.json",
@@ -145,9 +154,7 @@ describe("configFile.js", () => {
         configEncryptionKey: "",
         autoUpdateConfig: false,
       };
-      const result = await ConfigFile.default.parseBasicSettings(
-        defaultSettings.config
-      );
+      const result = await ConfigFile.default.parseBasicSettings(rawData);
 
       expect(result).toEqual(expect.objectContaining(expectedParsedData));
       expect(result.mergeGroups).toEqual(result.useGroups);
@@ -155,7 +162,14 @@ describe("configFile.js", () => {
   });
 
   describe("parseGroups function", () => {
-    it("only array of length 3 are parsed, result should be an array of object with first two being enabled", async () => {
+    it("Array of length < 3 isn't parsed", async () => {
+      const result = await ConfigFile.default.parseGroups([
+        ["1", "IP Lookup"],
+        ["2", "Domain"],
+      ]);
+      expect(result).toHaveLength(0);
+    });
+    it("Array of length >= 3 are parsed and only first two items are enabled", async () => {
       const groups = [
         ["1", "IP Lookup"],
         ["2", "Domain"],
@@ -166,10 +180,8 @@ describe("configFile.js", () => {
         { name: "Domain", enabled: true },
         { name: "Hash", enabled: false },
       ];
-      var result = await ConfigFile.default.parseGroups(groups.slice(0, 1));
-      expect(result).toHaveLength(0);
 
-      result = await ConfigFile.default.parseGroups(groups);
+      const result = await ConfigFile.default.parseGroups(groups);
       expect(result).toHaveLength(3);
       expect(result).toStrictEqual(expectedResult);
     });
@@ -179,6 +191,9 @@ describe("configFile.js", () => {
     it("configuration is overridden only if the corresponding flag is enabled", async () => {
       const newRSA = _.cloneDeep(defaultSettings.RSA);
       newRSA.Config.RSAConfigEnable = true;
+      newRSA.Config.RSAConfigPopup = true;
+      newRSA.Config.RSAConfigPort = "test";
+      newRSA.Config.RSAConfigDevId = "24";
 
       // Configuration shouldn't be changed if flag is false.
       await ConfigFile.default.updateSpecialProvider(
@@ -190,14 +205,42 @@ describe("configFile.js", () => {
       expect(result.config.RSAConfigEnable).toEqual(
         defaultSettings.RSA.Config.RSAConfigEnable
       );
+      expect(result.config.RSAConfigPopup).toEqual(
+        defaultSettings.RSA.Config.RSAConfigPopup
+      );
+      expect(result.config.RSAConfigPort).toEqual(
+        defaultSettings.RSA.Config.RSAConfigPort
+      );
+      expect(result.config.RSAConfigDevId).toEqual(
+        defaultSettings.RSA.Config.RSAConfigDevId
+      );
+
+      var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      settings.mergeRSA.config = true;
+      await LocalStore.setOne(StoreKey.SETTINGS, settings);
+
+      // Configuration should be changed if flag is true.
+      await ConfigFile.default.updateSpecialProvider(
+        StoreKey.RSA_SECURITY,
+        newRSA,
+        "mergeRSA"
+      );
+      result = await LocalStore.getOne(StoreKey.RSA_SECURITY);
+      expect(result.config.RSAConfigEnable).toEqual(true);
+      expect(result.config.RSAConfigPopup).toEqual(true);
+      expect(result.config.RSAConfigPort).toEqual("test");
+      expect(result.config.RSAConfigDevId).toEqual("24");
     });
 
     it("queries are merged by default and duplicate values aren't added", async () => {
       var newRSA = _.cloneDeep(defaultSettings.RSA);
-      newRSA.Queries = newRSA.Queries.concat([
-        [-1, "Search Destination IP", "ip.dst=TESTSEARCH", true],
-        [-1, "New Search Destination IP", "new_ip.dst=TESTSEARCH", true],
-      ]);
+      const newQuery = [
+        -1,
+        "New Search Destination IP",
+        "new_ip.dst=TESTSEARCH",
+        true,
+      ];
+      newRSA.Queries = newRSA.Queries.concat([newQuery]);
 
       // Queries should be merged by default and duplicate values shouldn't be added.
       await ConfigFile.default.updateSpecialProvider(
@@ -207,22 +250,20 @@ describe("configFile.js", () => {
       );
       var result = await LocalStore.getOne(StoreKey.RSA_SECURITY);
       var expectedResult = _.cloneDeep(defaultSettings.RSA);
-      expectedResult.Queries.push([
-        -1,
-        "New Search Destination IP",
-        "new_ip.dst=TESTSEARCH",
-        true,
-      ]);
+      expectedResult.Queries.push(newQuery);
       expectedResult = ConfigFile.default.parseQueries(expectedResult.Queries);
       expect(result.queries).toEqual(expectedResult);
     });
 
-    it("queries are overridden or ignored depending on corresponding flag", async () => {
+    it("queries are overridden if flag is override", async () => {
       var newRSA = _.cloneDeep(defaultSettings.RSA);
-      newRSA.Queries = [
-        [-1, "Search Destination IP", "ip.dst=TESTSEARCH", true],
-        [-1, "New Search Destination IP", "new_ip.dst=TESTSEARCH", true],
+      const newQuery = [
+        -1,
+        "New Search Destination IP",
+        "new_ip.dst=TESTSEARCH",
+        true,
       ];
+      newRSA.Queries = [newQuery];
 
       // Should override queries if flag is override.
       var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
@@ -234,16 +275,20 @@ describe("configFile.js", () => {
         "mergeRSA"
       );
       var result = await LocalStore.getOne(StoreKey.RSA_SECURITY);
-      var expectedResult = ConfigFile.default.parseQueries([
-        [-1, "Search Destination IP", "ip.dst=TESTSEARCH", true],
-        [-1, "New Search Destination IP", "new_ip.dst=TESTSEARCH", true],
-      ]);
+      var expectedResult = ConfigFile.default.parseQueries([newQuery]);
       expect(result.queries).toEqual(expectedResult);
+    });
 
-      // Should ignore queries if flag is ignore.
-      newRSA.Queries = [
-        [-1, "Search Hostname", "alias.host='TESTSEARCH'", true],
+    it("queries are ignore if flag is ignore", async () => {
+      var newRSA = _.cloneDeep(defaultSettings.RSA);
+      const newQuery = [
+        -1,
+        "New Search Destination IP",
+        "new_ip.dst=TESTSEARCH",
+        true,
       ];
+      var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      newRSA.Queries = [newQuery];
       settings.mergeRSA.queries = "ignore";
       await LocalStore.setOne(StoreKey.SETTINGS, settings);
       await ConfigFile.default.updateSpecialProvider(
@@ -251,7 +296,8 @@ describe("configFile.js", () => {
         newRSA,
         "mergeRSA"
       );
-      result = await LocalStore.getOne(StoreKey.RSA_SECURITY);
+      const result = await LocalStore.getOne(StoreKey.RSA_SECURITY);
+      var expectedResult = ConfigFile.default.parseQueries([newQuery]);
       expect(result.queries).toEqual(expectedResult);
     });
   });
@@ -259,14 +305,9 @@ describe("configFile.js", () => {
   describe("parseJSONFile function", () => {
     it("basic settings should be overridden if the corresponding flag is enabled", async () => {
       await LocalStore.clear();
-      const expectedParsedData = {
-        configurationURL:
-          "https://raw.githubusercontent.com/AdvancedThreatAnalytics/threat-analytics-search/main/settings.json",
-        useGroups: true,
-        configEncrypted: false,
-        configEncryptionKey: "",
-        autoUpdateConfig: false,
-      };
+      const expectedParsedData = ConfigFile.default.parseBasicSettings(
+        defaultSettings.config
+      );
 
       // Shouldn't override if the flag is false.
       await ConfigFile.default.parseJSONFile(defaultSettings, false);
@@ -282,11 +323,9 @@ describe("configFile.js", () => {
     it("groups name should be updated only if the mergeGroups is true", async () => {
       var newData = _.cloneDeep(defaultSettings);
       var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
-      const defaultProvidersGroup = [
-        { name: "IP Lookup", enabled: true },
-        { name: "Domain", enabled: true },
-        { name: "Hash", enabled: false },
-      ];
+      const defaultProvidersGroup = ConfigFile.default.parseGroups(
+        defaultSettings.groups
+      );
 
       // If mergeGroups is false shouldn't override.
       settings.mergeGroups = false;
@@ -305,38 +344,15 @@ describe("configFile.js", () => {
       expect(settings.providersGroups).toEqual(defaultProvidersGroup);
     });
 
-    it("search providers are merged, overridden and ignored depending on corresponding flag", async () => {
-      var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+    it("search providers are merged if flag is merge", async () => {
       var serachProviders = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
 
       // By default flag should be merge and duplicate values shouldn't be added.
       var newData = {
-        searchproviders: [
-          [
-            -1,
-            "Google new",
-            "http://www.google2.com/search?q=TESTSEARCH",
-            true,
-            true,
-            3,
-            false,
-            "",
-            false,
-            "",
-          ],
-          [
-            -1,
-            "D - AlienVault OTX Domain",
-            "https://otx.alienvault.com/indicator/domain/TESTSEARCH",
-            true,
-            true,
-            2,
-            false,
-            "",
-            false,
-            "",
-          ],
-        ],
+        searchproviders: _.cloneDeep(defaultSettings.searchproviders).splice(
+          0,
+          2
+        ),
       };
 
       await ConfigFile.default.parseJSONFile(newData);
@@ -353,17 +369,26 @@ describe("configFile.js", () => {
         proxyEnabled: false,
         proxyUrl: "",
       });
-      var newSerachProviders = await LocalStore.getOne(
+      var newSearchProviders = await LocalStore.getOne(
         StoreKey.SEARCH_PROVIDERS
       );
-      expect(newSerachProviders).toEqual(serachProviders);
-
-      // Override flag should change searchProviders to new values.
+      expect(newSearchProviders).toEqual(serachProviders);
+    });
+    it("search providers are overridden if flag is override", async () => {
+      var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       settings.mergeSearchProviders = "override";
       await LocalStore.setOne(StoreKey.SETTINGS, settings);
+      var newData = {
+        searchproviders: _.cloneDeep(defaultSettings.searchproviders).splice(
+          0,
+          2
+        ),
+      };
       await ConfigFile.default.parseJSONFile(newData);
-      newSerachProviders = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
-      expect(newSerachProviders).toEqual(
+      const newSearchProviders = await LocalStore.getOne(
+        StoreKey.SEARCH_PROVIDERS
+      );
+      expect(newSearchProviders).toEqual(
         ConfigFile.default.parseProviders(newData.searchproviders)
       );
     });

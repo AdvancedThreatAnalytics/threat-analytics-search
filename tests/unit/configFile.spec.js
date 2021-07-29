@@ -4,16 +4,16 @@ import LocalStore from "../../src/js/shared/local_store";
 import { StoreKey } from "../../src/js/shared/constants";
 
 require("./util");
-const ConfigFile = require("../../src/js/shared/config_file");
+const ConfigFile = require("../../src/js/shared/config_file").default;
 const defaultSettings = require("../resources/defaultSettings.json");
 const encryptedSettings = require("../resources/encryptedSettings.json");
 
-const parseJSONFile = jest.spyOn(ConfigFile.default, "parseJSONFile");
-const updateNow = jest.spyOn(ConfigFile.default, "updateNow");
+const parseJSONFile = jest.spyOn(ConfigFile, "parseJSONFile");
+const updateNow = jest.spyOn(ConfigFile, "updateNow");
 
 describe("configFile.js", () => {
   beforeEach(async () => {
-    await ConfigFile.default.sanitizeSettings();
+    await ConfigFile.sanitizeSettings();
 
     // Disable console's errors (used on 'updatedNow').
     jest.spyOn(console, "error").mockImplementation(() => {});
@@ -87,16 +87,16 @@ describe("configFile.js", () => {
   describe("generateJSONFile function", () => {
     it("generateJSONFile result should be equal to simple configuration file", async () => {
       await LocalStore.clear();
-      await ConfigFile.default.sanitizeSpecialProviders();
-      await ConfigFile.default.parseJSONFile(defaultSettings, true);
-      const result = await ConfigFile.default.generateJSONFile();
+      await ConfigFile.sanitizeSpecialProviders();
+      await ConfigFile.parseJSONFile(defaultSettings, true);
+      const result = await ConfigFile.generateJSONFile();
       expect(result).toStrictEqual(_.omit(defaultSettings, "update"));
     });
 
     it("generateJSONFile result should be equal to changed configuration file", async () => {
       await LocalStore.clear();
-      await ConfigFile.default.sanitizeSpecialProviders();
-      await ConfigFile.default.parseJSONFile(defaultSettings, true);
+      await ConfigFile.sanitizeSpecialProviders();
+      await ConfigFile.parseJSONFile(defaultSettings, true);
 
       // Change data in local storage.
       var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
@@ -129,7 +129,7 @@ describe("configFile.js", () => {
       );
       changedSettings.RSA.Queries.shift();
       changedSettings.RSA.Queries[0][1] = "changed label";
-      const result = await ConfigFile.default.generateJSONFile();
+      const result = await ConfigFile.generateJSONFile();
       expect(result).toStrictEqual(changedSettings);
     });
   });
@@ -391,6 +391,127 @@ describe("configFile.js", () => {
       expect(newSearchProviders).toEqual(
         ConfigFile.default.parseProviders(newData.searchproviders)
       );
+    });
+  });
+
+  describe("sanitizeSettings function", () => {
+    it("Settings and groups should be initialized with default values if some fields are missing", async () => {
+      // Initialize settings sample with some missings fields
+      const sampleConfig = {
+        resultsInBackgroundTab: true,
+        enableAdjacentTabs: true,
+        openGroupsInNewWindow: true,
+        enableOptionsMenuItem: true,
+
+        mergeGroups: false,
+        mergeSearchProviders: "merge",
+        mergeCBC: { config: false, queries: "merge" },
+        mergeNWI: { config: false, queries: "merge" },
+        mergeRSA: { config: false, queries: "merge" },
+      };
+
+      // Set sample to chrome's storage
+      await LocalStore.setOne(StoreKey.SETTINGS, sampleConfig);
+
+      // Sanitize settings
+      await ConfigFile.sanitizeSettings();
+
+      // Get default settings and groups
+      const defaultConfig = ConfigFile.parseBasicSettings(
+        defaultSettings.config
+      );
+      defaultConfig.providersGroups = ConfigFile.parseGroups(
+        defaultSettings.groups
+      );
+
+      // Check if missing fields are initialized with default values
+      const settings = await LocalStore.getOne(StoreKey.SETTINGS);
+      const expectedSettings = _.assign(defaultConfig, sampleConfig);
+
+      expect(settings).toEqual(expectedSettings);
+    });
+
+    it("Settings should not be modified if values are valid", async () => {
+      // Initialize settings with valid sample
+      const sampleConfig = {
+        configurationURL: "https://criticalstart.com",
+        useGroups: true,
+        configEncrypted: false,
+        configEncryptionKey: "",
+        autoUpdateConfig: false,
+
+        resultsInBackgroundTab: true,
+        enableAdjacentTabs: true,
+        openGroupsInNewWindow: true,
+        enableOptionsMenuItem: true,
+
+        mergeGroups: false,
+        mergeSearchProviders: "merge",
+        mergeCBC: { config: false, queries: "merge" },
+        mergeNWI: { config: false, queries: "merge" },
+        mergeRSA: { config: false, queries: "merge" },
+
+        providersGroups: [],
+      };
+
+      // Set sample to chrome's storage
+      await LocalStore.setOne(StoreKey.SETTINGS, sampleConfig);
+
+      // Sanitize settings
+      await ConfigFile.sanitizeSettings();
+
+      // Check if settings are not altered
+      const settings = await LocalStore.getOne(StoreKey.SETTINGS);
+
+      expect(settings).toEqual(sampleConfig);
+    });
+
+    it("Search providers should be initialized with default values if not defined", async () => {
+      // Set empty search providers to chrome's storage
+      await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, []);
+
+      // Sanitize settings
+      await ConfigFile.sanitizeSettings();
+
+      // Check if search providers are initialized with default values
+      const providers = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
+      const expectedProviders = ConfigFile.parseProviders(
+        defaultSettings.searchproviders
+      );
+
+      expect(providers).toEqual(expectedProviders);
+    });
+
+    it("Special providers should be initialized with default values if not defined", async () => {
+      const specialProviders = [
+        { storeKey: StoreKey.CARBON_BLACK, fileKey: "CBC" },
+        { storeKey: StoreKey.NET_WITNESS, fileKey: "NWI" },
+        { storeKey: StoreKey.RSA_SECURITY, fileKey: "RSA" },
+      ];
+
+      // Set invalid special providers to chrome's storage
+      for (const provider of specialProviders) {
+        await LocalStore.setOne(provider.storeKey, {
+          config: null,
+          queries: null,
+        });
+      }
+
+      // Sanitize settings
+      await ConfigFile.sanitizeSettings();
+
+      // Check if special providers' config and queries are initialized with default values
+      for (const provider of specialProviders) {
+        const data = await LocalStore.getOne(provider.storeKey);
+        const expectedData = {
+          config: _.get(defaultSettings, `${provider.fileKey}.Config`, {}),
+          queries: ConfigFile.parseQueries(
+            _.get(defaultSettings, `${provider.fileKey}.Queries`, [])
+          ),
+        };
+
+        expect(data).toEqual(expectedData);
+      }
     });
   });
 });

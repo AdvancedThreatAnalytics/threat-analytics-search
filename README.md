@@ -68,7 +68,8 @@ These commands will create `dist` directory and copies all files into it and min
 
 Tesing is done using [Jest](https://jestjs.io/) and all test files are located inside `tests/` folder.
 
-  - Unit tests are located on the `tests/unit` folder, and can be fun using the `yarn run test:unit` command.
+  - Unit tests are located on the `tests/unit` folder, and can be run using the `yarn run test:unit` command.
+  - Unit tests are located on the `tests/e2e` folder, and can be run using the `yarn run test:e2e` command (don't forget to build the extension before doing it).
 
 ### Packaging
 

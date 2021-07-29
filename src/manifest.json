@@ -8,7 +8,7 @@
     "48": "./images/icon_48.png",
     "128": "./images/icon_128.png"
   },
-  "description": "Use the Context Menu (right click menu) in Chrome to conduct single or group searches for selected text.",
+  "description": "Use the Context Menu (right click menu) in the browser to conduct single or group searches for selected text.",
   "background": {
     "service_worker": "background.js"
   },
@@ -17,5 +17,5 @@
   "host_permissions": ["http://*/*", "https://*/*"],
   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCpwQdswwbWCDVkWd4XMJ1nxuzZYNmgnturk8DeuZgc85IPRiLyg5TTQKgSVjGU2s/i8a3qB/RsmMw7LR2V8f2L0z4qUO2CX3UfqeOtJMv1MkcUPTYBj7bOGe5sj4bFtKFMBD2YiSizlIFkFe63q0fr1QX6eF3DCBpgheYUTfmkzQIDAQAB",
   "homepage_url": "http://www.criticalstart.com/company/",
-  "update_url": "https://clients2.google.com/service/update2/crx"
+  "update_url": "process.env.update_url"
 }

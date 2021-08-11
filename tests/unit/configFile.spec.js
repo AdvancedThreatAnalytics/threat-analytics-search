@@ -28,7 +28,7 @@ describe("configFile.js", () => {
     });
 
     it("parseJSONFile should be called with decrypted file content and return true", async () => {
-      var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      const settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       settings.configEncrypted = true;
       settings.configEncryptionKey = "password";
       await LocalStore.setOne(StoreKey.SETTINGS, settings);
@@ -44,7 +44,7 @@ describe("configFile.js", () => {
       fetch.mockAbortOnce();
 
       const result = await updateNow();
-      var lastConfigData = await LocalStore.getOne(StoreKey.LAST_CONFIG_DATA);
+      const lastConfigData = await LocalStore.getOne(StoreKey.LAST_CONFIG_DATA);
       expect(lastConfigData.errorMsg).not.toBe(null);
       expect(result).toBe(false);
     });
@@ -53,32 +53,32 @@ describe("configFile.js", () => {
       fetch.mockResponseOnce(JSON.stringify(defaultSettings), { status: 400 });
 
       const result = await updateNow();
-      var lastConfigData = await LocalStore.getOne(StoreKey.LAST_CONFIG_DATA);
+      const lastConfigData = await LocalStore.getOne(StoreKey.LAST_CONFIG_DATA);
       expect(lastConfigData.errorMsg).not.toBe(null);
       expect(result).toBe(false);
     });
 
     it("errorMsg shouldn't be null if file is encrypted but encryption is disabled", async () => {
-      var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      const settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       settings.configEncrypted = false;
       await LocalStore.setOne(StoreKey.SETTINGS, settings);
       fetch.mockResponseOnce(encryptedSettings.encryptedData);
 
       const result = await updateNow();
-      var lastConfigData = await LocalStore.getOne(StoreKey.LAST_CONFIG_DATA);
+      const lastConfigData = await LocalStore.getOne(StoreKey.LAST_CONFIG_DATA);
       expect(lastConfigData.errorMsg).not.toBe(null);
       expect(result).toBe(false);
     });
 
     it("errorMsg shouldn't be null if file is encrypted but encryption key is wrong", async () => {
-      var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      const settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       settings.configEncrypted = true;
       settings.configEncryptionKey = "wrong password";
       await LocalStore.setOne(StoreKey.SETTINGS, settings);
       fetch.mockResponseOnce(encryptedSettings.encryptedData);
 
       const result = await updateNow();
-      var lastConfigData = await LocalStore.getOne(StoreKey.LAST_CONFIG_DATA);
+      const lastConfigData = await LocalStore.getOne(StoreKey.LAST_CONFIG_DATA);
       expect(lastConfigData.errorMsg).not.toBe(null);
       expect(result).toBe(false);
     });
@@ -99,10 +99,10 @@ describe("configFile.js", () => {
       await ConfigFile.parseJSONFile(defaultSettings, true);
 
       // Change data in local storage.
-      var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
-      var providers =
+      const settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      const providers =
         (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || {};
-      var rsa = (await LocalStore.getOne(StoreKey.RSA_SECURITY)) || {};
+      const rsa = (await LocalStore.getOne(StoreKey.RSA_SECURITY)) || {};
       settings.configEncrypted = true;
       settings.configEncryptionKey = "some password";
       settings.providersGroups[0].name = "changed group";
@@ -135,11 +135,11 @@ describe("configFile.js", () => {
   });
 
   describe("parseBasicSettings function", () => {
-    it("data should be parsed correctly", async () => {
+    it("Data should be parsed correctly", async () => {
       await LocalStore.clear();
       const rawData = [
         [
-          "https://raw.githubusercontent.com/AdvancedThreatAnalytics/threat-analytics-search/main/settings.json",
+          "https://wwww.some-domain.com/settings.json",
           "true",
           "false",
           "",
@@ -147,14 +147,13 @@ describe("configFile.js", () => {
         ],
       ];
       const expectedParsedData = {
-        configurationURL:
-          "https://raw.githubusercontent.com/AdvancedThreatAnalytics/threat-analytics-search/main/settings.json",
+        configurationURL: rawData[0][0],
         useGroups: true,
         configEncrypted: false,
         configEncryptionKey: "",
         autoUpdateConfig: false,
       };
-      const result = await ConfigFile.default.parseBasicSettings(rawData);
+      const result = await ConfigFile.parseBasicSettings(rawData);
 
       expect(result).toEqual(expect.objectContaining(expectedParsedData));
       expect(result.mergeGroups).toEqual(result.useGroups);
@@ -162,14 +161,14 @@ describe("configFile.js", () => {
   });
 
   describe("parseGroups function", () => {
-    it("Array of length < 3 isn't parsed", async () => {
-      const result = await ConfigFile.default.parseGroups([
+    it("Array of length < 3 shouldn't be parsed", async () => {
+      const result = await ConfigFile.parseGroups([
         ["1", "IP Lookup"],
         ["2", "Domain"],
       ]);
       expect(result).toHaveLength(0);
     });
-    it("Array of length >= 3 are parsed and only first two items are enabled", async () => {
+    it("Array of length >= 3 is parsed and only first two items are enabled", async () => {
       const groups = [
         ["1", "IP Lookup"],
         ["2", "Domain"],
@@ -181,14 +180,14 @@ describe("configFile.js", () => {
         { name: "Hash", enabled: false },
       ];
 
-      const result = await ConfigFile.default.parseGroups(groups);
+      const result = await ConfigFile.parseGroups(groups);
       expect(result).toHaveLength(3);
       expect(result).toStrictEqual(expectedResult);
     });
   });
 
   describe("updateSpecialProvider function", () => {
-    it("configuration is overridden only if the corresponding flag is enabled", async () => {
+    it("Configuration is overridden only if the corresponding flag is enabled", async () => {
       const newRSA = _.cloneDeep(defaultSettings.RSA);
       newRSA.Config.RSAConfigEnable = true;
       newRSA.Config.RSAConfigPopup = true;
@@ -196,12 +195,12 @@ describe("configFile.js", () => {
       newRSA.Config.RSAConfigDevId = "24";
 
       // Configuration shouldn't be changed if flag is false.
-      await ConfigFile.default.updateSpecialProvider(
+      await ConfigFile.updateSpecialProvider(
         StoreKey.RSA_SECURITY,
         newRSA,
         "mergeRSA"
       );
-      var result = await LocalStore.getOne(StoreKey.RSA_SECURITY);
+      let result = await LocalStore.getOne(StoreKey.RSA_SECURITY);
       expect(result.config.RSAConfigEnable).toEqual(
         defaultSettings.RSA.Config.RSAConfigEnable
       );
@@ -215,25 +214,31 @@ describe("configFile.js", () => {
         defaultSettings.RSA.Config.RSAConfigDevId
       );
 
-      var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      const settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       settings.mergeRSA.config = true;
       await LocalStore.setOne(StoreKey.SETTINGS, settings);
 
       // Configuration should be changed if flag is true.
-      await ConfigFile.default.updateSpecialProvider(
+      await ConfigFile.updateSpecialProvider(
         StoreKey.RSA_SECURITY,
         newRSA,
         "mergeRSA"
       );
       result = await LocalStore.getOne(StoreKey.RSA_SECURITY);
-      expect(result.config.RSAConfigEnable).toEqual(true);
-      expect(result.config.RSAConfigPopup).toEqual(true);
-      expect(result.config.RSAConfigPort).toEqual("test");
-      expect(result.config.RSAConfigDevId).toEqual("24");
+      expect(result.config.RSAConfigEnable).toEqual(
+        newRSA.Config.RSAConfigEnable
+      );
+      expect(result.config.RSAConfigPopup).toEqual(
+        newRSA.Config.RSAConfigPopup
+      );
+      expect(result.config.RSAConfigPort).toEqual(newRSA.Config.RSAConfigPort);
+      expect(result.config.RSAConfigDevId).toEqual(
+        newRSA.Config.RSAConfigDevId
+      );
     });
 
-    it("queries are merged by default and duplicate values aren't added", async () => {
-      var newRSA = _.cloneDeep(defaultSettings.RSA);
+    it("Queries are merged by default and duplicate values aren't added", async () => {
+      const newRSA = _.cloneDeep(defaultSettings.RSA);
       const newQuery = [
         -1,
         "New Search Destination IP",
@@ -243,20 +248,20 @@ describe("configFile.js", () => {
       newRSA.Queries = newRSA.Queries.concat([newQuery]);
 
       // Queries should be merged by default and duplicate values shouldn't be added.
-      await ConfigFile.default.updateSpecialProvider(
+      await ConfigFile.updateSpecialProvider(
         StoreKey.RSA_SECURITY,
         newRSA,
         "mergeRSA"
       );
-      var result = await LocalStore.getOne(StoreKey.RSA_SECURITY);
-      var expectedResult = _.cloneDeep(defaultSettings.RSA);
+      const result = await LocalStore.getOne(StoreKey.RSA_SECURITY);
+      let expectedResult = _.cloneDeep(defaultSettings.RSA);
       expectedResult.Queries.push(newQuery);
-      expectedResult = ConfigFile.default.parseQueries(expectedResult.Queries);
+      expectedResult = ConfigFile.parseQueries(expectedResult.Queries);
       expect(result.queries).toEqual(expectedResult);
     });
 
-    it("queries are overridden if flag is override", async () => {
-      var newRSA = _.cloneDeep(defaultSettings.RSA);
+    it("Queries are overridden if flag is override", async () => {
+      const newRSA = _.cloneDeep(defaultSettings.RSA);
       const newQuery = [
         -1,
         "New Search Destination IP",
@@ -266,71 +271,72 @@ describe("configFile.js", () => {
       newRSA.Queries = [newQuery];
 
       // Should override queries if flag is override.
-      var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      const settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       settings.mergeRSA.queries = "override";
       await LocalStore.setOne(StoreKey.SETTINGS, settings);
-      await ConfigFile.default.updateSpecialProvider(
+      await ConfigFile.updateSpecialProvider(
         StoreKey.RSA_SECURITY,
         newRSA,
         "mergeRSA"
       );
-      var result = await LocalStore.getOne(StoreKey.RSA_SECURITY);
-      var expectedResult = ConfigFile.default.parseQueries([newQuery]);
+      const result = await LocalStore.getOne(StoreKey.RSA_SECURITY);
+      const expectedResult = ConfigFile.parseQueries([newQuery]);
       expect(result.queries).toEqual(expectedResult);
     });
 
-    it("queries are ignore if flag is ignore", async () => {
-      var newRSA = _.cloneDeep(defaultSettings.RSA);
+    it("Queries are ignored if flag is ignore", async () => {
+      const newRSA = _.cloneDeep(defaultSettings.RSA);
       const newQuery = [
         -1,
         "New Search Destination IP",
         "new_ip.dst=TESTSEARCH",
         true,
       ];
-      var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      const settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       newRSA.Queries = [newQuery];
       settings.mergeRSA.queries = "ignore";
       await LocalStore.setOne(StoreKey.SETTINGS, settings);
-      await ConfigFile.default.updateSpecialProvider(
+      await ConfigFile.updateSpecialProvider(
         StoreKey.RSA_SECURITY,
         newRSA,
         "mergeRSA"
       );
+
       const result = await LocalStore.getOne(StoreKey.RSA_SECURITY);
-      var expectedResult = ConfigFile.default.parseQueries([newQuery]);
+      const expectedResult = ConfigFile.parseQueries([newQuery]);
       expect(result.queries).toEqual(expectedResult);
     });
   });
 
   describe("parseJSONFile function", () => {
-    it("basic settings should be overridden if the corresponding flag is enabled", async () => {
+    it("Basic settings should be overridden if the corresponding flag is enabled", async () => {
       await LocalStore.clear();
-      const expectedParsedData = ConfigFile.default.parseBasicSettings(
+      const expectedParsedData = ConfigFile.parseBasicSettings(
         defaultSettings.config
       );
 
       // Shouldn't override if the flag is false.
-      await ConfigFile.default.parseJSONFile(defaultSettings, false);
-      var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      await ConfigFile.parseJSONFile(defaultSettings, false);
+      let settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       expect(settings).toEqual({});
 
       // Should override if the flag is true.
-      await ConfigFile.default.parseJSONFile(defaultSettings, true);
+      await ConfigFile.parseJSONFile(defaultSettings, true);
       settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       expect(settings).toEqual(expect.objectContaining(expectedParsedData));
     });
 
-    it("groups name should be updated only if the mergeGroups is true", async () => {
-      var newData = _.cloneDeep(defaultSettings);
-      var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
-      const defaultProvidersGroup = ConfigFile.default.parseGroups(
+    it("Groups named should be updated only if the mergeGroups is true", async () => {
+      const newData = _.cloneDeep(defaultSettings);
+      let settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      const defaultProvidersGroup = ConfigFile.parseGroups(
         defaultSettings.groups
       );
 
       // If mergeGroups is false shouldn't override.
       settings.mergeGroups = false;
       await LocalStore.setOne(StoreKey.SETTINGS, settings);
-      await ConfigFile.default.parseJSONFile(newData);
+      await ConfigFile.parseJSONFile(newData);
       settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       expect(settings.providersGroups).toEqual(defaultProvidersGroup);
 
@@ -339,25 +345,27 @@ describe("configFile.js", () => {
       newData.groups[2][1] = "New Hash";
       settings.mergeGroups = true;
       await LocalStore.setOne(StoreKey.SETTINGS, settings);
-      await ConfigFile.default.parseJSONFile(newData);
+      await ConfigFile.parseJSONFile(newData);
       settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       expect(settings.providersGroups).toEqual(defaultProvidersGroup);
     });
 
-    it("search providers are merged if flag is merge", async () => {
-      var serachProviders = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
+    it("Search providers are merged if flag is merge", async () => {
+      const searchProviders = await LocalStore.getOne(
+        StoreKey.SEARCH_PROVIDERS
+      );
 
       // By default flag should be merge and duplicate values shouldn't be added.
-      var newData = {
+      const newData = {
         searchproviders: _.cloneDeep(defaultSettings.searchproviders).splice(
           0,
           2
         ),
       };
 
-      await ConfigFile.default.parseJSONFile(newData);
+      await ConfigFile.parseJSONFile(newData);
 
-      serachProviders.push({
+      searchProviders.push({
         menuIndex: -1,
         label: "Google new",
         link: "https://www.google2.com/search?q=TESTSEARCH",
@@ -369,27 +377,28 @@ describe("configFile.js", () => {
         proxyEnabled: false,
         proxyUrl: "",
       });
-      var newSearchProviders = await LocalStore.getOne(
+      const newSearchProviders = await LocalStore.getOne(
         StoreKey.SEARCH_PROVIDERS
       );
-      expect(newSearchProviders).toEqual(serachProviders);
+      expect(newSearchProviders).toEqual(searchProviders);
     });
-    it("search providers are overridden if flag is override", async () => {
-      var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+
+    it("Search providers are overridden if flag is override", async () => {
+      const settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       settings.mergeSearchProviders = "override";
       await LocalStore.setOne(StoreKey.SETTINGS, settings);
-      var newData = {
+      const newData = {
         searchproviders: _.cloneDeep(defaultSettings.searchproviders).splice(
           0,
           2
         ),
       };
-      await ConfigFile.default.parseJSONFile(newData);
+      await ConfigFile.parseJSONFile(newData);
       const newSearchProviders = await LocalStore.getOne(
         StoreKey.SEARCH_PROVIDERS
       );
       expect(newSearchProviders).toEqual(
-        ConfigFile.default.parseProviders(newData.searchproviders)
+        ConfigFile.parseProviders(newData.searchproviders)
       );
     });
   });

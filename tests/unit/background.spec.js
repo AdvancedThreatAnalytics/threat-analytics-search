@@ -17,7 +17,7 @@ const sanitizeSettings = jest.spyOn(ConfigFile.default, "sanitizeSettings");
 const updateNow = jest.spyOn(ConfigFile.default, "updateNow");
 
 describe("background.js", () => {
-  it("should open migration.html if previous version was 4", () => {
+  it("Should open migration.html if previous version was 4", () => {
     installedListener({ previousVersion: "4" });
     expect(createTabs).toHaveBeenCalled();
     expect(createTabs).toBeCalledWith({
@@ -26,7 +26,7 @@ describe("background.js", () => {
     });
   });
 
-  it("should call sanitizeSettings if previous version was not 4", () => {
+  it("Should call sanitizeSettings if previous version was not 4", () => {
     installedListener({ previousVersion: "5" });
     expect(createTabs).toBeCalledWith({
       url: MiscURLs.INSTALLED_URL,
@@ -36,13 +36,13 @@ describe("background.js", () => {
     expect(updateNow).not.toHaveBeenCalled();
   });
 
-  it("should call updateNow if installing for the first time", async () => {
+  it("Should call updateNow if installing for the first time", async () => {
     await installedListener({ reason: "install" });
     expect(sanitizeSettings).toHaveReturned();
     expect(updateNow).toHaveBeenCalled();
   });
 
-  it("should open tab for simple search provider", async () => {
+  it("Should open tab for simple search provider", async () => {
     const info = {
       menuItemId: "searchprovider-0",
       selectionText: "test",
@@ -53,11 +53,11 @@ describe("background.js", () => {
     onClickedListener(info, tab);
 
     const providers = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
-    var settings = await LocalStore.getOne(StoreKey.SETTINGS);
+    const settings = await LocalStore.getOne(StoreKey.SETTINGS);
     const provider = _.find(providers, function (item) {
       return item.menuIndex === info.menuItemId;
     });
-    var targetURL = getProviderTargetURL(provider, info.selectionText);
+    let targetURL = getProviderTargetURL(provider, info.selectionText);
     expect(createTabs).toBeCalledWith({
       url: targetURL,
       selected: !settings.resultsInBackgroundTab,
@@ -76,7 +76,7 @@ describe("background.js", () => {
     });
   });
 
-  it("should open group providers", async () => {
+  it("Should open group providers", async () => {
     const newProviders = [
       {
         menuIndex: "searchprovider-37",
@@ -103,10 +103,11 @@ describe("background.js", () => {
         proxyUrl: "",
       },
     ];
-    var providers = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
+    let providers = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
     providers = providers.concat(newProviders);
     await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, providers);
-    var settings = await LocalStore.getOne(StoreKey.SETTINGS);
+
+    const settings = await LocalStore.getOne(StoreKey.SETTINGS);
     const info = {
       menuItemId: "group-3",
       selectionText: "test",
@@ -114,7 +115,7 @@ describe("background.js", () => {
     const tab = {
       index: 10,
     };
-    var urls = _.map(newProviders, function (provider) {
+    const urls = _.map(newProviders, function (provider) {
       return getProviderTargetURL(provider, info.selectionText);
     });
 
@@ -143,12 +144,12 @@ describe("background.js", () => {
     });
   });
 
-  it("should open options page", async () => {
+  it("Should open options page", async () => {
     await onClickedListener({ menuItemId: "optionspage" });
     expect(chrome.runtime.openOptionsPage.calledOnce).toBe(true);
   });
 
-  it("should open RSA item", async () => {
+  it("Should open RSA item", async () => {
     const info = {
       parentMenuItemId: "rsasecurity-0",
       menuItemId: "rsasecurity-0_1",
@@ -162,7 +163,7 @@ describe("background.js", () => {
     });
   });
 
-  it("should open CBC item", async () => {
+  it("Should open CBC item", async () => {
     const info = {
       parentMenuItemId: "parent-1",
       menuItemId: "carbonblack-0",
@@ -176,7 +177,7 @@ describe("background.js", () => {
     });
   });
 
-  it("should open NWI item", async () => {
+  it("Should open NWI item", async () => {
     const info = {
       parentMenuItemId: "netwitness-0",
       menuItemId: "netwitness-0_1",

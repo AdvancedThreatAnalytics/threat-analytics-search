@@ -8,6 +8,7 @@ import { getProviderTargetURL } from "../../src/js/shared/misc";
 const ConfigFile = require("../../src/js/shared/config_file");
 const { MiscURLs } = require("../../src/js/shared/constants");
 const {
+  ContextualMenu,
   installedListener,
   onClickedListener,
 } = require("../../src/background");
@@ -41,6 +42,23 @@ describe("background.js", () => {
     expect(sanitizeSettings).toHaveReturned();
     expect(updateNow).toHaveBeenCalled();
   });
+});
+
+describe("ContextMenu", () => {
+  beforeAll(async () => {
+    let rsa = await LocalStore.getOne(StoreKey.RSA_SECURITY);
+    let nwi = await LocalStore.getOne(StoreKey.NET_WITNESS);
+    let cbc = await LocalStore.getOne(StoreKey.CARBON_BLACK);
+    rsa.config.RSAConfigEnable = true;
+    nwi.config.NWIConfigEnable = true;
+    cbc.config.CBCConfigEnable = true;
+    await LocalStore.setOne(StoreKey.RSA_SECURITY, rsa);
+    await LocalStore.setOne(StoreKey.NET_WITNESS, nwi);
+    await LocalStore.setOne(StoreKey.CARBON_BLACK, cbc);
+
+    // Update contextual menu.
+    await ContextualMenu.update();
+  });
 
   it("Should open tab for simple search provider", async () => {
     const info = {
@@ -50,25 +68,60 @@ describe("background.js", () => {
     const tab = {
       index: 10,
     };
-    onClickedListener(info, tab);
+    await onClickedListener(info, tab);
 
     const providers = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
     const settings = await LocalStore.getOne(StoreKey.SETTINGS);
     const provider = _.find(providers, function (item) {
       return item.menuIndex === info.menuItemId;
     });
-    let targetURL = getProviderTargetURL(provider, info.selectionText);
+    const targetURL = getProviderTargetURL(provider, info.selectionText);
     expect(createTabs).toBeCalledWith({
       url: targetURL,
       selected: !settings.resultsInBackgroundTab,
       index: tab.index + 1,
     });
+  });
 
-    // Test providers with a POST request.
+  it("Should open dialog for POST search provider", async () => {
+    const info = {
+      menuItemId: "searchprovider-0",
+      selectionText: "test",
+    };
+    const tab = {
+      index: 10,
+    };
+    const providers = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
+    const settings = await LocalStore.getOne(StoreKey.SETTINGS);
     providers[0].postEnabled = true;
     await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, providers);
     await onClickedListener(info, tab);
-    targetURL = getProviderTargetURL(provider, info.selectionText);
+    const targetURL = getProviderTargetURL(providers[0], info.selectionText);
+
+    expect(createTabs).toBeCalledWith({
+      url: targetURL,
+      selected: !settings.resultsInBackgroundTab,
+      index: tab.index + 1,
+    });
+  });
+
+  it("Should open dialog for proxy search provider", async () => {
+    const info = {
+      menuItemId: "searchprovider-0",
+      selectionText: "test",
+    };
+    const tab = {
+      index: 10,
+    };
+    const providers = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
+    const settings = await LocalStore.getOne(StoreKey.SETTINGS);
+    providers[0].proxyEnabled = true;
+    providers[0].proxyUrl =
+      "https://run.mocky.io/v3/49340c84-b278-4332-8c5c-59ef778fb958";
+    await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, providers);
+    await onClickedListener(info, tab);
+    const targetURL = getProviderTargetURL(providers[0], info.selectionText);
+
     expect(createTabs).toBeCalledWith({
       url: targetURL,
       selected: !settings.resultsInBackgroundTab,

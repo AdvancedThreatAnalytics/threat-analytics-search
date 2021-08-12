@@ -108,7 +108,7 @@ export async function onClickedListener(info, tab) {
 
 // --- Contextual menu --- //
 
-var MenuPreffix = {
+export var MenuPreffix = {
   CARBON_BLACK: "carbonblack-",
   GROUP: "group-",
   NET_WITNESS: "netwitness-",
@@ -119,7 +119,7 @@ var MenuPreffix = {
   SEPARATOR: "separator-",
 };
 
-var ContextualMenu = {
+export var ContextualMenu = {
   // --- Update menu --- //
 
   _addSeparator: function () {

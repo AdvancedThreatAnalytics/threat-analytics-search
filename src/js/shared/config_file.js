@@ -96,50 +96,6 @@ async function updateSearchProviders(settings, newProviders, updateActions) {
   await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, searchProviders);
 }
 
-async function updateSpecialProvider(storeKey, newData, mergeKey) {
-  const settings = await LocalStore.getOne(StoreKey.SETTINGS);
-  const shouldOverrideConfig = _.get(settings, mergeKey + ".config", false);
-  const queriesMergeOption = _.get(settings, mergeKey + ".queries", "merge");
-
-  const provData = (await LocalStore.getOne(storeKey)) || {};
-
-  // Override configuration (if need)
-  if (shouldOverrideConfig || _.isNil(provData.config)) {
-    provData.config = _.get(newData, "Config", {});
-  }
-
-  // Check if queries should be merged ,overriden or ignored.
-  const newQueries = ConfigFile.parseQueries(_.get(newData, "Queries", []));
-  if (queriesMergeOption === "merge") {
-    if (!_.isArray(provData.queries)) {
-      provData.queries = [];
-    }
-
-    for (let i = 0; i < newQueries.length; i++) {
-      const newQuery = newQueries[i];
-
-      // Update values from outdated queries.
-      const aliases = _.get(newQuery, "metadata.alias");
-      if (_.isArray(aliases)) {
-        _.each(provData.queries, (item) => {
-          if (aliases.indexOf(item.query) >= 0) {
-            item.query = newQuery.query;
-          }
-        });
-      }
-
-      // Add query if isn't on the current list.
-      if (!_.find(provData.queries, (item) => item.query === newQuery.query)) {
-        provData.queries.push(newQuery);
-      }
-    }
-  } else if (queriesMergeOption === "override") {
-    provData.queries = newQueries;
-  }
-
-  return LocalStore.setOne(storeKey, provData);
-}
-
 // --- Main functions --- //
 
 const ConfigFile = {
@@ -186,6 +142,52 @@ const ConfigFile = {
     return !errMsg;
   },
 
+  updateSpecialProvider: async function (storeKey, newData, mergeKey) {
+    const settings = await LocalStore.getOne(StoreKey.SETTINGS);
+    const shouldOverrideConfig = _.get(settings, mergeKey + ".config", false);
+    const queriesMergeOption = _.get(settings, mergeKey + ".queries", "merge");
+
+    const provData = (await LocalStore.getOne(storeKey)) || {};
+
+    // Override configuration (if need)
+    if (shouldOverrideConfig || _.isNil(provData.config)) {
+      provData.config = _.get(newData, "Config", {});
+    }
+
+    // Check if queries should be merged ,overriden or ignored.
+    const newQueries = ConfigFile.parseQueries(_.get(newData, "Queries", []));
+    if (queriesMergeOption === "merge") {
+      if (!_.isArray(provData.queries)) {
+        provData.queries = [];
+      }
+
+      for (let i = 0; i < newQueries.length; i++) {
+        const newQuery = newQueries[i];
+
+        // Update values from outdated queries.
+        const aliases = _.get(newQuery, "metadata.alias");
+        if (_.isArray(aliases)) {
+          _.each(provData.queries, (item) => {
+            if (aliases.indexOf(item.query) >= 0) {
+              item.query = newQuery.query;
+            }
+          });
+        }
+
+        // Add query if isn't on the current list.
+        if (
+          !_.find(provData.queries, (item) => item.query === newQuery.query)
+        ) {
+          provData.queries.push(newQuery);
+        }
+      }
+    } else if (queriesMergeOption === "override") {
+      provData.queries = newQueries;
+    }
+
+    return LocalStore.setOne(storeKey, provData);
+  },
+
   sanitizeSettings: async function () {
     var defaultFile = await ConfigFile.getDefaultJSON();
 
@@ -210,7 +212,7 @@ const ConfigFile = {
       );
     }
 
-    ConfigFile.sanitizeSpecialProviders();
+    await ConfigFile.sanitizeSpecialProviders();
   },
 
   sanitizeSpecialProviders: async function () {
@@ -274,9 +276,21 @@ const ConfigFile = {
     );
 
     // Update configuration values and queries for RSA, NWI and CBC.
-    await updateSpecialProvider(StoreKey.RSA_SECURITY, newData.RSA, "mergeRSA");
-    await updateSpecialProvider(StoreKey.NET_WITNESS, newData.NWI, "mergeNWI");
-    await updateSpecialProvider(StoreKey.CARBON_BLACK, newData.CBC, "mergeCBC");
+    await ConfigFile.updateSpecialProvider(
+      StoreKey.RSA_SECURITY,
+      newData.RSA,
+      "mergeRSA"
+    );
+    await ConfigFile.updateSpecialProvider(
+      StoreKey.NET_WITNESS,
+      newData.NWI,
+      "mergeNWI"
+    );
+    await ConfigFile.updateSpecialProvider(
+      StoreKey.CARBON_BLACK,
+      newData.CBC,
+      "mergeCBC"
+    );
   },
 
   parseBasicSettings: function (settingsRaw) {

@@ -1,5 +1,5 @@
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import "bootstrap/dist/css/bootstrap.min.css";
+import "../styles/theme.scss";
 
 import _ from "lodash";
 import Mustache from "mustache";
@@ -133,7 +133,7 @@ async function makeRequest(targetURL, reqData, proxyURL) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: _.isObject(reqData) ? JSON.stringify(reqData) : null,
+      body: reqData,
     });
   } else {
     response = await fetch(proxyURL, {

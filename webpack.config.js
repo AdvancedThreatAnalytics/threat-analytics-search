@@ -50,6 +50,10 @@ module.exports = (env) => ({
       filename: "migration.html",
       chunks: ["js/migration"],
     }),
+    new HtmlWebpackPlugin({
+      template: "./src/views/providers.html",
+      filename: "views/providers.html",
+    }),
     new HtmlReplaceWebpackPlugin([
       {
         pattern: "@@browserName",
@@ -67,6 +71,7 @@ module.exports = (env) => ({
               "**/migration.html",
               "**/options.html",
               "**/postHandler.html",
+              "**/providers.html"
             ],
           },
         },

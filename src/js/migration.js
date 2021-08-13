@@ -62,9 +62,9 @@ document.addEventListener("DOMContentLoaded", async function () {
   // Update contextual menu.
   chrome.runtime.sendMessage({ action: "updateContextualMenu" });
 
-  // Close current tab (migration.html)
+  // Close current tab.
   chrome.tabs.getCurrent(function(tab) {
-    chrome.tabs.remove(tab.id, function() { });
+    chrome.tabs.remove(tab.id);
   });
 });
 

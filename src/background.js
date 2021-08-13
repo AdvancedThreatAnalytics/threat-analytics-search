@@ -78,31 +78,33 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 });
 
 // Context menu handler.
-chrome.contextMenus.onClicked.addListener(function (info, tab) {
+chrome.contextMenus.onClicked.addListener(onClickedListener);
+
+export async function onClickedListener(info, tab) {
   if (info.menuItemId.indexOf(MenuPreffix.GROUP) === 0) {
-    ContextualMenu.groupClicked(info, tab);
+    await ContextualMenu.groupClicked(info, tab);
   }
 
   if (info.menuItemId.indexOf(MenuPreffix.PROVIDER) === 0) {
-    ContextualMenu.providerClicked(info, tab);
+    await ContextualMenu.providerClicked(info, tab);
   }
 
   if (info.menuItemId.indexOf(MenuPreffix.CARBON_BLACK) === 0) {
-    ContextualMenu.carbonBlackClicked(info, tab);
+    await ContextualMenu.carbonBlackClicked(info, tab);
   }
 
   if (info.menuItemId.indexOf(MenuPreffix.NET_WITNESS) === 0) {
-    ContextualMenu.netWitnessClicked(info, tab);
+    await ContextualMenu.netWitnessClicked(info, tab);
   }
 
   if (info.menuItemId.indexOf(MenuPreffix.RSA_SECURITY) === 0) {
-    ContextualMenu.rsaSecurityClicked(info, tab);
+    await ContextualMenu.rsaSecurityClicked(info, tab);
   }
 
   if (info.menuItemId === MenuPreffix.OPTIONS) {
-    chrome.runtime.openOptionsPage();
+    await chrome.runtime.openOptionsPage();
   }
-});
+}
 
 // --- Contextual menu --- //
 
@@ -573,4 +575,4 @@ function showPopupMessage(title, message) {
   }
 }
 
-export default { installedListener };
+export default { installedListener, onClickedListener };

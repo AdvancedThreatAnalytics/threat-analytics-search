@@ -27,4 +27,6 @@ Object.defineProperty(chrome.storage, "local", {
   value: chromeStorageMock,
 });
 
+chrome.contextMenus.create.callsFake((obj) => obj.id);
+
 fetch.mockResponse(JSON.stringify(defaultSettings));

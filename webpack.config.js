@@ -2,6 +2,7 @@ const path = require("path");
 const bomPlugin = require("webpack-utf8-bom");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const HtmlReplaceWebpackPlugin = require('html-replace-webpack-plugin');
 const Dotenv = require("dotenv-webpack");
 
 module.exports = (env) => ({
@@ -49,6 +50,16 @@ module.exports = (env) => ({
       filename: "migration.html",
       chunks: ["js/migration"],
     }),
+    new HtmlWebpackPlugin({
+      template: "./src/views/providers.html",
+      filename: "views/providers.html",
+    }),
+    new HtmlReplaceWebpackPlugin([
+      {
+        pattern: "@@browserName",
+        replacement: env.mode === "edge" ? "Edge" : "Chrome"
+      },
+    ]),
     new CopyWebpackPlugin({
       patterns: [
         {
@@ -60,8 +71,22 @@ module.exports = (env) => ({
               "**/migration.html",
               "**/options.html",
               "**/postHandler.html",
+              "**/providers.html"
             ],
           },
+        },
+        {
+          from: path.join(__dirname, "src/manifest.json"),
+          transform(content) {
+            return content
+              .toString()
+              .replace(
+                "process.env.update_url",
+                env.mode === "edge"
+                  ? "https://edge.microsoft.com/extensionwebstorebase/v1/crx"
+                  : "https://clients2.google.com/service/update2/crx"
+              )
+          }
         },
         {
           from: "./settings.json",

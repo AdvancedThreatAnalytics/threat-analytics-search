@@ -2,7 +2,7 @@
 
 # Threat Analytics Search Chrome extension
 
-The **Threat Analytics Search** extension allows Google Chrome users to highlight specific text and conduct searches using various services. For instance, if you have a domain name you want to research, you could highlight that domain name and automatically search across as many registrars or threat exchanges you want.
+The **Threat Analytics Search** extension allows Google Chrome and Microsoft Edge users to highlight specific text and conduct searches using various services. For instance, if you have a domain name you want to research, you could highlight that domain name and automatically search across as many registrars or threat exchanges you want.
 
 ## Features
 
@@ -59,10 +59,10 @@ Additionally, there is a migration page that is used to relocate the user's sett
 ### Building
 
 Building is done using [Webpack](https://webpack.js.org/).  
-To build the "distribution" code, you first have to execute `yarn`, to install all dependencies, and then execute `yarn run build` (for production mode), or `yarn run build:dev` (for development mode) to build once, or `yarn run live` to watch file changes (in development mode) and rebuild on file change.  
+To build the "distribution" code, you first have to execute `yarn`, to install all dependencies, and then execute: `yarn run build:dev` (for development mode), `yarn run build` (for production on Google Chrome), or `yarn run build:edge` (for production on Microsoft Edge) to build once; or `yarn run live` to watch file changes (in development mode) and rebuild on file change.  
 These commands will create `dist` directory and copies all files into it and minifies them. 
 
-> Optionally, you can do `yarn run zip` for compress the content of the `dist` directory into a zip file (you can also do `yarn run build:zip` to execute both the build and zipping actions with a single command).
+> Optionally, you can do `yarn run zip` for compress the content of the `dist` directory into a zip file (you can also do `yarn run build:zip` or `yarn run build:edge:zip` to execute both the build and zipping actions with a single command).
 
 ### Testing
 

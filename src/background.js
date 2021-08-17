@@ -27,17 +27,16 @@ export async function installedListener(details) {
       selected: true,
     });
   } else {
-    // Open welcome screen.
-    chrome.tabs.create({
-      url: MiscURLs.INSTALLED_URL,
-      selected: true,
-    });
-
     // Sanitize settings with default values.
     await ConfigFile.sanitizeSettings();
 
-    // If the user is installing for the first time, update settings with newer values.
+    // If the user is installing for the first time, open welcome screen and update settings with newer values.
     if (_.get(details, "reason") === "install") {
+      chrome.tabs.create({
+        url: MiscURLs.INSTALLED_URL,
+        selected: true,
+      });
+
       await ConfigFile.updateNow();
     }
 

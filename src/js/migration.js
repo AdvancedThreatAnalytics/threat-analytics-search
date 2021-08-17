@@ -62,8 +62,10 @@ document.addEventListener("DOMContentLoaded", async function () {
   // Update contextual menu.
   chrome.runtime.sendMessage({ action: "updateContextualMenu" });
 
-  // Redirect to welcome URL.
-  window.open(MiscURLs.INSTALLED_URL, "_self");
+  // Close current tab.
+  chrome.tabs.getCurrent(function(tab) {
+    chrome.tabs.remove(tab.id);
+  });
 });
 
 function migrateGeneralSettings(defaultFile) {

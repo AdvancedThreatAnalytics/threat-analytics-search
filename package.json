@@ -16,7 +16,7 @@
     "live": "webpack --env mode=dev --mode=development --config webpack.config.js --watch",
     "test:e2e": "jest e2e --testTimeout=30000",
     "test:unit": "jest unit",
-    "zip": "bestzip dist.zip dist/*"
+    "zip": "cd dist && bestzip ../dist.zip *"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.14.5",

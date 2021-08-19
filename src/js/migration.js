@@ -3,7 +3,7 @@ import "../styles/theme.scss";
 
 import _ from "lodash";
 
-import { MiscURLs, StoreKey } from "./shared/constants";
+import { StoreKey } from "./shared/constants";
 import { isDate } from "./shared/misc";
 import ConfigFile from "./shared/config_file";
 import LocalStore from "./shared/local_store";
@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   chrome.runtime.sendMessage({ action: "updateContextualMenu" });
 
   // Close current tab.
-  chrome.tabs.getCurrent(function(tab) {
+  chrome.tabs.getCurrent(function (tab) {
     chrome.tabs.remove(tab.id);
   });
 });

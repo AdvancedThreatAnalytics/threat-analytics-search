@@ -5,7 +5,7 @@ const { MiscURLs, StoreKey } = require("../../src/js/shared/constants");
 const ConfigFile = require("../../src/js/shared/config_file").default;
 const SETTINGS = require("../../settings.json");
 
-describe("Migration", () => {
+describe("Migration (from v4.0)", () => {
   let browser;
   let page;
 
@@ -13,8 +13,8 @@ describe("Migration", () => {
     browser = await ExtensionUtil.load();
   });
 
-  test("Data from local storage is copied to chrome's storage", async () => {
-    // Go to options page to set sample data to local storage
+  test("Local storage's data is copied to Chrome's storage", async () => {
+    // Go to options page to set sample data to local storage.
     page = await ExtensionUtil.goto("options.html");
 
     const sampleData = {
@@ -54,7 +54,7 @@ describe("Migration", () => {
       _configLastRefresh: "test",
     };
 
-    // Set sample data to local storage
+    // Set sample data to local storage.
     await page.evaluate((data) => {
       for (const key in data) {
         window.localStorage.setItem(
@@ -64,17 +64,17 @@ describe("Migration", () => {
       }
     }, sampleData);
 
-    // Go to migration page
+    // Go to migration page.
     await ExtensionUtil.goto("migration.html", page);
 
-    // Check if page is redirected
+    // Check if page is redirected.
     const nav = await page.waitForRequest(MiscURLs.INSTALLED_URL);
     expect(nav.url()).toEqual(MiscURLs.INSTALLED_URL);
 
-    // Go back to options page
+    // Go back to options page.
     await ExtensionUtil.goto("options.html", page);
 
-    // Get data from chrome storage
+    // Get data from Chrome storage.
     const chromeData = await page.evaluate(
       () => new Promise((resolve) => chrome.storage.local.get(null, resolve))
     );
@@ -146,30 +146,28 @@ describe("Migration", () => {
       },
     };
 
-    // Verify if data is set to chrome storage for both
-    // 1. Data defined in local storage
-    // 2. Data not defined in local storage
+    // Verify if data was set on Chrome storage.
     expect(chromeData).toEqual(expectedData);
   });
 
-  test("Chrome's storage is populated from settings.json", async () => {
-    // Go to options page
+  test("Chrome's storage is populated with default settings if local storage is empty", async () => {
+    // Go to options page.
     page = await ExtensionUtil.goto("options.html");
 
-    // Clear local storage
+    // Clear local storage.
     await page.evaluate(() => window.localStorage.clear());
 
-    // Go to migration page
+    // Go to migration page.
     await ExtensionUtil.goto("migration.html", page);
 
-    // Check if page is redirected
+    // Check if page is redirected.
     const nav = await page.waitForRequest(MiscURLs.INSTALLED_URL);
     expect(nav.url()).toEqual(MiscURLs.INSTALLED_URL);
 
-    // Go back to options page
+    // Go back to options page.
     await ExtensionUtil.goto("options.html", page);
 
-    // Get data from chrome storage
+    // Get data from Chrome storage.
     const chromeData = await page.evaluate(
       () => new Promise((resolve) => chrome.storage.local.get(null, resolve))
     );
@@ -236,7 +234,7 @@ describe("Migration", () => {
       },
     };
 
-    // Verify if chrome's storage is populated from settings.json
+    // Verify if Chrome's storage is populated with settings.json.
     expect(chromeData).toEqual(expectedData);
   });
 

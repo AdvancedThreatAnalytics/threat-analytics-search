@@ -28,7 +28,7 @@ async function testPostHandler(sample, text) {
   // Go to options page
   const page = await ExtensionUtil.goto("options.html");
 
-  // Set sample provider to chrome's storage
+  // Set sample provider on Chrome storage.
   await page.evaluate(
     (key, value) =>
       new Promise((resolve) => {
@@ -40,7 +40,7 @@ async function testPostHandler(sample, text) {
     sample
   );
 
-  // Set interceptor for requests
+  // Set interceptor for requests.
   await page.setRequestInterception(true);
   page.on("request", interceptor);
 
@@ -48,22 +48,22 @@ async function testPostHandler(sample, text) {
   const requestUrl = sample.proxyEnabled ? sample.proxyUrl : targetUrl;
   const responsePromise = page.waitForResponse(requestUrl);
 
-  // Go to post handler page
+  // Go to post handler page.
   const handlerUrl = `postHandler.html?name=${sample.label}&data=${text}`;
   await ExtensionUtil.goto(handlerUrl, page);
 
-  // Check if POST request is made to the target or proxy url
+  // Check if POST request is made to the target or proxy URL.
   const response = await responsePromise;
   expect(response).toBeTruthy();
 
-  // Check if post data is sent correctly
+  // Check if post data is sent correctly.
   const expectedData = sample.proxyEnabled
     ? JSON.stringify({ url: targetUrl, data: sample.postValue })
     : sample.postValue;
   const postData = response.request().postData() || "";
   expect(postData).toEqual(expectedData);
 
-  // Check if request result is shown in UI
+  // Check if request result is shown in UI.
   const iconSelector = response.ok() ? ".fas.fa-check-circle" : ".fas.fa-ban";
   const resultElem = await page.waitForSelector(iconSelector);
   expect(resultElem).toBeTruthy();

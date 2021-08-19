@@ -20,17 +20,17 @@ describe("background.js", () => {
 
   it("Should call 'sanitizeSettings' if previous version was not 4", () => {
     installedListener({ previousVersion: "5" });
-    expect(createTabs).toBeCalledWith({
-      url: MiscURLs.INSTALLED_URL,
-      selected: true,
-    });
     expect(sanitizeSettings).toHaveBeenCalled();
     expect(updateNow).not.toHaveBeenCalled();
   });
 
-  it("Should call 'updateNow' if installing for the first time", async () => {
+  it("Should call 'updateNow' and open welcome URL if installing for the first time", async () => {
     await installedListener({ reason: "install" });
     expect(sanitizeSettings).toHaveReturned();
     expect(updateNow).toHaveBeenCalled();
+    expect(createTabs).toBeCalledWith({
+      url: MiscURLs.INSTALLED_URL,
+      selected: true,
+    });
   });
 });

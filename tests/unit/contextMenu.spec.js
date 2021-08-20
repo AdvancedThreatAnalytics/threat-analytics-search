@@ -20,7 +20,9 @@ const createTabs = jest.spyOn(chrome.tabs, "create");
 
 describe("ContextualMenu", () => {
   describe("Menu population", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
+      // Reset settings to default values.
+      await LocalStore.clear();
       await ConfigFile.sanitizeSettings();
     });
 

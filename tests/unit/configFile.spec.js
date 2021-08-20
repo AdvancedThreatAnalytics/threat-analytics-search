@@ -96,7 +96,7 @@ describe("configFile.js", () => {
     it("generateJSONFile result should be equal to changed configuration file", async () => {
       await LocalStore.clear();
       await ConfigFile.sanitizeSpecialProviders();
-      await ConfigFile.parseJSONFile(defaultSettings, true);
+      await ConfigFile.parseJSONFile(_.cloneDeep(defaultSettings), true);
 
       // Change data in local storage.
       const settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
@@ -237,6 +237,37 @@ describe("configFile.js", () => {
       );
     });
 
+    it("Configuration is overridden if overrideAll is true, regardless of the corresponding flag", async () => {
+      const newRSA = _.cloneDeep(defaultSettings.RSA);
+
+      // Reinitialize default values in case previous tests changed the stored data.
+      let rsa = (await LocalStore.getOne(StoreKey.RSA_SECURITY)) || {};
+      rsa.config = _.cloneDeep(newRSA.Config);
+      await LocalStore.setOne(StoreKey.RSA_SECURITY, rsa);
+
+      newRSA.Config.RSAConfigEnable = true;
+      newRSA.Config.RSAConfigPopup = true;
+      newRSA.Config.RSAConfigPort = "test";
+      newRSA.Config.RSAConfigDevId = "24";
+
+      const settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      settings.mergeRSA.config = false;
+      await LocalStore.setOne(StoreKey.SETTINGS, settings);
+
+      // Configuration should be changed even if flag is false.
+      await ConfigFile.updateSpecialProvider(
+        StoreKey.RSA_SECURITY,
+        newRSA,
+        "mergeRSA",
+        true
+      );
+      rsa = await LocalStore.getOne(StoreKey.RSA_SECURITY);
+      expect(rsa.config.RSAConfigEnable).toEqual(newRSA.Config.RSAConfigEnable);
+      expect(rsa.config.RSAConfigPopup).toEqual(newRSA.Config.RSAConfigPopup);
+      expect(rsa.config.RSAConfigPort).toEqual(newRSA.Config.RSAConfigPort);
+      expect(rsa.config.RSAConfigDevId).toEqual(newRSA.Config.RSAConfigDevId);
+    });
+
     it("Queries are merged by default and duplicate values aren't added", async () => {
       const newRSA = _.cloneDeep(defaultSettings.RSA);
       const newQuery = [
@@ -302,6 +333,38 @@ describe("configFile.js", () => {
         "mergeRSA"
       );
 
+      const result = await LocalStore.getOne(StoreKey.RSA_SECURITY);
+      const expectedResult = ConfigFile.parseQueries([newQuery]);
+      expect(result.queries).toEqual(expectedResult);
+    });
+
+    it("Queries are overridden if overrideAll is true even if flag is not override", async () => {
+      const newRSA = _.cloneDeep(defaultSettings.RSA);
+      const newQuery = [
+        -1,
+        "New Search Destination IP",
+        "new_ip.dst=TESTSEARCH",
+        true,
+      ];
+      newRSA.Queries = [newQuery];
+
+      // Reinitialize default values in case previous tests changed the stored data.
+      const rsa = await LocalStore.getOne(StoreKey.RSA_SECURITY);
+      rsa.queries = ConfigFile.parseQueries(
+        _.cloneDeep(defaultSettings.RSA.Queries)
+      );
+      await LocalStore.setOne(StoreKey.RSA_SECURITY, rsa);
+
+      // Should override queries if overrideAll is true and even corresponding flag is not override.
+      const settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      settings.mergeRSA.queries = "merge";
+      await LocalStore.setOne(StoreKey.SETTINGS, settings);
+      await ConfigFile.updateSpecialProvider(
+        StoreKey.RSA_SECURITY,
+        newRSA,
+        "mergeRSA",
+        true
+      );
       const result = await LocalStore.getOne(StoreKey.RSA_SECURITY);
       const expectedResult = ConfigFile.parseQueries([newQuery]);
       expect(result.queries).toEqual(expectedResult);

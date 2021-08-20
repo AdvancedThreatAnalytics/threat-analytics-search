@@ -8,7 +8,7 @@ const createTabs = jest.spyOn(chrome.tabs, "create");
 const sanitizeSettings = jest.spyOn(ConfigFile.default, "sanitizeSettings");
 const updateNow = jest.spyOn(ConfigFile.default, "updateNow");
 
-describe("background.js", () => {
+describe("onInstall", () => {
   it("Should open 'migration.html' if previous version was 4", () => {
     installedListener({ previousVersion: "4" });
     expect(createTabs).toHaveBeenCalled();

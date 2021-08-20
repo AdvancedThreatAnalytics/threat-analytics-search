@@ -106,14 +106,14 @@ async function updateSearchProviders(
 
 const ConfigFile = {
   updateNow: async function () {
-    var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
-    var errMsg = null;
+    const settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+    let errMsg = null;
 
     try {
       // Execute request to get configuration file.
-      var response = await fetch(settings.configurationURL);
+      const response = await fetch(settings.configurationURL);
       if (response.status >= 200 && response.status < 300) {
-        var dataRaw = await response.text();
+        let dataRaw = await response.text();
         dataRaw = dataRaw.replace(/\n\r|\r\n/g, "");
 
         // Check if the file should be decripted.
@@ -128,7 +128,7 @@ const ConfigFile = {
         }
 
         // Parse data object.
-        var data = JSON.parse(dataRaw);
+        const data = JSON.parse(dataRaw);
         await ConfigFile.parseJSONFile(data, false);
       } else {
         errMsg = "Update failed - Invalid URL";

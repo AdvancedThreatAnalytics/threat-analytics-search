@@ -246,7 +246,7 @@ describe("ConfigFile", () => {
       expect(result.config).toStrictEqual(newConfig);
     });
 
-    it("Configuration should be overridden if overrideAll is true and even corresponding flag is disabled", async () => {
+    it("Configuration should be overridden if forced (no matter the value of corresponding flag)", async () => {
       const settings = _.cloneDeep(
         (await LocalStore.getOne(StoreKey.SETTINGS)) || {}
       );
@@ -310,7 +310,7 @@ describe("ConfigFile", () => {
       expect(result.queries).toEqual(ConfigFile.parseQueries(newQueries));
     });
 
-    it("Queries should be overridden if overrideAll is true even corresponding flag is not override", async () => {
+    it("Queries should be overridden if forced (no matter the value of corresponding flag)", async () => {
       const settings = _.cloneDeep(
         (await LocalStore.getOne(StoreKey.SETTINGS)) || {}
       );
@@ -402,6 +402,28 @@ describe("ConfigFile", () => {
         ["3", "Group 3"],
       ];
       await ConfigFile.parseJSONFile({ ...defaultSettings, groups: newGroups });
+
+      settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      const expectedGroups = ConfigFile.parseGroups(newGroups);
+      expect(settings.providersGroups).toEqual(expectedGroups);
+    });
+
+    it("Groups names should be updated is forced (no matter flag's value)", async () => {
+      let settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      await LocalStore.setOne(StoreKey.SETTINGS, {
+        ...settings,
+        mergeGroups: false,
+      });
+
+      const newGroups = [
+        ["1", "Group 1"],
+        ["2", "Group 2"],
+        ["3", "Group 3"],
+      ];
+      await ConfigFile.parseJSONFile(
+        { ...defaultSettings, groups: newGroups },
+        true
+      );
 
       settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       const expectedGroups = ConfigFile.parseGroups(newGroups);

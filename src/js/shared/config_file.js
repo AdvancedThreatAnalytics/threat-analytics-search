@@ -57,7 +57,7 @@ async function updateSearchProviders(
   settings,
   newProviders,
   updateActions,
-  overrideAll
+  forceOverride
 ) {
   // Get menu items (with current search providers).
   let searchProviders =
@@ -78,9 +78,11 @@ async function updateSearchProviders(
   });
 
   // Check if the new list of search providers should be merged or should override current values.
-  const mergeProviderOption = _.get(settings, "mergeSearchProviders", "merge");
+  const mergeProviderOption = forceOverride
+    ? "override"
+    : _.get(settings, "mergeSearchProviders", "merge");
 
-  if (mergeProviderOption === "override" || overrideAll) {
+  if (mergeProviderOption === "override") {
     searchProviders = newProviders;
   } else if (mergeProviderOption === "merge") {
     for (let i = 0; i < newProviders.length; i++) {
@@ -152,13 +154,12 @@ const ConfigFile = {
     storeKey,
     newData,
     mergeKey,
-    overrideAll
+    forceOverride
   ) {
     const settings = await LocalStore.getOne(StoreKey.SETTINGS);
-    const shouldOverrideConfig = overrideAll
-      ? overrideAll
-      : _.get(settings, mergeKey + ".config", false);
-    const queriesMergeOption = overrideAll
+    const shouldOverrideConfig =
+      forceOverride || _.get(settings, mergeKey + ".config", false);
+    const queriesMergeOption = forceOverride
       ? "override"
       : _.get(settings, mergeKey + ".queries", "merge");
 

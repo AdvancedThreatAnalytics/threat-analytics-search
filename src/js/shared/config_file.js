@@ -53,7 +53,12 @@ function mapObjectToArray(object, mapping) {
   return _.map(mapping, (meta) => _.get(object, meta.field));
 }
 
-async function updateSearchProviders(settings, newProviders, updateActions) {
+async function updateSearchProviders(
+  settings,
+  newProviders,
+  updateActions,
+  forceOverride
+) {
   // Get menu items (with current search providers).
   let searchProviders =
     (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
@@ -73,8 +78,13 @@ async function updateSearchProviders(settings, newProviders, updateActions) {
   });
 
   // Check if the new list of search providers should be merged or should override current values.
-  const mergeProviderOption = _.get(settings, "mergeSearchProviders", "merge");
-  if (mergeProviderOption === "merge") {
+  const mergeProviderOption = forceOverride
+    ? "override"
+    : _.get(settings, "mergeSearchProviders", "merge");
+
+  if (mergeProviderOption === "override") {
+    searchProviders = newProviders;
+  } else if (mergeProviderOption === "merge") {
     for (let i = 0; i < newProviders.length; i++) {
       const newProvider = newProviders[i];
 
@@ -88,8 +98,6 @@ async function updateSearchProviders(settings, newProviders, updateActions) {
         searchProviders.push(newProvider);
       }
     }
-  } else if (mergeProviderOption === "override") {
-    searchProviders = newProviders;
   }
 
   // Save list of search providers.
@@ -142,10 +150,18 @@ const ConfigFile = {
     return !errMsg;
   },
 
-  updateSpecialProvider: async function (storeKey, newData, mergeKey) {
+  updateSpecialProvider: async function (
+    storeKey,
+    newData,
+    mergeKey,
+    forceOverride
+  ) {
     const settings = await LocalStore.getOne(StoreKey.SETTINGS);
-    const shouldOverrideConfig = _.get(settings, mergeKey + ".config", false);
-    const queriesMergeOption = _.get(settings, mergeKey + ".queries", "merge");
+    const shouldOverrideConfig =
+      forceOverride || _.get(settings, mergeKey + ".config", false);
+    const queriesMergeOption = forceOverride
+      ? "override"
+      : _.get(settings, mergeKey + ".queries", "merge");
 
     const provData = (await LocalStore.getOne(storeKey)) || {};
 
@@ -237,18 +253,18 @@ const ConfigFile = {
     });
   },
 
-  parseJSONFile: async function (newData, overrideConfig) {
+  parseJSONFile: async function (newData, overrideAll) {
     // Update main settings.
     const settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
 
     // - Update basic settings (if need).
-    if (overrideConfig && !_.isEmpty(newData.config)) {
+    if (overrideAll && !_.isEmpty(newData.config)) {
       _.assign(settings, ConfigFile.parseBasicSettings(newData.config));
     }
 
     // - Update group names in the local store (if need).
     const groups = newData.groups;
-    if (settings.mergeGroups && !_.isEmpty(groups)) {
+    if ((overrideAll || settings.mergeGroups) && !_.isEmpty(groups)) {
       if (_.isEmpty(settings.providersGroups)) {
         settings.providersGroups = ConfigFile.parseGroups(groups);
       } else {
@@ -272,24 +288,28 @@ const ConfigFile = {
     await updateSearchProviders(
       settings,
       newProviders,
-      _.get(newData, "update.providers")
+      _.get(newData, "update.providers"),
+      overrideAll
     );
 
     // Update configuration values and queries for RSA, NWI and CBC.
     await ConfigFile.updateSpecialProvider(
       StoreKey.RSA_SECURITY,
       newData.RSA,
-      "mergeRSA"
+      "mergeRSA",
+      overrideAll
     );
     await ConfigFile.updateSpecialProvider(
       StoreKey.NET_WITNESS,
       newData.NWI,
-      "mergeNWI"
+      "mergeNWI",
+      overrideAll
     );
     await ConfigFile.updateSpecialProvider(
       StoreKey.CARBON_BLACK,
       newData.CBC,
-      "mergeCBC"
+      "mergeCBC",
+      overrideAll
     );
   },
 

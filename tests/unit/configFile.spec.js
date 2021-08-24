@@ -202,7 +202,7 @@ describe("ConfigFile", () => {
   });
 
   describe("updateSpecialProvider()", () => {
-    it("Configuration shouln't be overridden if corresponding flag is disabled", async () => {
+    it("Configuration shouldn't be overridden if corresponding flag is disabled", async () => {
       const oldConfig = defaultSettings.RSA.Config;
       const newConfig = {
         ...oldConfig,
@@ -246,6 +246,32 @@ describe("ConfigFile", () => {
       expect(result.config).toStrictEqual(newConfig);
     });
 
+    it("Configuration should be overridden if forced (no matter the value of corresponding flag)", async () => {
+      const settings = _.cloneDeep(
+        (await LocalStore.getOne(StoreKey.SETTINGS)) || {}
+      );
+      settings.mergeRSA.config = false;
+      await LocalStore.setOne(StoreKey.SETTINGS, settings);
+
+      const oldConfig = defaultSettings.RSA.Config;
+      const newConfig = {
+        ...oldConfig,
+        RSAConfigEnable: !oldConfig.RSAConfigEnable,
+        RSAConfigPopup: !oldConfig.RSAConfigPopup,
+        RSAConfigPort: "new-value",
+        RSAConfigDevId: "24",
+      };
+      await ConfigFile.updateSpecialProvider(
+        StoreKey.RSA_SECURITY,
+        { ...defaultSettings.RSA, Config: newConfig },
+        "mergeRSA",
+        true
+      );
+
+      const result = await LocalStore.getOne(StoreKey.RSA_SECURITY);
+      expect(result.config).toStrictEqual(newConfig);
+    });
+
     it("Queries should merged by default", async () => {
       const newQueries = _.clone(defaultSettings.RSA.Queries);
       const newQuery = [-1, "Some new Query", "new_ip.dst=TESTSEARCH", true];
@@ -278,6 +304,25 @@ describe("ConfigFile", () => {
         StoreKey.RSA_SECURITY,
         { ...defaultSettings.RSA, Queries: newQueries },
         "mergeRSA"
+      );
+
+      const result = await LocalStore.getOne(StoreKey.RSA_SECURITY);
+      expect(result.queries).toEqual(ConfigFile.parseQueries(newQueries));
+    });
+
+    it("Queries should be overridden if forced (no matter the value of corresponding flag)", async () => {
+      const settings = _.cloneDeep(
+        (await LocalStore.getOne(StoreKey.SETTINGS)) || {}
+      );
+      settings.mergeRSA.queries = "ignore";
+      await LocalStore.setOne(StoreKey.SETTINGS, settings);
+
+      const newQueries = [-1, "Some new Query", "new_ip.dst=TESTSEARCH", true];
+      await ConfigFile.updateSpecialProvider(
+        StoreKey.RSA_SECURITY,
+        { ...defaultSettings.RSA, Queries: newQueries },
+        "mergeRSA",
+        true
       );
 
       const result = await LocalStore.getOne(StoreKey.RSA_SECURITY);
@@ -357,6 +402,28 @@ describe("ConfigFile", () => {
         ["3", "Group 3"],
       ];
       await ConfigFile.parseJSONFile({ ...defaultSettings, groups: newGroups });
+
+      settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      const expectedGroups = ConfigFile.parseGroups(newGroups);
+      expect(settings.providersGroups).toEqual(expectedGroups);
+    });
+
+    it("Groups names should be updated is forced (no matter flag's value)", async () => {
+      let settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      await LocalStore.setOne(StoreKey.SETTINGS, {
+        ...settings,
+        mergeGroups: false,
+      });
+
+      const newGroups = [
+        ["1", "Group 1"],
+        ["2", "Group 2"],
+        ["3", "Group 3"],
+      ];
+      await ConfigFile.parseJSONFile(
+        { ...defaultSettings, groups: newGroups },
+        true
+      );
 
       settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       const expectedGroups = ConfigFile.parseGroups(newGroups);

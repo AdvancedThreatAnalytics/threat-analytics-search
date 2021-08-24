@@ -1,7 +1,7 @@
 const _ = require("lodash");
 
 const ExtensionUtil = require("./util");
-const { MiscURLs, StoreKey } = require("../../src/js/shared/constants");
+const { StoreKey } = require("../../src/js/shared/constants");
 const ConfigFile = require("../../src/js/shared/config_file").default;
 const SETTINGS = require("../../settings.json");
 
@@ -67,12 +67,8 @@ describe("Migration (from v4.0)", () => {
     // Go to migration page.
     await ExtensionUtil.goto("migration.html", page);
 
-    // Check if page is redirected.
-    const nav = await page.waitForRequest(MiscURLs.INSTALLED_URL);
-    expect(nav.url()).toEqual(MiscURLs.INSTALLED_URL);
-
     // Go back to options page.
-    await ExtensionUtil.goto("options.html", page);
+    page = await ExtensionUtil.goto("options.html");
 
     // Get data from Chrome storage.
     const chromeData = await page.evaluate(
@@ -160,12 +156,8 @@ describe("Migration (from v4.0)", () => {
     // Go to migration page.
     await ExtensionUtil.goto("migration.html", page);
 
-    // Check if page is redirected.
-    const nav = await page.waitForRequest(MiscURLs.INSTALLED_URL);
-    expect(nav.url()).toEqual(MiscURLs.INSTALLED_URL);
-
     // Go back to options page.
-    await ExtensionUtil.goto("options.html", page);
+    page = await ExtensionUtil.goto("options.html");
 
     // Get data from Chrome storage.
     const chromeData = await page.evaluate(

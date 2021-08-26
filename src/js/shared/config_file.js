@@ -131,7 +131,7 @@ const ConfigFile = {
 
         // Parse data object.
         const data = JSON.parse(dataRaw);
-        await ConfigFile.parseJSONFile(data, false);
+        await ConfigFile.parseJSONFile(data, true);
       } else {
         errMsg = "Update failed - Invalid URL";
       }

@@ -1,7 +1,7 @@
 const _ = require("lodash");
 
 const ExtensionUtil = require("./util");
-const { MiscURLs, StoreKey } = require("../../src/js/shared/constants");
+const { StoreKey } = require("../../src/js/shared/constants");
 const ConfigFile = require("../../src/js/shared/config_file").default;
 const SETTINGS = require("../../settings.json");
 
@@ -67,17 +67,19 @@ describe("Migration (from v4.0)", () => {
     // Go to migration page.
     await ExtensionUtil.goto("migration.html", page);
 
-    // Check if page is redirected.
-    const nav = await page.waitForRequest(MiscURLs.INSTALLED_URL);
-    expect(nav.url()).toEqual(MiscURLs.INSTALLED_URL);
-
     // Go back to options page.
-    await ExtensionUtil.goto("options.html", page);
+    page = await ExtensionUtil.goto("options.html");
 
     // Get data from Chrome storage.
     const chromeData = await page.evaluate(
       () => new Promise((resolve) => chrome.storage.local.get(null, resolve))
     );
+
+    // Update menu index to its initial value as
+    // it could have been edited in background.js
+    _.forEach(chromeData[StoreKey.SEARCH_PROVIDERS], (item, index) => {
+      item.menuIndex = _.get(sampleData, `_allsearch.${index}.0`);
+    });
 
     const expectedData = {
       [StoreKey.SETTINGS]: {
@@ -113,7 +115,7 @@ describe("Migration (from v4.0)", () => {
 
       [StoreKey.SEARCH_PROVIDERS]: [
         {
-          menuIndex: "searchprovider-0",
+          menuIndex: sampleData._allsearch[0][0],
           label: sampleData._allsearch[0][1],
           link: sampleData._allsearch[0][2],
           enabled: sampleData._allsearch[0][3],
@@ -160,17 +162,19 @@ describe("Migration (from v4.0)", () => {
     // Go to migration page.
     await ExtensionUtil.goto("migration.html", page);
 
-    // Check if page is redirected.
-    const nav = await page.waitForRequest(MiscURLs.INSTALLED_URL);
-    expect(nav.url()).toEqual(MiscURLs.INSTALLED_URL);
-
     // Go back to options page.
-    await ExtensionUtil.goto("options.html", page);
+    page = await ExtensionUtil.goto("options.html");
 
     // Get data from Chrome storage.
     const chromeData = await page.evaluate(
       () => new Promise((resolve) => chrome.storage.local.get(null, resolve))
     );
+
+    // Update menu index to its initial value as
+    // it could have been edited in background.js
+    _.forEach(chromeData[StoreKey.SEARCH_PROVIDERS], (item, index) => {
+      item.menuIndex = _.get(SETTINGS, `searchproviders.${index}.0`);
+    });
 
     const defaultBasic = ConfigFile.parseBasicSettings(SETTINGS.config);
     const defaultGroups = ConfigFile.parseGroups(SETTINGS.groups);
@@ -208,10 +212,7 @@ describe("Migration (from v4.0)", () => {
       },
 
       [StoreKey.SEARCH_PROVIDERS]: ConfigFile.parseProviders(
-        _.get(SETTINGS, "searchproviders", []).map((item, index) => {
-          item[0] = item[3] ? `searchprovider-${index}` : -1;
-          return item;
-        })
+        _.get(SETTINGS, "searchproviders", [])
       ),
 
       [StoreKey.CARBON_BLACK]: {

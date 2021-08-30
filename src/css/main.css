@@ -1,0 +1,58 @@
+html.page-options {
+  font-size: 15px;
+}
+
+html.page-options h2 {
+  font-size: 1.4rem;
+}
+html.page-options h3 {
+  font-size: 1.25rem;
+}
+
+.text-black {
+  color: #000;
+}
+.text-line-through {
+  text-decoration: line-through;
+}
+.text-monospace {
+  font-family: "Consolas", "Lucida Console", "monospace";
+}
+
+.text-small {
+  font-size: 0.85em;
+}
+.text-large {
+  font-size: 1.2em;
+}
+.text-extra-large {
+  font-size: 1.4em;
+}
+
+.flex-1 {
+  flex: 1;
+}
+.flex-2 {
+  flex: 2;
+}
+
+.form-control-small {
+  font-size: 0.9em;
+  height: auto;
+}
+
+.sortable-handle {
+  cursor: grab;
+}
+
+.sortable:nth-child(even) {
+  background-color: #f4f4f4;
+}
+.sortable-chosen,
+.sortable.sortable-chosen {
+  background-color: #dfd;
+}
+.sortable-ghost,
+.sortable.sortable-ghost {
+  background-color: #ddf;
+}

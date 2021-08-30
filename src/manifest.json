@@ -1,0 +1,21 @@
+{
+  "name": "Threat Analytics Search",
+  "manifest_version": 3,
+  "version": "5.1.0",
+  "icons": {
+    "16": "./images/icon_16.png",
+    "32": "./images/icon_32.png",
+    "48": "./images/icon_48.png",
+    "128": "./images/icon_128.png"
+  },
+  "description": "Use the Context Menu (right click menu) in the browser to conduct single or group searches for selected text.",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "options_page": "options.html",
+  "permissions": ["alarms", "contextMenus", "notifications", "storage"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCpwQdswwbWCDVkWd4XMJ1nxuzZYNmgnturk8DeuZgc85IPRiLyg5TTQKgSVjGU2s/i8a3qB/RsmMw7LR2V8f2L0z4qUO2CX3UfqeOtJMv1MkcUPTYBj7bOGe5sj4bFtKFMBD2YiSizlIFkFe63q0fr1QX6eF3DCBpgheYUTfmkzQIDAQAB",
+  "homepage_url": "http://www.criticalstart.com/company/",
+  "update_url": "process.env.update_url"
+}

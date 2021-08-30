@@ -1,0 +1,69 @@
+<!--
+  Utility page to consume search engines that requires POST requests (instead of GET requests).
+  -->
+<html lang="en-US">
+  <head>
+    <title>CRITICALSTART</title>
+  </head>
+  <body>
+    <div id="target">
+      <h5 class="text-info text-center m-3">
+        <i class="fas fa-sync fa-spin"></i> Loading...
+      </h5>
+    </div>
+    <script id="template" type="x-tmpl-mustache">
+      <table class="table" aria-busy="{{ busy }}">
+        <tbody>
+          <tr>
+            <td class="font-weight-bold">URL</td>
+            <td><a href="{{ targetURL }}" target="_blank">{{ targetURL }}</a></td>
+          </tr>
+          <tr>
+            <td class="font-weight-bold">Data</td>
+            <td>
+              {{#reqData}}
+                <span>{{reqData2}}</span>
+              {{/reqData}}
+              {{^reqData}}
+                <em>No data sent</em>
+              {{/reqData}}
+            </td>
+          </tr>
+          <tr>
+            <td class="font-weight-bold">
+              <div class="text-nowrap">
+                Result
+                {{#succeeded}}
+                  <i class="fas fa-check-circle text-success" aria-hidden="true"></i>
+                {{/succeeded}}
+                {{#error}}
+                  <i class="fas fa-ban text-danger" aria-hidden="true"></i>
+                {{/error}}
+                {{#loading}}
+                  <i class="fas fa-sync fa-spin text-info" aria-hidden="true"></i>
+                {{/loading}}
+              </div>
+              {{#error}}
+                <div class="text-center mt-1">
+                  <button type="button" class="btn btn-primary px-1 py-0" title="Retry request" id="retryBtn">
+                    Retry
+                  </button>
+                </div>
+              {{/error}}
+            </td>
+            <td class="w-100 {{ resultClass }}">
+              {{#loading}}
+                <span class="text-info">
+                  Executing...
+                </span>
+              {{/loading}}
+              {{^loading}}
+                <pre>{{ response }}</pre>
+              {{/loading}}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </script>
+  </body>
+</html>

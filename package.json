@@ -48,6 +48,7 @@
     "aes-js": "^3.1.2",
     "bootstrap": "^4.6.0",
     "bootstrap.native": "^3.0.15",
+    "gibberish-aes": "^1.0.0",
     "jest": "^27.0.6",
     "jest-puppeteer": "^5.0.4",
     "js-beautify": "^1.13.13",

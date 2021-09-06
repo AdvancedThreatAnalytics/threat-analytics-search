@@ -48,7 +48,8 @@ export function encryptAES(data, password) {
 }
 
 export function randArr(num) {
-  let result = [], i;
+  let result = [],
+    i;
   for (i = 0; i < num; i++) {
     result = result.concat(Math.floor(Math.random() * 256));
   }

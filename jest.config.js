@@ -7,5 +7,5 @@ module.exports = {
     "^.+\\.jsx?$": "babel-jest"
   },
   verbose: true,
-  testEnvironment: "jsdom"
+  testEnvironment: "node"
 }

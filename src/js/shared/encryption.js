@@ -21,8 +21,10 @@ export function decryptAES(data, key) {
   return aesjs.utils.utf8.fromBytes(aesjs.padding.pkcs7.strip(decryptedBytes));
 }
 
-export function encryptAES(data, password) {
-  const salt = randArr(8);
+export function encryptAES(data, password, salt) {
+  if (!salt) {
+    salt = randArr(8);
+  }
   const s2a = Array.from(unescape(encodeURIComponent(password)), (c) =>
     c.charCodeAt(0)
   );

@@ -370,7 +370,7 @@ describe("ConfigFile", () => {
       expect(_.omit(settings, "providersGroups")).toEqual(expectedSettings);
     });
 
-    it("Groups names shouldn't be updated is corresponding flag is false", async () => {
+    it("Groups names shouldn't be updated if corresponding flag is false", async () => {
       let settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       await LocalStore.setOne(StoreKey.SETTINGS, {
         ...settings,
@@ -389,7 +389,7 @@ describe("ConfigFile", () => {
       expect(settings.providersGroups).toEqual(defaultGroups);
     });
 
-    it("Groups names should be updated is corresponding flag is true", async () => {
+    it("Groups names should be updated if corresponding flag is true", async () => {
       let settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       await LocalStore.setOne(StoreKey.SETTINGS, {
         ...settings,
@@ -408,7 +408,7 @@ describe("ConfigFile", () => {
       expect(settings.providersGroups).toEqual(expectedGroups);
     });
 
-    it("Groups names should be updated is forced (no matter flag's value)", async () => {
+    it("Groups names should be updated if forced (no matter flag's value)", async () => {
       let settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       await LocalStore.setOne(StoreKey.SETTINGS, {
         ...settings,
@@ -427,6 +427,33 @@ describe("ConfigFile", () => {
 
       settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       const expectedGroups = ConfigFile.parseGroups(newGroups);
+      expect(settings.providersGroups).toEqual(expectedGroups);
+    });
+
+    it("Provider groups should be added or removed if override flag is true", async () => {
+      // New group should be added.
+      const newGroups = [
+        ["1", "Group 1"],
+        ["2", "Group 2"],
+        ["3", "Group 3"],
+        ["4", "Group 4"],
+      ];
+      await ConfigFile.parseJSONFile(
+        { ...defaultSettings, groups: newGroups },
+        true
+      );
+
+      let settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      let expectedGroups = ConfigFile.parseGroups(newGroups);
+      expect(settings.providersGroups).toEqual(expectedGroups);
+
+      // Groups should be removed if removed in file.
+      await ConfigFile.parseJSONFile(
+        { ...defaultSettings, groups: newGroups.slice(0, 3) },
+        true
+      );
+      settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      expectedGroups = ConfigFile.parseGroups(newGroups.slice(0, 3));
       expect(settings.providersGroups).toEqual(expectedGroups);
     });
 

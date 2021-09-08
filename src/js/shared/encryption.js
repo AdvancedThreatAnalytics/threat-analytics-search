@@ -84,5 +84,7 @@ export function openSSLKey(passwordArr, saltArr) {
 }
 
 export default {
+  decryptAES,
+  encryptAES,
   openSSLKey,
 };

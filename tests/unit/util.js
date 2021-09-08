@@ -4,6 +4,7 @@ global.atob = require("atob");
 global.btoa = require("btoa");
 const _ = require("lodash");
 require("jest-fetch-mock").enableMocks();
+
 const defaultSettings = require("../resources/defaultSettings.json");
 
 const chromeStorageMock = (function () {
@@ -23,6 +24,7 @@ const chromeStorageMock = (function () {
     },
   };
 })();
+
 Object.defineProperty(chrome.storage, "local", {
   value: chromeStorageMock,
 });

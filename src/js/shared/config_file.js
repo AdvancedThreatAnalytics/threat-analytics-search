@@ -264,7 +264,7 @@ const ConfigFile = {
 
     // - Update group names in the local store (if need).
     const groups = newData.groups;
-    if ((overrideAll || settings.mergeGroups) && !_.isEmpty(groups)) {
+    if ((overrideAll || settings.mergeGroups) && groups.length >= 3) {
       if (overrideAll || _.isEmpty(settings.providersGroups)) {
         settings.providersGroups = ConfigFile.parseGroups(groups);
       } else {

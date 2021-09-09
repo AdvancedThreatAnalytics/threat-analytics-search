@@ -437,6 +437,7 @@ describe("ConfigFile", () => {
         ["2", "Group 2"],
         ["3", "Group 3"],
         ["4", "Group 4"],
+        ["5", "Group 5"],
       ];
       await ConfigFile.parseJSONFile(
         { ...defaultSettings, groups: newGroups },
@@ -449,11 +450,26 @@ describe("ConfigFile", () => {
 
       // Groups should be removed if removed in file.
       await ConfigFile.parseJSONFile(
-        { ...defaultSettings, groups: newGroups.slice(0, 3) },
+        { ...defaultSettings, groups: newGroups.slice(0, 4) },
+        true
+      );
+      settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      expectedGroups = ConfigFile.parseGroups(newGroups.slice(0, 4));
+      expect(settings.providersGroups).toEqual(expectedGroups);
+
+      // If new groups are less than 3:
+      // 1) only group name should be updated with new one
+      // 2) disable other groups up to 3
+      // 3) delete all groups greater than 3
+      await ConfigFile.parseJSONFile(
+        { ...defaultSettings, groups: [["1", "New Group 1"]] },
         true
       );
       settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       expectedGroups = ConfigFile.parseGroups(newGroups.slice(0, 3));
+      expectedGroups[0].name = "New Group 1";
+      expectedGroups[1].enabled = false;
+      expectedGroups[2].enabled = false;
       expect(settings.providersGroups).toEqual(expectedGroups);
     });
 

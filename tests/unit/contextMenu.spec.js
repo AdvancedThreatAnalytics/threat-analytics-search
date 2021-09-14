@@ -377,4 +377,168 @@ describe("ContextualMenu", () => {
       });
     });
   });
+
+  describe("Opening search result options", () => {
+    it("Should focus new tab depending on resultsInBackgroundTab flag", async () => {
+      const info = {
+        menuItemId: "searchprovider-0",
+        selectionText: "resultsInBackgroundTab",
+      };
+      const tab = {
+        index: 10,
+      };
+      const settings = await LocalStore.getOne(StoreKey.SETTINGS);
+      const providers = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
+      const provider = _.find(providers, function (item) {
+        return item.menuIndex === info.menuItemId;
+      });
+      const targetURL = getProviderTargetURL(provider, info.selectionText);
+
+      // If shouldn't focus on new tab.
+      await LocalStore.setOne(StoreKey.SETTINGS, {
+        ...settings,
+        resultsInBackgroundTab: true,
+      });
+      await onClickedListener(info, tab);
+      expect(createTabs).toBeCalledWith({
+        url: targetURL,
+        selected: false,
+        index: tab.index + 1,
+      });
+
+      // If should focus on new tab.
+      await LocalStore.setOne(StoreKey.SETTINGS, {
+        ...settings,
+        resultsInBackgroundTab: false,
+      });
+      await onClickedListener(info, tab);
+      expect(createTabs).toBeCalledWith({
+        url: targetURL,
+        selected: true,
+        index: tab.index + 1,
+      });
+    });
+
+    it("Should open new tab next to current one depending on enableAdjacentTabs flag", async () => {
+      const info = {
+        menuItemId: "searchprovider-0",
+        selectionText: "true_enableAdjacentTabs",
+      };
+      const tab = {
+        index: 7,
+      };
+      const settings = await LocalStore.getOne(StoreKey.SETTINGS);
+      const providers = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
+      const provider = _.find(providers, function (item) {
+        return item.menuIndex === info.menuItemId;
+      });
+      const targetURL = getProviderTargetURL(provider, info.selectionText);
+
+      // If should open new tab next to current tab.
+      await LocalStore.setOne(StoreKey.SETTINGS, {
+        ...settings,
+        enableAdjacentTabs: true,
+      });
+      await onClickedListener(info, tab);
+      expect(createTabs).toBeCalledWith({
+        url: targetURL,
+        selected: !settings.resultsInBackgroundTab,
+        index: tab.index + 1,
+      });
+
+      // If should open new tab next to last tab.
+      await LocalStore.setOne(StoreKey.SETTINGS, {
+        ...settings,
+        enableAdjacentTabs: false,
+      });
+      await onClickedListener(info, tab);
+      expect(createTabs).toBeCalledWith({
+        url: targetURL,
+        selected: !settings.resultsInBackgroundTab,
+        index: null,
+      });
+    });
+
+    it("Should open group providers depending on openGroupsInNewWindow flag", async () => {
+      const settings = await LocalStore.getOne(StoreKey.SETTINGS);
+      const groupProviders = [
+        {
+          link: "https://stat.ripe.net/TESTSEARCH#tabId=at-a-glance",
+          group: 8,
+        },
+        {
+          link: "http://www.google.com/safebrowsing/diagnostic?site=TESTSEARCH",
+          group: 8,
+        },
+      ];
+      const info = {
+        menuItemId: "group-3",
+        selectionText: "test",
+      };
+      const tab = {
+        index: 10,
+      };
+      const urls = _.map(groupProviders, function (provider) {
+        return getProviderTargetURL(provider, info.selectionText);
+      });
+
+      // If should open in new window.
+      await LocalStore.setOne(StoreKey.SETTINGS, {
+        ...settings,
+        openGroupsInNewWindow: true,
+      });
+      await onClickedListener(info, tab);
+      expect(
+        chrome.windows.create.withArgs({
+          url: urls,
+          focused: !settings.resultsInBackgroundTab,
+        }).calledOnce
+      ).toBe(true);
+
+      // If should open in current window
+      await LocalStore.setOne(StoreKey.SETTINGS, {
+        ...settings,
+        openGroupsInNewWindow: false,
+      });
+      await onClickedListener(info, tab);
+      expect(createTabs).toBeCalledWith({
+        url: urls[0],
+        selected: !settings.resultsInBackgroundTab,
+        index: null,
+      });
+      expect(createTabs).toBeCalledWith({
+        url: urls[1],
+        selected: !settings.resultsInBackgroundTab,
+        index: null,
+      });
+    });
+
+    it("Should add item for Options to context menu depending on enableOptionsMenuItem flag", async () => {
+      const settings = await LocalStore.getOne(StoreKey.SETTINGS);
+
+      // If should add Options item.
+      await LocalStore.setOne(StoreKey.SETTINGS, {
+        ...settings,
+        enableOptionsMenuItem: true,
+      });
+      await ContextualMenu.update();
+      expect(createContextMenu).toHaveBeenLastCalledWith({
+        id: MenuPreffix.OPTIONS,
+        title: "Options",
+        contexts: ["selection"],
+      });
+
+      // If shouldn't add Options item.
+      await LocalStore.setOne(StoreKey.SETTINGS, {
+        ...settings,
+        enableOptionsMenuItem: false,
+      });
+      await ContextualMenu.update();
+      expect(createContextMenu).not.toHaveBeenLastCalledWith({
+        id: MenuPreffix.OPTIONS,
+        title: "Options",
+        contexts: ["selection"],
+      });
+    });
+  });
 });

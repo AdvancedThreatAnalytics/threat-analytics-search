@@ -60,13 +60,15 @@ chrome.runtime.onStartup.addListener(function () {
 chrome.alarms.create({
   periodInMinutes: 10080,
 });
-chrome.alarms.onAlarm.addListener(async function () {
+chrome.alarms.onAlarm.addListener(alarmListener);
+
+export async function alarmListener() {
   var settings = await LocalStore.getOne(StoreKey.SETTINGS);
   if (settings.autoUpdateConfig) {
     await ConfigFile.updateNow();
     ContextualMenu.update();
   }
-});
+}
 
 // Messages handler.
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {

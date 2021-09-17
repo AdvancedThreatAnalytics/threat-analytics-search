@@ -379,7 +379,7 @@ describe("ContextualMenu", () => {
   });
 
   describe("Opening search result options", () => {
-    it("Should focus new tab depending on resultsInBackgroundTab flag", async () => {
+    it("Shouldn't focus new tab if resultsInBackgroundTab is true", async () => {
       const info = {
         menuItemId: "searchprovider-0",
         selectionText: "resultsInBackgroundTab",
@@ -405,6 +405,22 @@ describe("ContextualMenu", () => {
         selected: false,
         index: tab.index + 1,
       });
+    });
+
+    it("Should focus new tab if resultsInBackgroundTab is false", async () => {
+      const info = {
+        menuItemId: "searchprovider-0",
+        selectionText: "resultsInBackgroundTab",
+      };
+      const tab = {
+        index: 10,
+      };
+      const settings = await LocalStore.getOne(StoreKey.SETTINGS);
+      const providers = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
+      const provider = _.find(providers, function (item) {
+        return item.menuIndex === info.menuItemId;
+      });
+      const targetURL = getProviderTargetURL(provider, info.selectionText);
 
       // If should focus on new tab.
       await LocalStore.setOne(StoreKey.SETTINGS, {
@@ -419,7 +435,7 @@ describe("ContextualMenu", () => {
       });
     });
 
-    it("Should open new tab next to current one depending on enableAdjacentTabs flag", async () => {
+    it("Should open new tab next to current one if enableAdjacentTabs is true", async () => {
       const info = {
         menuItemId: "searchprovider-0",
         selectionText: "true_enableAdjacentTabs",
@@ -445,6 +461,22 @@ describe("ContextualMenu", () => {
         selected: !settings.resultsInBackgroundTab,
         index: tab.index + 1,
       });
+    });
+
+    it("Should open new tab next to last one if enableAdjacentTabs is false", async () => {
+      const info = {
+        menuItemId: "searchprovider-0",
+        selectionText: "true_enableAdjacentTabs",
+      };
+      const tab = {
+        index: 7,
+      };
+      const settings = await LocalStore.getOne(StoreKey.SETTINGS);
+      const providers = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
+      const provider = _.find(providers, function (item) {
+        return item.menuIndex === info.menuItemId;
+      });
+      const targetURL = getProviderTargetURL(provider, info.selectionText);
 
       // If should open new tab next to last tab.
       await LocalStore.setOne(StoreKey.SETTINGS, {
@@ -459,7 +491,7 @@ describe("ContextualMenu", () => {
       });
     });
 
-    it("Should open group providers depending on openGroupsInNewWindow flag", async () => {
+    it("Should open group providers in new window if openGroupsInNewWindow is true", async () => {
       const settings = await LocalStore.getOne(StoreKey.SETTINGS);
       const groupProviders = [
         {
@@ -494,6 +526,30 @@ describe("ContextualMenu", () => {
           focused: !settings.resultsInBackgroundTab,
         }).calledOnce
       ).toBe(true);
+    });
+
+    it("Should open group providers in current window if openGroupsInNewWindow is false", async () => {
+      const settings = await LocalStore.getOne(StoreKey.SETTINGS);
+      const groupProviders = [
+        {
+          link: "https://stat.ripe.net/TESTSEARCH#tabId=at-a-glance",
+          group: 8,
+        },
+        {
+          link: "http://www.google.com/safebrowsing/diagnostic?site=TESTSEARCH",
+          group: 8,
+        },
+      ];
+      const info = {
+        menuItemId: "group-3",
+        selectionText: "test",
+      };
+      const tab = {
+        index: 10,
+      };
+      const urls = _.map(groupProviders, function (provider) {
+        return getProviderTargetURL(provider, info.selectionText);
+      });
 
       // If should open in current window
       await LocalStore.setOne(StoreKey.SETTINGS, {
@@ -513,7 +569,7 @@ describe("ContextualMenu", () => {
       });
     });
 
-    it("Should add item for Options to context menu depending on enableOptionsMenuItem flag", async () => {
+    it("Should add item for Options to context menu if enableOptionsMenuItem is true", async () => {
       const settings = await LocalStore.getOne(StoreKey.SETTINGS);
 
       // If should add Options item.
@@ -527,6 +583,10 @@ describe("ContextualMenu", () => {
         title: "Options",
         contexts: ["selection"],
       });
+    });
+
+    it("Shouldn't add item for Options to context menu if enableOptionsMenuItem is false", async () => {
+      const settings = await LocalStore.getOne(StoreKey.SETTINGS);
 
       // If shouldn't add Options item.
       await LocalStore.setOne(StoreKey.SETTINGS, {

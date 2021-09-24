@@ -37,32 +37,35 @@ describe("Options page", () => {
     expect(value).toEqual(newValue);
   });
 
-  test("Order changes on providers are preserved", async () => {
+  test("Changes on providers' order are preserved", async () => {
+    const listItemSelector = "form[name=manage_providers] ul[role=list] li[role=listitem]";
+
     // Wait until the input appears.
-    let selector =
-      "form[name=manage_providers] ul[role=list] li[role=listitem] input[name=label_1]";
+    let selector = `${listItemSelector} input[name=label_1]`;
     await page.waitForSelector(selector);
+
+    // Enable drag interception (otherwise, drag and drop feature doesn't work)
+    await page.setDragInterception(true); 
 
     // Get the input value
     const expectedValue = await page.$eval(selector, (el) => el.value);
 
-    // Drag and drop second item to the first
-    const dragSelector =
-      "form[name=manage_providers] ul[role=list] li[role=listitem] .sortable-handle";
+    // Drag and drop second item to the first (change order)
+    const dragSelector = `${listItemSelector} .sortable-handle`;
     const elements = await page.$$(dragSelector);
-    elements[1].dragAndDrop(elements[0]);
+    await elements[1].dragAndDrop(elements[0]);
 
     // Reload the page.
     await page.reload();
 
     // Wait until the input appears.
-    selector =
-      "form[name=manage_providers] ul[role=list] li[role=listitem] input[name=label_0]";
+    selector = `${listItemSelector} input[name=label_0]`;
     await page.waitForSelector(selector);
 
     // Get the input value
     const value = await page.$eval(selector, (el) => el.value);
 
+    // Check if order change is preserved
     expect(value).toEqual(expectedValue);
   });
 

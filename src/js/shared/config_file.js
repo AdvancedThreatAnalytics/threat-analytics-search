@@ -265,16 +265,22 @@ const ConfigFile = {
     // - Update group names in the local store (if need).
     const groups = newData.groups;
     if ((overrideAll || settings.mergeGroups) && !_.isEmpty(groups)) {
-      if (_.isEmpty(settings.providersGroups)) {
+      if (
+        (overrideAll && groups.length >= 3) ||
+        _.isEmpty(settings.providersGroups)
+      ) {
         settings.providersGroups = ConfigFile.parseGroups(groups);
       } else {
-        for (
-          let k = 0;
-          k < groups.length && k < settings.providersGroups.length;
-          k++
-        ) {
+        for (let k = 0; k < settings.providersGroups.length; k++) {
           if (groups[k]) {
             settings.providersGroups[k].name = groups[k][GROUP_INDEXES.name];
+          } else if (k < 3) {
+            settings.providersGroups[k].enabled = false;
+          } else {
+            settings.providersGroups.splice(
+              3,
+              settings.providersGroups.length - 3
+            );
           }
         }
       }

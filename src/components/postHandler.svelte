@@ -31,7 +31,7 @@ async function initialize() {
 
   // Find menu's item.
   const menuItems = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
-  const menuItem = _.find(menuItems, item => item.label === name);
+  const menuItem = _.find(menuItems, (item) => item.label === name);
 
   // Prepare request's parameters and URL.
   reqData = menuItem.postValue;
@@ -64,7 +64,9 @@ async function initialize() {
 }
 
 function toString(item) {
-  return _.isObject(item) && !_.isError(item) ? JSON.stringify(item) : item + "";
+  return _.isObject(item) && !_.isError(item)
+    ? JSON.stringify(item)
+    : item + "";
 }
 
 /**
@@ -142,13 +144,18 @@ async function makeRequest(targetURL, reqData, proxyURL) {
             {:else if error}
               <i class="fas fa-ban text-danger" aria-hidden="true"></i>
             {:else}
-              <i class="fas fa-check-circle text-success" aria-hidden="true"></i>
+              <i class="fas fa-check-circle text-success" aria-hidden="true"
+              ></i>
             {/if}
           </div>
 
           {#if error}
             <div class="text-center mt-1">
-              <button type="button" class="btn btn-primary px-1 py-0" title="Retry request" on:click={initialize}>
+              <button
+                type="button"
+                class="btn btn-primary px-1 py-0"
+                title="Retry request"
+                on:click="{initialize}">
                 Retry
               </button>
             </div>
@@ -157,9 +164,7 @@ async function makeRequest(targetURL, reqData, proxyURL) {
 
         <td class="w-100">
           {#if loading}
-            <span class="text-info">
-              Executing...
-            </span>
+            <span class="text-info"> Executing... </span>
           {:else if error}
             <pre class="text-danger">{toString(error)}</pre>
           {:else}

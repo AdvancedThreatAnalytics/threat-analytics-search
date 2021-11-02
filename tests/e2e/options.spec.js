@@ -38,14 +38,15 @@ describe("Options page", () => {
   });
 
   test("Changes on providers' order are preserved", async () => {
-    const listItemSelector = "form[name=manage_providers] ul[role=list] li[role=listitem]";
+    const listItemSelector =
+      "form[name=manage_providers] ul[role=list] li[role=listitem]";
 
     // Wait until the input appears.
     let selector = `${listItemSelector} input[name=label_1]`;
     await page.waitForSelector(selector);
 
     // Enable drag interception (otherwise, drag and drop feature doesn't work)
-    await page.setDragInterception(true); 
+    await page.setDragInterception(true);
 
     // Get the input value
     const expectedValue = await page.$eval(selector, (el) => el.value);

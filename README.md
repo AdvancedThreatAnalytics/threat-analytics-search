@@ -33,12 +33,13 @@ If configured, the extension also defines three special sections on the contextu
 
 The extension is implemented with JavaScript. The full list of dependencies can be found on the [package.json](./package.json) file, but the most relevant ones are:
 
-| Library                                    | Used for   |
-|--------------------------------------------|------------|
-| [Mustache](https://mustache.github.io/)    | Templates  |
-| [aes-js](https://github.com/ricmoo/aes-js) | Encryption |
-| [Bootstrap](https://getbootstrap.com/)     | UI         |
-| [Font Awesome](https://fontawesome.com/)   | Icons      |
+| Library                                    | Used for    |
+|--------------------------------------------|-------------|
+| [Mustache](https://mustache.github.io/)    | Templates   |
+| [aes-js](https://github.com/ricmoo/aes-js) | Encryption  |
+| [Bootstrap](https://getbootstrap.com/)     | UI          |
+| [Font Awesome](https://fontawesome.com/)   | Icons       |
+| [Svelte](https://svelte.dev/)              | Components  |
 
 ### Code structure
 

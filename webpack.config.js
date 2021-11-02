@@ -32,6 +32,12 @@ module.exports = (env) => ({
         test: /\.(svg|eot|woff|woff2|ttf)$/,
         use: ["file-loader"],
       },
+      {
+        test: /\.svelte$/,
+        use: {
+          loader: 'svelte-loader',
+        },
+      },
     ],
   },
   plugins: [
@@ -67,7 +73,7 @@ module.exports = (env) => ({
           from: path.join(__dirname, "src/"),
           globOptions: {
             ignore: [
-              "**/*.+(css|js)",
+              "**/*.+(css|js|svelte)",
               "**/migration.html",
               "**/options.html",
               "**/postHandler.html",
@@ -76,6 +82,7 @@ module.exports = (env) => ({
           },
         },
         {
+          // Replace update URL depending if we are compiling for Edge or for Chrome.
           from: path.join(__dirname, "src/manifest.json"),
           transform(content) {
             return content
@@ -102,7 +109,7 @@ module.exports = (env) => ({
     minimize: true,
     splitChunks: {
       chunks(chunk) {
-        // Dont split background file, otherwise won't be loaded completely by Chrome.
+        // Don't split background file, otherwise won't be loaded completely by Chrome.
         return chunk.name !== "background";
       },
     },

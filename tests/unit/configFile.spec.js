@@ -370,7 +370,7 @@ describe("ConfigFile", () => {
       expect(_.omit(settings, "providersGroups")).toEqual(expectedSettings);
     });
 
-    it("Groups names shouldn't be updated is corresponding flag is false", async () => {
+    it("Groups names shouldn't be updated if corresponding flag is false", async () => {
       let settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       await LocalStore.setOne(StoreKey.SETTINGS, {
         ...settings,
@@ -389,7 +389,7 @@ describe("ConfigFile", () => {
       expect(settings.providersGroups).toEqual(defaultGroups);
     });
 
-    it("Groups names should be updated is corresponding flag is true", async () => {
+    it("Groups names should be updated if corresponding flag is true", async () => {
       let settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       await LocalStore.setOne(StoreKey.SETTINGS, {
         ...settings,
@@ -408,7 +408,7 @@ describe("ConfigFile", () => {
       expect(settings.providersGroups).toEqual(expectedGroups);
     });
 
-    it("Groups names should be updated is forced (no matter flag's value)", async () => {
+    it("Groups names should be updated if forced (no matter flag's value)", async () => {
       let settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
       await LocalStore.setOne(StoreKey.SETTINGS, {
         ...settings,
@@ -476,6 +476,73 @@ describe("ConfigFile", () => {
       expect(searchProviders).toEqual(
         ConfigFile.parseProviders(newSearchProviders)
       );
+    });
+
+    describe("Groups names should be updated is forced (no matter flag's value)", () => {
+      it("Groups names should be updated", async () => {
+        const newGroups = [
+          ["1", "Group 1"],
+          ["2", "Group 2"],
+          ["3", "Group 3"],
+        ];
+        await ConfigFile.parseJSONFile(
+          { ...defaultSettings, groups: newGroups },
+          true
+        );
+
+        const settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+        const expectedGroups = ConfigFile.parseGroups(newGroups);
+        expect(settings.providersGroups).toEqual(expectedGroups);
+      });
+
+      it("New groups should be added", async () => {
+        const newGroups = [
+          ["1", "Group 1"],
+          ["2", "Group 2"],
+          ["3", "Group 3"],
+          ["4", "Group 4"],
+          ["5", "Group 5"],
+        ];
+        await ConfigFile.parseJSONFile(
+          { ...defaultSettings, groups: newGroups },
+          true
+        );
+
+        const settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+        const expectedGroups = ConfigFile.parseGroups(newGroups);
+        expect(settings.providersGroups).toEqual(expectedGroups);
+      });
+
+      it("Old obsolete groups should be removed", async () => {
+        const newGroups = [
+          ["1", "Group 1"],
+          ["2", "Group 2"],
+          ["3", "Group 3"],
+          ["4", "Group 4"],
+        ];
+        await ConfigFile.parseJSONFile(
+          { ...defaultSettings, groups: newGroups },
+          true
+        );
+
+        let settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+        const expectedGroups = ConfigFile.parseGroups(newGroups);
+        expect(settings.providersGroups).toEqual(expectedGroups);
+      });
+
+      it("Undefined groups should be disabled", async () => {
+        await ConfigFile.parseJSONFile(
+          { ...defaultSettings, groups: [["1", "New Group 1"]] },
+          true
+        );
+
+        const settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+        const expectedGroups = ConfigFile.parseGroups(defaultSettings.groups);
+        expectedGroups[0].name = "New Group 1";
+        expectedGroups[1].enabled = false;
+        expectedGroups[2].enabled = false;
+        expect(settings.providersGroups).toEqual(expectedGroups);
+      });
     });
   });
 

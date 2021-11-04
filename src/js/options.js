@@ -17,6 +17,7 @@ import {
   StoreKey,
   CBC_CONFIG,
   CONFIG_FILE_OPTIONS,
+  HEADER,
   MERGE_OPTIONS,
   MERGE_DROPDOWN_ITEMS,
   NWI_CONFIG,
@@ -29,13 +30,19 @@ import ConfigFile from "./shared/config_file";
 import LocalStore from "./shared/local_store";
 import providerTabHelper from "./shared/provider_helper";
 
+import HeaderComponent from "../components/options/header.svelte";
+
+let headerComponent = new HeaderComponent({
+  target: document.getElementById("header"),
+});
+
 // Global variable for store initial settings (before user changes).
 var initData = {};
 
 // Wait for the page to be loaded to execute the initialization function.
 document.addEventListener("DOMContentLoaded", async function () {
   Header.update();
-  updateTabsVisibility(Header.DEFAULT_TAB);
+  updateTabsVisibility(HEADER.DEFAULT_TAB);
 
   SettingsTab.initialize();
   ProvidersTab.initialize();
@@ -79,103 +86,16 @@ function mainConfigurationUpdated(lazy) {
 // --- Header --- //
 
 var Header = {
-  TABS: [
-    {
-      page: "settings",
-      href: "#",
-      label: "Settings",
-    },
-    {
-      page: "search-providers",
-      href: "#",
-      label: "Search Providers",
-    },
-    {
-      page: "security-analytics",
-      href: "#",
-      label: "Security Analytics",
-    },
-    {
-      page: "netwitness",
-      href: "#",
-      label: "NetWitness",
-    },
-    {
-      page: "carbon-black",
-      href: "#",
-      label: "Carbon Black",
-    },
-  ],
-
-  LINKS: [
-    {
-      label: "Home",
-      title: "Home",
-      icon: "fa fa-home",
-      href: MiscURLs.EXTENSION_HOME_URL,
-    },
-    {
-      label: "About us",
-      title: "About us",
-      icon: "fa fa-info-circle",
-      href: MiscURLs.ABOUT_US_URL,
-    },
-    {
-      label: "Feedback",
-      title: "Report an issue",
-      icon: "fab fa-github",
-      href: MiscURLs.ISSUES_URL,
-    },
-  ],
-
-  DEFAULT_TAB: "search-providers",
-
   update: function (params) {
-    var current = _.get(params, "current") || Header.DEFAULT_TAB;
-
-    // Add 'computed' variables to tabs.
-    var tabs = _.map(Header.TABS, function (tab) {
-      return _.assign(
-        {
-          classes: tab.page === current ? "active" : "text-success",
-          attributes: tab.page === current ? 'aria-current="page"' : "",
-        },
-        tab
-      );
+    var current = _.get(params, "current") || HEADER.DEFAULT_TAB;
+    headerComponent.$set({
+      current,
     });
-
-    // Add default values to parameters.
-    params = _.assign(
-      {
-        current: current,
-        tabs: tabs,
-      },
-      params
-    );
-
-    // Replace template.
-    var headerTemplate = document.getElementById(
-      "template-header-nav"
-    ).innerHTML;
-    var headerRendered = Mustache.render(headerTemplate, params);
-    document.querySelector("header nav").innerHTML = headerRendered;
-
-    // Replace link template.
-    var linksTemplate = document.getElementById(
-      "template-header-links"
-    ).innerHTML;
-    var linksRendered = Mustache.render(linksTemplate, { links: Header.LINKS });
-    document.getElementById("links").innerHTML = linksRendered;
 
     // Replace footer link.
     var el = document.getElementById("footer-link");
     el.setAttribute("href", MiscURLs.CRITICALSTART_URL);
     el.innerHTML = MiscURLs.CRITICALSTART_URL;
-
-    // Replace logo link.
-    document
-      .getElementById("logo-link")
-      .setAttribute("href", MiscURLs.RELEASES_URL);
 
     // Add click behaviors to tab links.
     var items = document.querySelectorAll("header nav .nav-link");

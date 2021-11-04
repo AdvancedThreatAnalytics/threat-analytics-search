@@ -5,48 +5,7 @@
 
   <body>
     <!-- Header -->
-    <header class="container d-flex mb-3">
-      <a
-        id="logo-link"
-        target="_blank"
-        title="Threat Analytics @@browserName plugin notes"
-      >
-        <img
-          src="./images/icon_128.png"
-          alt="CRITICALSTART logo"
-          height="90px"
-        />
-      </a>
-      <div class="flex-grow-1 pl-3">
-        <h1 class="mb-1">CRITICALSTART</h1>
-        <nav>Loading...</nav>
-        <script id="template-header-nav" type="x-tmpl-mustache">
-          <ul class="nav nav-tabs">
-            {{#tabs}}
-              <li class="nav-item">
-                <a
-                  class="nav-link {{ classes }}"
-                  data-tab="{{ page }}"
-                  href="{{ href }}"
-                  {{ attributes }}
-                >{{ label }}</a>
-              </li>
-            {{/tabs}}
-          </ul>
-        </script>
-      </div>
-      <div id="links" class="d-flex align-items-end">Loading...</div>
-      <script id="template-header-links" type="x-tmpl-mustache">
-        {{#links}}
-          <div class="mx-2 pb-2">
-            <a href="{{ href }}" title="{{ title }}" target="_blank">
-              <i class="{{ icon }}" aria-hidden="true"></i>
-              {{ label }}
-            </a>
-          </div>
-        {{/links}}
-      </script>
-    </header>
+    <div id="header"></div>
 
     <!-- Tabs content -->
     <main class="container">

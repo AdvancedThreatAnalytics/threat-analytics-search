@@ -17,7 +17,6 @@ import {
   StoreKey,
   CBC_CONFIG,
   CONFIG_FILE_OPTIONS,
-  HEADER,
   MERGE_OPTIONS,
   MERGE_DROPDOWN_ITEMS,
   NWI_CONFIG,
@@ -35,15 +34,13 @@ import HeaderComponent from "../components/options/header.svelte";
 let headerComponent = new HeaderComponent({
   target: document.getElementById("header"),
 });
+headerComponent.$on("tabClicked", updateTabsVisibility);
 
 // Global variable for store initial settings (before user changes).
 var initData = {};
 
 // Wait for the page to be loaded to execute the initialization function.
 document.addEventListener("DOMContentLoaded", async function () {
-  Header.update();
-  updateTabsVisibility(HEADER.DEFAULT_TAB);
-
   SettingsTab.initialize();
   ProvidersTab.initialize();
   CarbonBlackTab.initialize();
@@ -62,6 +59,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 });
 
 function updateTabsVisibility(current) {
+  current = _.get(current, "detail");
   var pages = document.querySelectorAll("main section");
   for (var i = 0; i < pages.length; i++) {
     var pageAttr = pages[i].getAttribute("data-tab");
@@ -82,40 +80,6 @@ function mainConfigurationUpdated(lazy) {
 
   chrome.runtime.sendMessage({ action: "updateContextualMenu" });
 }
-
-// --- Header --- //
-
-var Header = {
-  update: function (params) {
-    var current = _.get(params, "current") || HEADER.DEFAULT_TAB;
-    headerComponent.$set({
-      current,
-    });
-
-    // Replace footer link.
-    var el = document.getElementById("footer-link");
-    el.setAttribute("href", MiscURLs.CRITICALSTART_URL);
-    el.innerHTML = MiscURLs.CRITICALSTART_URL;
-
-    // Add click behaviors to tab links.
-    var items = document.querySelectorAll("header nav .nav-link");
-    for (var i = 0; i < items.length; i++) {
-      items[i].addEventListener("click", Header.tabClicked);
-    }
-  },
-
-  tabClicked: function (event) {
-    var current = event.target.getAttribute("data-tab");
-
-    Header.update({
-      current: current,
-    });
-    updateTabsVisibility(current);
-
-    event.preventDefault();
-    return false;
-  },
-};
 
 // --- Settings tab --- //
 

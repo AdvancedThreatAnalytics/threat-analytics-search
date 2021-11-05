@@ -266,59 +266,6 @@ export const SEARCH_RESULT_OPTIONS = [
   },
 ];
 
-export const HEADER = {
-  TABS: [
-    {
-      page: "settings",
-      href: "#",
-      label: "Settings",
-    },
-    {
-      page: "search-providers",
-      href: "#",
-      label: "Search Providers",
-    },
-    {
-      page: "security-analytics",
-      href: "#",
-      label: "Security Analytics",
-    },
-    {
-      page: "netwitness",
-      href: "#",
-      label: "NetWitness",
-    },
-    {
-      page: "carbon-black",
-      href: "#",
-      label: "Carbon Black",
-    },
-  ],
-
-  LINKS: [
-    {
-      label: "Home",
-      title: "Home",
-      icon: "fa fa-home",
-      href: MiscURLs.EXTENSION_HOME_URL,
-    },
-    {
-      label: "About us",
-      title: "About us",
-      icon: "fa fa-info-circle",
-      href: MiscURLs.ABOUT_US_URL,
-    },
-    {
-      label: "Feedback",
-      title: "Report an issue",
-      icon: "fab fa-github",
-      href: MiscURLs.ISSUES_URL,
-    },
-  ],
-
-  DEFAULT_TAB: "search-providers",
-};
-
 export const EXPORT_FILE_NAME = "Settings.json";
 
 export default {
@@ -326,7 +273,6 @@ export default {
   StoreKey,
   CBC_CONFIG,
   CONFIG_FILE_OPTIONS,
-  HEADER,
   MERGE_DROPDOWN_ITEMS,
   MERGE_OPTIONS,
   NWI_CONFIG,

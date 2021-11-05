@@ -29,7 +29,13 @@ import ConfigFile from "./shared/config_file";
 import LocalStore from "./shared/local_store";
 import providerTabHelper from "./shared/provider_helper";
 
+// Inject Svelte components into the page.
+import Footer from "../components/options/footer.svelte";
 import HeaderComponent from "../components/options/header.svelte";
+
+new Footer({
+  target: document.getElementById("footer"),
+});
 
 let headerComponent = new HeaderComponent({
   target: document.getElementById("header"),

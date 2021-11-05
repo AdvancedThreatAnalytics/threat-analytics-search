@@ -1,6 +1,6 @@
 <script>
 import { MiscURLs } from "../../js/shared/constants";
-import { onMount } from "svelte";
+import { onMount, tick } from "svelte";
 import { createEventDispatcher } from "svelte";
 
 const dispatch = createEventDispatcher();
@@ -62,7 +62,8 @@ function tabClicked(tabName) {
   dispatch("tabClicked", tabName);
 }
 
-onMount(() => {
+onMount(async() => {
+  await tick();
   tabClicked(DEFAULT_TAB);
 });
 </script>

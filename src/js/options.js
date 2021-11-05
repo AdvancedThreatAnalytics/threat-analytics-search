@@ -29,6 +29,13 @@ import ConfigFile from "./shared/config_file";
 import LocalStore from "./shared/local_store";
 import providerTabHelper from "./shared/provider_helper";
 
+// Inject Svelte components into the page.
+import Footer from "../components/options/footer.svelte";
+
+new Footer({
+  target: document.getElementById("footer"),
+});
+
 // Global variable for store initial settings (before user changes).
 var initData = {};
 
@@ -166,11 +173,6 @@ var Header = {
     ).innerHTML;
     var linksRendered = Mustache.render(linksTemplate, { links: Header.LINKS });
     document.getElementById("links").innerHTML = linksRendered;
-
-    // Replace footer link.
-    var el = document.getElementById("footer-link");
-    el.setAttribute("href", MiscURLs.CRITICALSTART_URL);
-    el.innerHTML = MiscURLs.CRITICALSTART_URL;
 
     // Replace logo link.
     document

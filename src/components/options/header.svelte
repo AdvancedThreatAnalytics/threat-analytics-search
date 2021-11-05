@@ -5,61 +5,56 @@ import { createEventDispatcher } from "svelte";
 
 const dispatch = createEventDispatcher();
 
-const HEADER = {
-  TABS: [
-    {
-      page: "settings",
-      href: "#",
-      label: "Settings",
-    },
-    {
-      page: "search-providers",
-      href: "#",
-      label: "Search Providers",
-    },
-    {
-      page: "security-analytics",
-      href: "#",
-      label: "Security Analytics",
-    },
-    {
-      page: "netwitness",
-      href: "#",
-      label: "NetWitness",
-    },
-    {
-      page: "carbon-black",
-      href: "#",
-      label: "Carbon Black",
-    },
-  ],
+const TABS = [
+  {
+    page: "settings",
+    label: "Settings",
+  },
+  {
+    page: "search-providers",
+    label: "Search Providers",
+  },
+  {
+    page: "security-analytics",
+    label: "Security Analytics",
+  },
+  {
+    page: "netwitness",
+    label: "NetWitness",
+  },
+  {
+    page: "carbon-black",
+    label: "Carbon Black",
+  },
+];
 
-  LINKS: [
-    {
-      label: "Home",
-      title: "Home",
-      icon: "fa fa-home",
-      href: MiscURLs.EXTENSION_HOME_URL,
-    },
-    {
-      label: "About us",
-      title: "About us",
-      icon: "fa fa-info-circle",
-      href: MiscURLs.ABOUT_US_URL,
-    },
-    {
-      label: "Feedback",
-      title: "Report an issue",
-      icon: "fab fa-github",
-      href: MiscURLs.ISSUES_URL,
-    },
-  ],
+const LINKS = [
+  {
+    label: "Home",
+    title: "Home",
+    icon: "fa fa-home",
+    href: MiscURLs.EXTENSION_HOME_URL,
+  },
+  {
+    label: "About us",
+    title: "About us",
+    icon: "fa fa-info-circle",
+    href: MiscURLs.ABOUT_US_URL,
+  },
+  {
+    label: "Feedback",
+    title: "Report an issue",
+    icon: "fab fa-github",
+    href: MiscURLs.ISSUES_URL,
+  },
+];
 
-  DEFAULT_TAB: "search-providers",
-};
-const HREF = MiscURLs.CRITICALSTART_URL;
-const LINKS = HEADER.LINKS;
-const TABS = HEADER.TABS;
+const DEFAULT_TAB = "search-providers";
+
+const HOME_URL = MiscURLs.CRITICALSTART_URL;
+
+// TODO: once the Options page is completely implemented with Svelte, this variable should be a property with
+// two way binding, making unnecessary to dispatch the "tabClicked" event.
 let current;
 
 function tabClicked(tabName) {
@@ -68,7 +63,7 @@ function tabClicked(tabName) {
 }
 
 onMount(() => {
-  tabClicked(HEADER.DEFAULT_TAB);
+  tabClicked(DEFAULT_TAB);
 });
 </script>
 
@@ -77,21 +72,23 @@ onMount(() => {
     id="logo-link"
     target="_blank"
     title="Threat Analytics @@browserName plugin notes"
-    href="{HREF}">
+    href="{HOME_URL}">
     <img src="./images/icon_128.png" alt="CRITICALSTART logo" height="90px" />
   </a>
+
   <div class="flex-grow-1 pl-3">
     <h1 class="mb-1">CRITICALSTART</h1>
+
     <nav>
       <ul class="nav nav-tabs">
         {#each TABS as tab}
           <li class="nav-item">
             <a
+              href="{'#'}"
               class="nav-link {tab.page === current
                 ? 'active'
                 : 'text-success'}"
               data-tab="{tab.page}"
-              href="{tab.href}"
               aria-current="{tab.page === current ? 'page' : ''}"
               on:click|preventDefault="{() => tabClicked(tab.page)}"
               >{tab.label}</a>

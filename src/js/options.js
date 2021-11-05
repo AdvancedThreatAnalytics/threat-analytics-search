@@ -31,16 +31,16 @@ import providerTabHelper from "./shared/provider_helper";
 
 // Inject Svelte components into the page.
 import Footer from "../components/options/footer.svelte";
-import HeaderComponent from "../components/options/header.svelte";
+import Header from "../components/options/header.svelte";
 
 new Footer({
   target: document.getElementById("footer"),
 });
 
-let headerComponent = new HeaderComponent({
+const myHeader = new Header({
   target: document.getElementById("header"),
 });
-headerComponent.$on("tabClicked", updateTabsVisibility);
+myHeader.$on("tabClicked", updateTabsVisibility);
 
 // Global variable for store initial settings (before user changes).
 var initData = {};
@@ -64,11 +64,11 @@ document.addEventListener("DOMContentLoaded", async function () {
   });
 });
 
-function updateTabsVisibility(current) {
-  current = _.get(current, "detail");
-  var pages = document.querySelectorAll("main section");
-  for (var i = 0; i < pages.length; i++) {
-    var pageAttr = pages[i].getAttribute("data-tab");
+function updateTabsVisibility(data) {
+  const current = _.get(data, "detail");
+  const pages = document.querySelectorAll("main section");
+  for (let i = 0; i < pages.length; i++) {
+    const pageAttr = pages[i].getAttribute("data-tab");
     if (!_.isEmpty(pageAttr)) {
       pages[i].style.display = pageAttr === current ? "block" : "none";
     }

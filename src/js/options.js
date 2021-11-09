@@ -31,19 +31,22 @@ import providerTabHelper from "./shared/provider_helper";
 
 // Inject Svelte components into the page.
 import Footer from "../components/options/footer.svelte";
+import Header from "../components/options/header.svelte";
 
 new Footer({
   target: document.getElementById("footer"),
 });
+
+const myHeader = new Header({
+  target: document.getElementById("header"),
+});
+myHeader.$on("tabClicked", updateTabsVisibility);
 
 // Global variable for store initial settings (before user changes).
 var initData = {};
 
 // Wait for the page to be loaded to execute the initialization function.
 document.addEventListener("DOMContentLoaded", async function () {
-  Header.update();
-  updateTabsVisibility(Header.DEFAULT_TAB);
-
   SettingsTab.initialize();
   ProvidersTab.initialize();
   CarbonBlackTab.initialize();
@@ -61,10 +64,11 @@ document.addEventListener("DOMContentLoaded", async function () {
   });
 });
 
-function updateTabsVisibility(current) {
-  var pages = document.querySelectorAll("main section");
-  for (var i = 0; i < pages.length; i++) {
-    var pageAttr = pages[i].getAttribute("data-tab");
+function updateTabsVisibility(data) {
+  const current = _.get(data, "detail");
+  const pages = document.querySelectorAll("main section");
+  for (let i = 0; i < pages.length; i++) {
+    const pageAttr = pages[i].getAttribute("data-tab");
     if (!_.isEmpty(pageAttr)) {
       pages[i].style.display = pageAttr === current ? "block" : "none";
     }
@@ -82,122 +86,6 @@ function mainConfigurationUpdated(lazy) {
 
   chrome.runtime.sendMessage({ action: "updateContextualMenu" });
 }
-
-// --- Header --- //
-
-var Header = {
-  TABS: [
-    {
-      page: "settings",
-      href: "#",
-      label: "Settings",
-    },
-    {
-      page: "search-providers",
-      href: "#",
-      label: "Search Providers",
-    },
-    {
-      page: "security-analytics",
-      href: "#",
-      label: "Security Analytics",
-    },
-    {
-      page: "netwitness",
-      href: "#",
-      label: "NetWitness",
-    },
-    {
-      page: "carbon-black",
-      href: "#",
-      label: "Carbon Black",
-    },
-  ],
-
-  LINKS: [
-    {
-      label: "Home",
-      title: "Home",
-      icon: "fa fa-home",
-      href: MiscURLs.EXTENSION_HOME_URL,
-    },
-    {
-      label: "About us",
-      title: "About us",
-      icon: "fa fa-info-circle",
-      href: MiscURLs.ABOUT_US_URL,
-    },
-    {
-      label: "Feedback",
-      title: "Report an issue",
-      icon: "fab fa-github",
-      href: MiscURLs.ISSUES_URL,
-    },
-  ],
-
-  DEFAULT_TAB: "search-providers",
-
-  update: function (params) {
-    var current = _.get(params, "current") || Header.DEFAULT_TAB;
-
-    // Add 'computed' variables to tabs.
-    var tabs = _.map(Header.TABS, function (tab) {
-      return _.assign(
-        {
-          classes: tab.page === current ? "active" : "text-success",
-          attributes: tab.page === current ? 'aria-current="page"' : "",
-        },
-        tab
-      );
-    });
-
-    // Add default values to parameters.
-    params = _.assign(
-      {
-        current: current,
-        tabs: tabs,
-      },
-      params
-    );
-
-    // Replace template.
-    var headerTemplate = document.getElementById(
-      "template-header-nav"
-    ).innerHTML;
-    var headerRendered = Mustache.render(headerTemplate, params);
-    document.querySelector("header nav").innerHTML = headerRendered;
-
-    // Replace link template.
-    var linksTemplate = document.getElementById(
-      "template-header-links"
-    ).innerHTML;
-    var linksRendered = Mustache.render(linksTemplate, { links: Header.LINKS });
-    document.getElementById("links").innerHTML = linksRendered;
-
-    // Replace logo link.
-    document
-      .getElementById("logo-link")
-      .setAttribute("href", MiscURLs.RELEASES_URL);
-
-    // Add click behaviors to tab links.
-    var items = document.querySelectorAll("header nav .nav-link");
-    for (var i = 0; i < items.length; i++) {
-      items[i].addEventListener("click", Header.tabClicked);
-    }
-  },
-
-  tabClicked: function (event) {
-    var current = event.target.getAttribute("data-tab");
-
-    Header.update({
-      current: current,
-    });
-    updateTabsVisibility(current);
-
-    event.preventDefault();
-    return false;
-  },
-};
 
 // --- Settings tab --- //
 

@@ -49,7 +49,7 @@ const LINKS = [
   },
 ];
 
-const DEFAULT_TAB = "search-providers";
+const DEFAULT_TAB = "settings";
 
 const HOME_URL = MiscURLs.CRITICALSTART_URL;
 
@@ -62,7 +62,7 @@ function tabClicked(tabName) {
   dispatch("tabClicked", tabName);
 }
 
-onMount(async() => {
+onMount(async () => {
   await tick();
   tabClicked(DEFAULT_TAB);
 });

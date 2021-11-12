@@ -49,7 +49,7 @@ const LINKS = [
   },
 ];
 
-const DEFAULT_TAB = "settings";
+const DEFAULT_TAB = "search-providers";
 
 const HOME_URL = MiscURLs.CRITICALSTART_URL;
 

@@ -1,9 +1,10 @@
 <script>
 import _ from "lodash";
-import Notiflix from "notiflix";
-import { createEventDispatcher } from "svelte";
 import beautify from "js-beautify";
 import BSN from "bootstrap.native/dist/bootstrap-native.esm.min.js";
+import Notiflix from "notiflix";
+import { createEventDispatcher } from "svelte";
+
 import ConfigFile from "../../../js/shared/config_file";
 import { EXPORT_FILE_NAME } from "../../../js/shared/constants";
 
@@ -19,7 +20,7 @@ async function exportToFile() {
   // Generate the JSON
   let data = await ConfigFile.generateJSONFile();
 
-  // Create a downloadable link with content. I have named the exported file to `Settings.json`
+  // Create a downloadable link with content. I have named the exported file to 'Settings.json'.
   var downloadLink = document.createElement("a");
   var blob = new Blob([JSON.stringify(data)], {
     type: "text/plain;charset=utf-8",
@@ -170,6 +171,7 @@ async function updateJSONTextarea(newSettings) {
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
+
       <div class="modal-body">
         <textarea
           id="settings_json"
@@ -177,6 +179,7 @@ async function updateJSONTextarea(newSettings) {
           rows="24">
         </textarea>
       </div>
+
       <div class="modal-footer">
         <button
           type="button"

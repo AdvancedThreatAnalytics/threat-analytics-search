@@ -17,15 +17,15 @@ function closeModal() {
 }
 
 async function exportToFile() {
-  // Generate the JSON
-  let data = await ConfigFile.generateJSONFile();
+  // Generate the JSON.
+  const data = await ConfigFile.generateJSONFile();
 
   // Create a downloadable link with content. I have named the exported file to 'Settings.json'.
-  var downloadLink = document.createElement("a");
-  var blob = new Blob([JSON.stringify(data)], {
+  const downloadLink = document.createElement("a");
+  const blob = new Blob([JSON.stringify(data)], {
     type: "text/plain;charset=utf-8",
   });
-  var url = URL.createObjectURL(blob);
+  const url = URL.createObjectURL(blob);
   downloadLink.href = url;
   downloadLink.download = EXPORT_FILE_NAME;
 
@@ -35,15 +35,15 @@ async function exportToFile() {
 }
 
 function fileImported(event) {
-  let selectedFile = _.first(this.files);
-  var reader = new FileReader();
+  const selectedFile = _.first(this.files);
+  const reader = new FileReader();
 
   reader.onload = async function (event) {
     await saveSearches(event.target.result);
   };
   reader.readAsText(selectedFile);
 
-  // Reset the value
+  // Reset the value.
   event.target.value = "";
 }
 
@@ -52,17 +52,17 @@ function importFromFile() {
 }
 
 async function openModal() {
-  // Update text Area
+  // Update textarea.
   await updateJSONTextarea();
   editModal = new BSN.Modal("#settings_editModal");
   editModal.show();
 }
 
 async function saveModalChanges() {
-  var changes = document.getElementById("settings_json").value;
-  var success = await saveSearches(changes);
+  const changes = document.getElementById("settings_json").value;
+  const success = await saveSearches(changes);
 
-  // close Modal on success
+  // Close modal on success.
   if (success) {
     closeModal();
   }
@@ -70,7 +70,7 @@ async function saveModalChanges() {
 
 async function saveSearches(data) {
   try {
-    var parsedData = JSON.parse(data);
+    const parsedData = JSON.parse(data);
 
     if (
       confirm(
@@ -79,7 +79,7 @@ async function saveSearches(data) {
     ) {
       await ConfigFile.parseJSONFile(parsedData, true);
 
-      // Update UI according to this change
+      // Update UI according to this change.
       dispatch("updateMainConfiguration");
 
       Notiflix.Notify.Success("New configuration saved");
@@ -95,7 +95,7 @@ async function saveSearches(data) {
 }
 
 async function updateJSONTextarea(newSettings) {
-  var textarea = document.getElementById("settings_json");
+  const textarea = document.getElementById("settings_json");
   if (textarea) {
     if (_.isNil(newSettings)) {
       newSettings = await ConfigFile.generateJSONFile();

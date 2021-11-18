@@ -10,7 +10,10 @@ import { EXPORT_FILE_NAME } from "../../../js/shared/constants";
 
 const dispatch = createEventDispatcher();
 
+// Auxiliary variables.
 let editModal = null;
+
+// Bindings.
 let fileInput;
 let modalElem;
 let modalTextarea;

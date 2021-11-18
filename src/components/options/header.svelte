@@ -62,7 +62,7 @@ function tabClicked(tabName) {
   dispatch("tabClicked", tabName);
 }
 
-onMount(async() => {
+onMount(async () => {
   await tick();
   tabClicked(DEFAULT_TAB);
 });

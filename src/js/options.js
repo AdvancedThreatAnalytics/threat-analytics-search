@@ -7,7 +7,6 @@ import "../css/main.css";
 import _ from "lodash";
 import Mustache from "mustache";
 import Notiflix from "notiflix";
-import beautify from "js-beautify";
 import { DateTime } from "luxon";
 import { Sortable } from "sortablejs";
 import BSN from "bootstrap.native/dist/bootstrap-native.esm.min.js";
@@ -22,7 +21,6 @@ import {
   NWI_CONFIG,
   RSA_CONFIG,
   SEARCH_RESULT_OPTIONS,
-  EXPORT_FILE_NAME,
 } from "./shared/constants";
 
 import ConfigFile from "./shared/config_file";
@@ -32,6 +30,7 @@ import providerTabHelper from "./shared/provider_helper";
 // Inject Svelte components into the page.
 import Footer from "../components/options/footer.svelte";
 import Header from "../components/options/header.svelte";
+import ImportExport from "../components/options/settings/importExport.svelte";
 
 new Footer({
   target: document.getElementById("footer"),
@@ -90,8 +89,6 @@ function mainConfigurationUpdated(lazy) {
 // --- Settings tab --- //
 
 var SettingsTab = {
-  editModal: null,
-
   initialize: function () {
     fetch("views/settings.html")
       .then((response) => response.text())
@@ -141,27 +138,6 @@ var SettingsTab = {
         document
           .getElementById("settings_refreshNow")
           .addEventListener("click", SettingsTab.updateNow);
-        document
-          .getElementById("settings_import")
-          .addEventListener("click", SettingsTab.importFromFile);
-        document
-          .getElementById("settings_export")
-          .addEventListener("click", SettingsTab.exportToFile);
-        document
-          .getElementById("settings_edit")
-          .addEventListener("click", SettingsTab.openModal);
-        document
-          .getElementById("settings_fileInput")
-          .addEventListener("change", SettingsTab.fileImported);
-        document
-          .getElementById("settings_closeModal")
-          .addEventListener("click", SettingsTab.closeModal);
-        document
-          .getElementById("settings_saveChanges")
-          .addEventListener("click", SettingsTab.saveModalChanges);
-        document
-          .getElementById("settings_discardChanges")
-          .addEventListener("click", SettingsTab.closeModal);
 
         var inputs = document.querySelectorAll('form[name="settings"] input');
         _.each(inputs, function (input) {
@@ -171,6 +147,14 @@ var SettingsTab = {
             input.addEventListener("change", SettingsTab.onInputChanged);
           }
         });
+
+        // Inject import/export component.
+        const importExportComponent = new ImportExport({
+          target: document.getElementById("importExport"),
+        });
+        importExportComponent.$on("updateMainConfiguration", () =>
+          mainConfigurationUpdated(false)
+        );
 
         // Update inputs with settings values.
         SettingsTab.updateForms();
@@ -283,19 +267,6 @@ var SettingsTab = {
     document.getElementById("settings_lastConfigUpdateError").innerHTML = error;
   },
 
-  updateJSONTextarea: async function (newSettings) {
-    var textarea = document.getElementById("settings_json");
-    if (textarea) {
-      if (_.isNil(newSettings)) {
-        newSettings = await ConfigFile.generateJSONFile();
-      }
-
-      textarea.value = beautify(JSON.stringify(newSettings), {
-        indent_size: 2,
-      });
-    }
-  },
-
   updateNow: async function () {
     var success = await ConfigFile.updateNow();
     if (success) {
@@ -311,88 +282,6 @@ var SettingsTab = {
         "The settings couldn't be updated, please check the URL or the file content"
       );
     }
-  },
-
-  saveSearches: async function (data) {
-    try {
-      var parsedData = JSON.parse(data);
-
-      if (
-        confirm(
-          "Are you sure you want to override your local settings with these values?"
-        )
-      ) {
-        await ConfigFile.parseJSONFile(parsedData, true);
-
-        // Update UI according to this change
-        mainConfigurationUpdated();
-
-        Notiflix.Notify.Success("New configuration saved");
-        return true;
-      }
-    } catch (err) {
-      console.error(err);
-      Notiflix.Notify.Failure(
-        "Configuration couldn't be saved. Please verify that the file is valid."
-      );
-      return false;
-    }
-  },
-
-  importFromFile() {
-    document.getElementById("settings_fileInput").click();
-  },
-
-  fileImported(event) {
-    let selectedFile = _.first(this.files);
-    var reader = new FileReader();
-
-    reader.onload = function (event) {
-      SettingsTab.saveSearches(event.target.result);
-    };
-    reader.readAsText(selectedFile);
-
-    // Reset the value
-    event.target.value = "";
-  },
-
-  exportToFile: async function () {
-    // Generate the JSON
-    let data = await ConfigFile.generateJSONFile();
-
-    // Create a downloadable link with content. I have named the exported file to `Settings.json`
-    var downloadLink = document.createElement("a");
-    var blob = new Blob([JSON.stringify(data)], {
-      type: "text/plain;charset=utf-8",
-    });
-    var url = URL.createObjectURL(blob);
-    downloadLink.href = url;
-    downloadLink.download = EXPORT_FILE_NAME;
-
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-  },
-
-  openModal: async function () {
-    // Update text Area
-    await SettingsTab.updateJSONTextarea();
-    SettingsTab.editModal = new BSN.Modal("#settings_editModal");
-    SettingsTab.editModal.show();
-  },
-
-  saveModalChanges: async function () {
-    var changes = document.getElementById("settings_json").value;
-    var success = await SettingsTab.saveSearches(changes);
-
-    // close Modal on success
-    if (success) {
-      SettingsTab.closeModal();
-    }
-  },
-
-  closeModal() {
-    SettingsTab.editModal.dispose();
   },
 };
 

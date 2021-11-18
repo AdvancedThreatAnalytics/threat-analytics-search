@@ -2,7 +2,7 @@ const path = require("path");
 const bomPlugin = require("webpack-utf8-bom");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const HtmlReplaceWebpackPlugin = require('html-replace-webpack-plugin');
+const HtmlReplaceWebpackPlugin = require("html-replace-webpack-plugin");
 const Dotenv = require("dotenv-webpack");
 
 module.exports = (env) => ({
@@ -63,7 +63,7 @@ module.exports = (env) => ({
     new HtmlReplaceWebpackPlugin([
       {
         pattern: "@@browserName",
-        replacement: env.mode === "edge" ? "Edge" : "Chrome"
+        replacement: env.BROWSER_NAME,
       },
     ]),
     new CopyWebpackPlugin({
@@ -77,7 +77,7 @@ module.exports = (env) => ({
               "**/migration.html",
               "**/options.html",
               "**/postHandler.html",
-              "**/providers.html"
+              "**/providers.html",
             ],
           },
         },
@@ -87,13 +87,8 @@ module.exports = (env) => ({
           transform(content) {
             return content
               .toString()
-              .replace(
-                "process.env.update_url",
-                env.mode === "edge"
-                  ? "https://edge.microsoft.com/extensionwebstorebase/v1/crx"
-                  : "https://clients2.google.com/service/update2/crx"
-              )
-          }
+              .replace("process.env.update_url", env.UPDATE_URL);
+          },
         },
         {
           from: "./settings.json",

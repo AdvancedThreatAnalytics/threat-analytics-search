@@ -11,7 +11,6 @@ import {
 import { getGroupProviders, getProviderTargetURL } from "./js/shared/misc";
 import ConfigFile from "./js/shared/config_file";
 import LocalStore from "./js/shared/local_store";
-import Analytics from "./js/shared/analytics";
 
 // Install handler.
 chrome.runtime.onInstalled.addListener(installedListener);
@@ -43,11 +42,6 @@ export async function installedListener(details) {
     // Update contextual menu.
     ContextualMenu.update();
   }
-
-  Analytics.track("install", {
-    "Current Version": _.get(chrome.runtime.getManifest(), "version"),
-    "Previous Version": previous,
-  });
 }
 
 // Startup handler.
@@ -332,12 +326,6 @@ export var ContextualMenu = {
 
       var index = settings.enableAdjacentTabs ? tab.index + 1 : null;
 
-      Analytics.track("menuitem", {
-        Type: "provider",
-        Url: targetURL,
-        "Selection Text": info.selectionText,
-      });
-
       chrome.tabs.create({
         url: targetURL,
         selected: !settings.resultsInBackgroundTab,
@@ -354,13 +342,6 @@ export var ContextualMenu = {
     var groupItems = getGroupProviders(groupIndex, providers);
     var urls = _.map(groupItems, function (provider) {
       return getProviderTargetURL(provider, info.selectionText);
-    });
-
-    // Send mixpanel event.
-    Analytics.track("menuitem", {
-      Type: "group",
-      Urls: urls,
-      "Selection Text": info.selectionText,
     });
 
     if (settings.openGroupsInNewWindow) {
@@ -406,13 +387,6 @@ export var ContextualMenu = {
         "&" +
         query +
         "&sort=start%20desc&rows=10&start=0";
-
-      // Send mixpanel event.
-      Analytics.track("menuitem", {
-        Type: "cbc",
-        Query: query,
-        "Selection Text": info.selectionText,
-      });
 
       if (config.CBCConfigPopup) {
         showPopupMessage("Carbon Black", url);
@@ -491,13 +465,6 @@ export var ContextualMenu = {
         showPopupMessage("NetWitness Investigator", url);
       }
 
-      // Send mixpanel event.
-      Analytics.track("menuitem", {
-        Type: "nwi",
-        Query: query,
-        "Selection Text": info.selectionText,
-      });
-
       chrome.tabs.create({
         url: url,
       });
@@ -544,13 +511,6 @@ export var ContextualMenu = {
       if (config.RSAConfigPopup) {
         showPopupMessage("RSA Security Analytics", url);
       }
-
-      // Send mixpanel event.
-      Analytics.track("menuitem", {
-        Type: "rsa",
-        Query: query,
-        "Selection Text": info.selectionText,
-      });
 
       chrome.tabs.create({
         url: url,

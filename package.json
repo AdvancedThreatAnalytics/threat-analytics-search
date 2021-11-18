@@ -1,6 +1,6 @@
 {
   "name": "threat-analytics-search",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "description": "Use the right-click menu in the browser to conduct single or group searches for selected text.",
   "main": "index.js",
   "repository": "https://github.com/AdvancedThreatAnalytics/threat-analytics-search.git",
@@ -26,6 +26,7 @@
     "btoa": "^1.2.1",
     "copy-webpack-plugin": "^8.1.1",
     "css-loader": "^5.2.4",
+    "dotenv": "^10.0.0",
     "eslint": "^7.25.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-svelte3": "^3.2.1",
@@ -44,8 +45,7 @@
     "svelte-loader": "^3.1.2",
     "webpack": "^5.36.2",
     "webpack-cli": "^4.6.0",
-    "webpack-utf8-bom": "^1.3.0",
-    "dotenv": "^10.0.0"
+    "webpack-utf8-bom": "^1.3.0"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.3",

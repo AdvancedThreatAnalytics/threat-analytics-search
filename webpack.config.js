@@ -3,7 +3,7 @@ const bomPlugin = require("webpack-utf8-bom");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const HtmlReplaceWebpackPlugin = require("html-replace-webpack-plugin");
-const webpack = require("webpack");
+const Webpack = require("webpack");
 const Dotenv = require("dotenv");
 
 module.exports = (env) => (
@@ -44,7 +44,7 @@ module.exports = (env) => (
       ],
     },
     plugins: [
-      new webpack.DefinePlugin({
+      new Webpack.DefinePlugin({
         "process.env": JSON.stringify(process.env),
       }),
       new HtmlWebpackPlugin({

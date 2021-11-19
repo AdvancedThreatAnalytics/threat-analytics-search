@@ -9,7 +9,6 @@ export const MiscURLs = {
     "https://github.com/AdvancedThreatAnalytics/threat-analytics-search/issues",
   RELEASES_URL:
     "https://github.com/AdvancedThreatAnalytics/threat-analytics-search/releases",
-  MIXPANEL_TRACK_URL: "https://api.mixpanel.com/track#live-event",
 };
 
 export const StoreKey = {

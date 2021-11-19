@@ -10,7 +10,13 @@ import { EXPORT_FILE_NAME } from "../../../js/shared/constants";
 
 const dispatch = createEventDispatcher();
 
+// Auxiliary variables.
 let editModal = null;
+
+// Bindings.
+let fileInput;
+let modalElem;
+let modalTextarea;
 
 function closeModal() {
   editModal.dispose();
@@ -48,19 +54,18 @@ function fileImported(event) {
 }
 
 function importFromFile() {
-  document.getElementById("settings_fileInput").click();
+  fileInput.click();
 }
 
 async function openModal() {
   // Update textarea.
   await updateJSONTextarea();
-  editModal = new BSN.Modal("#settings_editModal");
+  editModal = new BSN.Modal(modalElem);
   editModal.show();
 }
 
 async function saveModalChanges() {
-  const changes = document.getElementById("settings_json").value;
-  const success = await saveSearches(changes);
+  const success = await saveSearches(modalTextarea.value);
 
   // Close modal on success.
   if (success) {
@@ -95,13 +100,12 @@ async function saveSearches(data) {
 }
 
 async function updateJSONTextarea(newSettings) {
-  const textarea = document.getElementById("settings_json");
-  if (textarea) {
+  if (modalTextarea) {
     if (_.isNil(newSettings)) {
       newSettings = await ConfigFile.generateJSONFile();
     }
 
-    textarea.value = beautify(JSON.stringify(newSettings), {
+    modalTextarea.value = beautify(JSON.stringify(newSettings), {
       indent_size: 2,
     });
   }
@@ -121,7 +125,7 @@ async function updateJSONTextarea(newSettings) {
 
     <input
       class="d-none"
-      id="settings_fileInput"
+      bind:this={fileInput}
       on:change="{fileImported}"
       type="file" />
 
@@ -129,22 +133,19 @@ async function updateJSONTextarea(newSettings) {
       <button
         type="button"
         class="btn btn-primary mr-2"
-        on:click="{importFromFile}"
-        id="settings_import">
+        on:click="{importFromFile}">
         <i class="fas fa-file-import" aria-hidden="true"></i> Import
       </button>
       <button
         type="button"
         class="btn btn-primary mr-2"
-        on:click="{exportToFile}"
-        id="settings_export">
+        on:click="{exportToFile}">
         <i class="fas fa-file-export" aria-hidden="true"></i> Export
       </button>
       <button
         type="button"
         class="btn btn-secondary"
-        on:click="{openModal}"
-        id="settings_edit">
+        on:click="{openModal}">
         <i class="fas fa-edit" aria-hidden="true"></i> Edit manually
       </button>
     </div>
@@ -153,7 +154,7 @@ async function updateJSONTextarea(newSettings) {
 
 <div
   class="modal fade"
-  id="settings_editModal"
+  bind:this={modalElem}
   tabindex="-1"
   role="dialog"
   aria-labelledby="settingsEditModal"
@@ -166,7 +167,6 @@ async function updateJSONTextarea(newSettings) {
           type="button"
           class="close"
           on:click="{closeModal}"
-          id="settings_closeModal"
           aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -174,7 +174,7 @@ async function updateJSONTextarea(newSettings) {
 
       <div class="modal-body">
         <textarea
-          id="settings_json"
+          bind:this={modalTextarea}
           class="form-control text-monospace text-small"
           rows="24">
         </textarea>
@@ -184,15 +184,13 @@ async function updateJSONTextarea(newSettings) {
         <button
           type="button"
           class="btn btn-secondary"
-          on:click="{closeModal}"
-          id="settings_discardChanges">
+          on:click="{closeModal}">
           Discard
         </button>
         <button
           type="button"
           class="btn btn-success mr-2"
-          on:click="{saveModalChanges}"
-          id="settings_saveChanges">
+          on:click="{saveModalChanges}">
           Save changes
         </button>
       </div>

@@ -27,10 +27,10 @@ import LocalStore from "./shared/local_store";
 import providerTabHelper from "./shared/provider_helper";
 
 // Inject Svelte components into the page.
+import Fields from "../components/shared/fields.svelte";
 import Footer from "../components/options/footer.svelte";
 import Header from "../components/options/header.svelte";
 import ImportExport from "../components/options/settings/importExport.svelte";
-import Fields from "../components/shared/fields.svelte";
 
 new Footer({
   target: document.getElementById("footer"),

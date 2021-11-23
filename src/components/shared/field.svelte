@@ -14,11 +14,14 @@ let dropdown = null;
 // Bindings
 let dropdownButton;
 let popoverIcon;
+let popoverTitle;
 
 // Computed variables
-const isCheckbox = item.type === "checkbox";
-const isInput = item.type === "input";
-const isDropdown = item.type === "dropdown";
+$: isCheckbox = item.type === "checkbox";
+$: isInput = item.type === "input";
+$: isDropdown = item.type === "dropdown";
+$: providers =
+  item.key === "mergeSearchProviders" ? "search providers" : "queries";
 
 // Methods
 function onChange(newValue) {
@@ -26,7 +29,9 @@ function onChange(newValue) {
     dispatch("change", newValue);
   }
 
-  dropdown.toggle();
+  if (isDropdown) {
+    dropdown.toggle();
+  }
 }
 
 // Hooks
@@ -36,11 +41,9 @@ onMount(() => {
     dropdown = new BSN.Dropdown(dropdownButton);
 
     // Initialize popover
-    const providers =
-      item.key === "mergeSearchProviders" ? "search providers" : "queries";
     new BSN.Tooltip(popoverIcon, {
+      title: popoverTitle.outerHTML,
       customClass: "ml-1",
-      title: `<div class='text-left'><div><strong>Merge:</strong> Adds ${providers} that aren't already in current list of ${providers}.</div><div><strong>Override:</strong> Replaces local ${providers} with new settings.</div><div><strong>Ignore:</strong> Keeps current list and ignores any incoming changes.</div></div>`,
     });
   }
 });
@@ -115,5 +118,21 @@ onMount(() => {
       aria-hidden="true"
       data-toggle="tooltip"
       data-placement="right"></i>
+    <div class="d-none">
+      <div bind:this="{popoverTitle}" class="text-left">
+        <div>
+          <strong>Merge:</strong>
+          Adds {providers} that aren't already in current list of {providers}.
+        </div>
+        <div>
+          <strong>Override:</strong>
+          Replaces local {providers} with new settings.
+        </div>
+        <div>
+          <strong>Ignore:</strong>
+          Keeps current list and ignores any incoming changes.
+        </div>
+      </div>
+    </div>
   </li>
 {/if}

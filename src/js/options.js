@@ -16,7 +16,6 @@ import {
   CBC_CONFIG,
   CONFIG_FILE_OPTIONS,
   MERGE_OPTIONS,
-  MERGE_DROPDOWN_ITEMS,
   NWI_CONFIG,
   RSA_CONFIG,
   SEARCH_RESULT_OPTIONS,
@@ -97,21 +96,21 @@ var SettingsTab = {
         document.querySelector('main section[data-tab="settings"]').innerHTML =
           htmlData;
 
-        await SettingsTab.injectData(CONFIG_FILE_OPTIONS, "config");
-
         // Add click/change behaviors.
         document
           .getElementById("settings_refreshNow")
           .addEventListener("click", SettingsTab.updateNow);
 
-        var inputs = document.querySelectorAll('form[name="settings"] input');
-        _.each(inputs, function (input) {
-          if (input.type === "checkbox") {
-            input.addEventListener("click", SettingsTab.onInputChanged);
-          } else {
-            input.addEventListener("change", SettingsTab.onInputChanged);
-          }
+        // Inject configuration file
+        const configComponent = new Fields({
+          target: document.getElementById("config"),
+          props: {
+            items: CONFIG_FILE_OPTIONS,
+          },
         });
+        configComponent.$on("updateMainConfiguration", () =>
+          mainConfigurationUpdated(true)
+        );
 
         // Inject search results
         const searchResultsComponent = new Fields({
@@ -148,68 +147,7 @@ var SettingsTab = {
       });
   },
 
-  injectData: async function (settings, divId) {
-    var data = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
-    const items = _.map(settings, function (item) {
-      var value =
-        item.type === "dropdown"
-          ? MERGE_DROPDOWN_ITEMS.find(
-              (menuItem) => menuItem.itemKey === _.get(data, item.key, "merge")
-            ).itemLabel
-          : _.get(data, item.key);
-
-      return _.assignIn(
-        {
-          isCheckbox: item.type === "checkbox",
-          isInput: item.type === "input",
-          isDropdown: item.type === "dropdown",
-          value: value || "",
-          checked: value === true || value === "true" ? "checked" : "",
-        },
-        item
-      );
-    });
-    // Replace link template.
-    var template = document.getElementById(
-      "template_generic-settings"
-    ).innerHTML;
-    var rendered = Mustache.render(template, {
-      items,
-    });
-    document.getElementById(divId).innerHTML = rendered;
-  },
-
-  onInputChanged: async function (event) {
-    var targetName = _.get(event, "target.name");
-
-    if (!_.isEmpty(targetName)) {
-      var newSettings =
-        _.clone(await LocalStore.getOne(StoreKey.SETTINGS)) || {};
-      newSettings[targetName] =
-        event.target.type === "checkbox"
-          ? event.target.checked
-          : event.target.value;
-      await LocalStore.setOne(StoreKey.SETTINGS, newSettings);
-
-      // Update context menu
-      mainConfigurationUpdated(true);
-    }
-  },
-
   updateForms: async function () {
-    var settings = await LocalStore.getOne(StoreKey.SETTINGS);
-
-    // Update inputs.
-    var inputs = document.querySelectorAll('form[name="settings"] input');
-    _.each(inputs, function (input) {
-      var value = _.get(settings, input.name);
-      if (input.type === "checkbox") {
-        input.checked = value === true;
-      } else {
-        input.value = value;
-      }
-    });
-
     // Update 'last update' text.
     SettingsTab.updateLastConfigUpdate();
   },

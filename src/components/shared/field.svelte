@@ -70,7 +70,7 @@ onMount(() => {
 {:else if isInput}
   <li class="list-group-item">
     <div class="form-group mb-0">
-      <label class="mb-1">
+      <label class="mb-1 w-100">
         {item.label}
         <input
           type="text"

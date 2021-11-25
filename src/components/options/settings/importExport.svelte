@@ -125,7 +125,7 @@ async function updateJSONTextarea(newSettings) {
 
     <input
       class="d-none"
-      bind:this={fileInput}
+      bind:this="{fileInput}"
       on:change="{fileImported}"
       type="file" />
 
@@ -142,10 +142,7 @@ async function updateJSONTextarea(newSettings) {
         on:click="{exportToFile}">
         <i class="fas fa-file-export" aria-hidden="true"></i> Export
       </button>
-      <button
-        type="button"
-        class="btn btn-secondary"
-        on:click="{openModal}">
+      <button type="button" class="btn btn-secondary" on:click="{openModal}">
         <i class="fas fa-edit" aria-hidden="true"></i> Edit manually
       </button>
     </div>
@@ -154,7 +151,7 @@ async function updateJSONTextarea(newSettings) {
 
 <div
   class="modal fade"
-  bind:this={modalElem}
+  bind:this="{modalElem}"
   tabindex="-1"
   role="dialog"
   aria-labelledby="settingsEditModal"
@@ -174,17 +171,14 @@ async function updateJSONTextarea(newSettings) {
 
       <div class="modal-body">
         <textarea
-          bind:this={modalTextarea}
+          bind:this="{modalTextarea}"
           class="form-control text-monospace text-small"
           rows="24">
         </textarea>
       </div>
 
       <div class="modal-footer">
-        <button
-          type="button"
-          class="btn btn-secondary"
-          on:click="{closeModal}">
+        <button type="button" class="btn btn-secondary" on:click="{closeModal}">
           Discard
         </button>
         <button

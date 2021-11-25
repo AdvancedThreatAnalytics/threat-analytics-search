@@ -9,7 +9,6 @@ import Mustache from "mustache";
 import Notiflix from "notiflix";
 import { DateTime } from "luxon";
 import { Sortable } from "sortablejs";
-import BSN from "bootstrap.native/dist/bootstrap-native.esm.min.js";
 
 import {
   MiscURLs,
@@ -28,6 +27,7 @@ import LocalStore from "./shared/local_store";
 import providerTabHelper from "./shared/provider_helper";
 
 // Inject Svelte components into the page.
+import Fields from "../components/shared/fields.svelte";
 import Footer from "../components/options/footer.svelte";
 import Header from "../components/options/header.svelte";
 import ImportExport from "../components/options/settings/importExport.svelte";
@@ -99,40 +99,6 @@ var SettingsTab = {
 
         await SettingsTab.injectData(CONFIG_FILE_OPTIONS, "config");
         await SettingsTab.injectData(SEARCH_RESULT_OPTIONS, "search-results");
-        await SettingsTab.injectData(MERGE_OPTIONS, "merge-options");
-
-        // Initialize tooltips.
-        let popovers = document.querySelectorAll(
-          "main section[data-tab='settings'] [data-toggle='tooltip']"
-        );
-        _.each(popovers, (popover) => {
-          const providers =
-            popover.id === "mergeSearchProviders"
-              ? "search providers"
-              : "queries";
-          new BSN.Tooltip(popover, {
-            customClass: "ml-1",
-            title: `<div class='text-left'><div><strong>Merge:</strong> Adds ${providers} that aren't already in current list of ${providers}.</div><div><strong>Override:</strong> Replaces local ${providers} with new settings.</div><div><strong>Ignore:</strong> Keeps current list and ignores any incoming changes.</div></div>`,
-          });
-        });
-
-        // Initialize dropdowns.
-        let dropdowns = document.querySelectorAll(
-          "[data-bs-toggle='dropdown']",
-          false
-        );
-        _.each(dropdowns, (dropdown) => {
-          let dropdownItems =
-            dropdown.parentElement.querySelectorAll(".dropdown-item");
-          dropdown = new BSN.Dropdown(dropdown);
-          _.each(dropdownItems, function (item) {
-            item.addEventListener("click", function (event) {
-              SettingsTab.onDropdownSelect(event);
-              dropdown.toggle();
-            });
-          });
-          return dropdown;
-        });
 
         // Add click/change behaviors.
         document
@@ -147,6 +113,17 @@ var SettingsTab = {
             input.addEventListener("change", SettingsTab.onInputChanged);
           }
         });
+
+        // Inject merge options
+        const mergeOptionsComponent = new Fields({
+          target: document.getElementById("merge-options"),
+          props: {
+            items: MERGE_OPTIONS,
+          },
+        });
+        mergeOptionsComponent.$on("updateMainConfiguration", () =>
+          mainConfigurationUpdated(true)
+        );
 
         // Inject import/export component.
         const importExportComponent = new ImportExport({
@@ -209,21 +186,6 @@ var SettingsTab = {
     }
   },
 
-  onDropdownSelect: async function (event) {
-    event.preventDefault();
-    var targetName = _.get(event, "target.name");
-
-    if (!_.isEmpty(targetName)) {
-      var newSettings =
-        _.clone(await LocalStore.getOne(StoreKey.SETTINGS)) || {};
-      newSettings[targetName] = event.target.value;
-      await LocalStore.setOne(StoreKey.SETTINGS, newSettings);
-
-      // Update The UI
-      SettingsTab.updateForms();
-    }
-  },
-
   updateForms: async function () {
     var settings = await LocalStore.getOne(StoreKey.SETTINGS);
 
@@ -236,17 +198,6 @@ var SettingsTab = {
       } else {
         input.value = value;
       }
-    });
-
-    var dropdownItems = document.querySelectorAll(
-      'form[name="settings"] .dropdown-toggle'
-    );
-    _.each(dropdownItems, function (dropdown) {
-      var value = MERGE_DROPDOWN_ITEMS.find(
-        (menuItem) =>
-          menuItem.itemKey === _.get(settings, dropdown.name, "merge")
-      ).itemLabel;
-      document.getElementById("settings_" + dropdown.name).innerHTML = value;
     });
 
     // Update 'last update' text.

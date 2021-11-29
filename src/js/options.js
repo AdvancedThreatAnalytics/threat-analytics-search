@@ -98,7 +98,6 @@ var SettingsTab = {
           htmlData;
 
         await SettingsTab.injectData(CONFIG_FILE_OPTIONS, "config");
-        await SettingsTab.injectData(SEARCH_RESULT_OPTIONS, "search-results");
 
         // Add click/change behaviors.
         document
@@ -113,6 +112,17 @@ var SettingsTab = {
             input.addEventListener("change", SettingsTab.onInputChanged);
           }
         });
+
+        // Inject search results
+        const searchResultsComponent = new Fields({
+          target: document.getElementById("search-results"),
+          props: {
+            items: SEARCH_RESULT_OPTIONS,
+          },
+        });
+        searchResultsComponent.$on("updateMainConfiguration", () =>
+          mainConfigurationUpdated(true)
+        );
 
         // Inject merge options
         const mergeOptionsComponent = new Fields({

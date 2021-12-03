@@ -7,29 +7,22 @@ import "../css/main.css";
 import _ from "lodash";
 import Mustache from "mustache";
 import Notiflix from "notiflix";
-import { DateTime } from "luxon";
 import { Sortable } from "sortablejs";
 
 import {
   MiscURLs,
   StoreKey,
   CBC_CONFIG,
-  CONFIG_FILE_OPTIONS,
-  MERGE_OPTIONS,
   NWI_CONFIG,
   RSA_CONFIG,
-  SEARCH_RESULT_OPTIONS,
 } from "./shared/constants";
-
-import ConfigFile from "./shared/config_file";
 import LocalStore from "./shared/local_store";
 import providerTabHelper from "./shared/provider_helper";
 
 // Inject Svelte components into the page.
-import Fields from "../components/shared/fields.svelte";
 import Footer from "../components/options/footer.svelte";
 import Header from "../components/options/header.svelte";
-import ImportExport from "../components/options/settings/importExport.svelte";
+import Settings from "../components/options/settings.svelte";
 
 new Footer({
   target: document.getElementById("footer"),
@@ -45,7 +38,9 @@ var initData = {};
 
 // Wait for the page to be loaded to execute the initialization function.
 document.addEventListener("DOMContentLoaded", async function () {
-  SettingsTab.initialize();
+  new Settings({
+    target: document.querySelector('main section[data-tab="settings"]'),
+  });
   ProvidersTab.initialize();
   CarbonBlackTab.initialize();
   NetWitnessTab.initialize();
@@ -75,7 +70,6 @@ function updateTabsVisibility(data) {
 
 function mainConfigurationUpdated(lazy) {
   if (!lazy) {
-    SettingsTab.updateForms();
     ProvidersTab.updateForms();
     CarbonBlackTab.updateForms();
     NetWitnessTab.updateForms();
@@ -84,105 +78,6 @@ function mainConfigurationUpdated(lazy) {
 
   chrome.runtime.sendMessage({ action: "updateContextualMenu" });
 }
-
-// --- Settings tab --- //
-
-var SettingsTab = {
-  initialize: function () {
-    fetch("views/settings.html")
-      .then((response) => response.text())
-      .then(async (htmlData) => {
-        // Insert template file.
-        document.querySelector('main section[data-tab="settings"]').innerHTML =
-          htmlData;
-
-        // Add click/change behaviors.
-        document
-          .getElementById("settings_refreshNow")
-          .addEventListener("click", SettingsTab.updateNow);
-
-        // Inject configuration file
-        const configComponent = new Fields({
-          target: document.getElementById("config"),
-          props: {
-            items: CONFIG_FILE_OPTIONS,
-          },
-        });
-        configComponent.$on("updateMainConfiguration", () =>
-          mainConfigurationUpdated(true)
-        );
-
-        // Inject search results
-        const searchResultsComponent = new Fields({
-          target: document.getElementById("search-results"),
-          props: {
-            items: SEARCH_RESULT_OPTIONS,
-          },
-        });
-        searchResultsComponent.$on("updateMainConfiguration", () =>
-          mainConfigurationUpdated(true)
-        );
-
-        // Inject merge options
-        const mergeOptionsComponent = new Fields({
-          target: document.getElementById("merge-options"),
-          props: {
-            items: MERGE_OPTIONS,
-          },
-        });
-        mergeOptionsComponent.$on("updateMainConfiguration", () =>
-          mainConfigurationUpdated(true)
-        );
-
-        // Inject import/export component.
-        const importExportComponent = new ImportExport({
-          target: document.getElementById("importExport"),
-        });
-        importExportComponent.$on("updateMainConfiguration", () =>
-          mainConfigurationUpdated(false)
-        );
-
-        // Update inputs with settings values.
-        SettingsTab.updateForms();
-      });
-  },
-
-  updateForms: async function () {
-    // Update 'last update' text.
-    SettingsTab.updateLastConfigUpdate();
-  },
-
-  updateLastConfigUpdate: async function () {
-    var lastConfig = await LocalStore.getOne(StoreKey.LAST_CONFIG_DATA);
-
-    let date = _.get(lastConfig, "date", "-");
-    let error = _.get(lastConfig, "errorMsg", "");
-
-    date = DateTime.fromSeconds(date / 1000).toLocaleString(
-      DateTime.DATETIME_SHORT_WITH_SECONDS
-    );
-
-    document.getElementById("settings_lastConfigUpdate").innerHTML = date;
-    document.getElementById("settings_lastConfigUpdateError").innerHTML = error;
-  },
-
-  updateNow: async function () {
-    var success = await ConfigFile.updateNow();
-    if (success) {
-      // Update UI according to this change
-      mainConfigurationUpdated();
-
-      Notiflix.Notify.Success("The settings were refreshed");
-    } else {
-      // Update Last Config label to show error details.
-      SettingsTab.updateLastConfigUpdate();
-
-      Notiflix.Notify.Failure(
-        "The settings couldn't be updated, please check the URL or the file content"
-      );
-    }
-  },
-};
 
 // --- Search Providers tab --- //
 

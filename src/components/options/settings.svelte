@@ -1,0 +1,112 @@
+<script>
+import Fields from "../shared/fields.svelte";
+import {
+  CONFIG_FILE_OPTIONS,
+  MERGE_OPTIONS,
+  SEARCH_RESULT_OPTIONS,
+  StoreKey,
+} from "../../js/shared/constants";
+import ImportExport from "./settings/importExport.svelte";
+import LocalStore from "../../js/shared/local_store";
+import _ from "lodash";
+import { DateTime } from "luxon";
+import { onMount } from "svelte";
+import ConfigFile from "../../js/shared/config_file";
+import Notiflix from "notiflix";
+
+// Bindings.
+let lastConfigUpdate;
+let lastConfigUpdateError;
+
+onMount(() => {
+  updateLastConfigUpdate();
+});
+
+function mainConfigurationUpdated(lazy) {
+  if (!lazy) {
+    updateLastConfigUpdate();
+  }
+
+  chrome.runtime.sendMessage({ action: "updateContextualMenu" });
+}
+
+async function updateLastConfigUpdate() {
+  var lastConfig = await LocalStore.getOne(StoreKey.LAST_CONFIG_DATA);
+
+  let date = _.get(lastConfig, "date", "-");
+  lastConfigUpdateError.innerHTML = _.get(lastConfig, "errorMsg", "");
+  lastConfigUpdate.innerHTML = DateTime.fromSeconds(date / 1000).toLocaleString(
+    DateTime.DATETIME_SHORT_WITH_SECONDS
+  );
+}
+
+async function updateNow() {
+  var success = await ConfigFile.updateNow();
+  if (success) {
+    // Update UI according to this change
+    mainConfigurationUpdated();
+
+    Notiflix.Notify.Success("The settings were refreshed");
+  } else {
+    // Update Last Config label to show error details.
+    updateLastConfigUpdate();
+
+    Notiflix.Notify.Failure(
+      "The settings couldn't be updated, please check the URL or the file content"
+    );
+  }
+}
+</script>
+
+<div>
+  <form name="settings">
+    <div class="row">
+      <div class="col-lg-6">
+        <div>
+          <h2 class="mb-3">Configuration File Options</h2>
+          <ul class="list-group">
+            <Fields
+              items="{CONFIG_FILE_OPTIONS}"
+              on:updateMainConfiguration="{() =>
+                mainConfigurationUpdated(true)}" />
+            <li class="list-group-item d-flex">
+              <div class="flex-1">
+                <label class="mb-1">Last Updated on:</label>
+                <div bind:this="{lastConfigUpdate}"></div>
+                <div class="text-danger" bind:this="{lastConfigUpdateError}">
+                </div>
+              </div>
+              <div>
+                <button
+                  type="button"
+                  class="btn btn-success"
+                  on:click="{updateNow}">
+                  <i class="fas fa-sync"></i> Update Now
+                </button>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="mt-4">
+          <h2 class="mb-3">Search Results Options</h2>
+          <Fields
+            items="{SEARCH_RESULT_OPTIONS}"
+            on:updateMainConfiguration="{() =>
+              mainConfigurationUpdated(true)}" />
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <h2 class="mb-3">Merge Settings Options</h2>
+        <Fields
+          items="{MERGE_OPTIONS}"
+          on:updateMainConfiguration="{() => mainConfigurationUpdated(true)}" />
+      </div>
+    </div>
+  </form>
+
+  <!-- Export/Import Search Options -->
+  <ImportExport
+    on:updateMainConfiguration="{() => mainConfigurationUpdated(false)}" />
+</div>

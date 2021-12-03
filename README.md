@@ -33,35 +33,35 @@ If configured, the extension also defines three special sections on the contextu
 
 The extension is implemented with JavaScript. The full list of dependencies can be found on the [package.json](./package.json) file, but the most relevant ones are:
 
-| Library                                    | Used for    |
-|--------------------------------------------|-------------|
-| [Mustache](https://mustache.github.io/)    | Templates   |
-| [aes-js](https://github.com/ricmoo/aes-js) | Encryption  |
-| [Bootstrap](https://getbootstrap.com/)     | UI          |
-| [Font Awesome](https://fontawesome.com/)   | Icons       |
-| [Svelte](https://svelte.dev/)              | Components  |
+| Library                                    | Used for   |
+| ------------------------------------------ | ---------- |
+| [Mustache](https://mustache.github.io/)    | Templates  |
+| [aes-js](https://github.com/ricmoo/aes-js) | Encryption |
+| [Bootstrap](https://getbootstrap.com/)     | UI         |
+| [Font Awesome](https://fontawesome.com/)   | Icons      |
+| [Svelte](https://svelte.dev/)              | Components |
 
 ### Code structure
 
 The application is divided into three sections:
 
 - The background page
-    - Initializing the extension
-    - Downloading and parsing the configuration file
-    - Updating the context menu
+  - Initializing the extension
+  - Downloading and parsing the configuration file
+  - Updating the context menu
 - The post-handler page
-    - Executing searches that require doing a POST request
+  - Executing searches that require doing a POST request
 - The options page
-    - Allows users to modify extension settings
-    - Adding or removing search providers.
+  - Allows users to modify extension settings
+  - Adding or removing search providers.
 
 Additionally, there is a migration page that is used to relocate the user's settings from the local storage, i.e. `localStorage`, to Chrome's storage, i.e. `chrome.storage.local`. This change was required after upgrading the manifest file to version 3 since service workers (unlike background pages) do not have access to the local storage.
 
 ### Building
 
 Building is done using [Webpack](https://webpack.js.org/).  
-To build the "distribution" code, you first have to execute `yarn`, to install all dependencies, and then execute: `yarn run build:dev` (for development mode), `yarn run build` (for production on Google Chrome), or `yarn run build:edge` (for production on Microsoft Edge) to build once; or `yarn run live` to watch file changes (in development mode) and rebuild on file change.  
-These commands will create `dist` directory and copies all files into it and minifies them. 
+To build the "distribution" code, you first have to execute `yarn`, to install all dependencies, and then execute: `yarn run build:dev` (for development mode on Google chrome), `yarn run build` (for production on Google Chrome), or `yarn run build:edge` (for production on Microsoft Edge) to build once; or `yarn run live` to watch file changes (in development mode) and rebuild on file change.  
+These commands will create `dist` directory and copies all files into it and minifies them.
 
 > Optionally, you can do `yarn run zip` for compress the content of the `dist` directory into a zip file (you can also do `yarn run build:zip` or `yarn run build:edge:zip` to execute both the build and zipping actions with a single command).
 
@@ -69,8 +69,8 @@ These commands will create `dist` directory and copies all files into it and min
 
 Tesing is done using [Jest](https://jestjs.io/) and all test files are located inside `tests/` folder.
 
-  - Unit tests are located on the `tests/unit` folder, and can be run using the `yarn run test:unit` command.
-  - Unit tests are located on the `tests/e2e` folder, and can be run using the `yarn run test:e2e` command (don't forget to build the extension before doing it).
+- Unit tests are located on the `tests/unit` folder, and can be run using the `yarn run test:unit` command.
+- Unit tests are located on the `tests/e2e` folder, and can be run using the `yarn run test:e2e` command (don't forget to build the extension before doing it).
 
 ### Packaging
 

@@ -3,7 +3,7 @@
     [
       -1,
       "Google",
-      "http://www.google.com/search?q=TESTSEARCH",
+      "https://www.google.com/search?q=TESTSEARCH",
       true,
       true,
       3,
@@ -27,7 +27,7 @@
     [
       -1,
       "D - VirusTotal Domain Info",
-      "https://www.virustotal.com/en/domain/%s/information/",
+      "https://www.virustotal.com/gui/domain/%s/detection",
       true,
       true,
       2,
@@ -39,7 +39,7 @@
     [
       -1,
       "D - WHOIS DNS Info",
-      "http://who.is/whois/TESTSEARCH",
+      "https://who.is/whois/TESTSEARCH",
       true,
       true,
       2,
@@ -51,7 +51,7 @@
     [
       -1,
       "D - McAfee TI",
-      "http://www.mcafee.com/threat-intelligence/domain/default.aspx?domain=TESTSEARCH",
+      "https://www.mcafee.com/enterprise/en-in/search.html?q=TESTSEARCH",
       true,
       true,
       2,
@@ -75,7 +75,7 @@
     [
       -1,
       "D - TotalHash",
-      "http://totalhash.com/search/dnsrr:TESTSEARCH",
+      "https://totalhash.cymru.com/search/dnsrr:TESTSEARCH",
       true,
       true,
       2,
@@ -87,7 +87,7 @@
     [
       -1,
       "D - Robtex DNS",
-      "https://www.robtex.com/q/y?q=TESTSEARCH",
+      "https://www.robtex.com/TESTSEARCH",
       true,
       true,
       2,
@@ -147,7 +147,7 @@
     [
       -1,
       "H - TotalHash",
-      "http://totalhash.com/search/av:TESTSEARCH",
+      "https://totalhash.com/search/av:TESTSEARCH",
       true,
       true,
       4,
@@ -207,7 +207,7 @@
     [
       -1,
       "I - VirusTotal IP Info",
-      "https://www.virustotal.com/en/ip-address/%s/information/",
+      "https://www.virustotal.com/gui/ip-address/%s/detection/",
       true,
       true,
       1,
@@ -231,7 +231,7 @@
     [
       -1,
       "I - Anti-Hacker",
-      "http://anti-hacker-alliance.com/index.php?ip=TESTSEARCH",
+      "https://anti-hacker-alliance.com/index.php?ip=TESTSEARCH",
       true,
       true,
       1,
@@ -267,7 +267,7 @@
     [
       -1,
       "RIPE",
-      "https://stat.ripe.net/TESTSEARCH#tabId=at-a-glance",
+      "https://stat.ripe.net/app/launchpad/TESTSEARCH",
       true,
       true,
       3,
@@ -279,7 +279,7 @@
     [
       -1,
       "Google Safe Browsing",
-      "http://www.google.com/safebrowsing/diagnostic?site=TESTSEARCH",
+      "https://transparencyreport.google.com/safe-browsing/search?url=TESTSEARCH",
       true,
       true,
       3,

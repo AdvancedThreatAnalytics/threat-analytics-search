@@ -38,9 +38,11 @@ var initData = {};
 
 // Wait for the page to be loaded to execute the initialization function.
 document.addEventListener("DOMContentLoaded", async function () {
-  new Settings({
+  const settingsTab = new Settings({
     target: document.querySelector('main section[data-tab="settings"]'),
   });
+  settingsTab.$on("updateMainConfiguration", mainConfigurationUpdated);
+
   ProvidersTab.initialize();
   CarbonBlackTab.initialize();
   NetWitnessTab.initialize();
@@ -69,7 +71,7 @@ function updateTabsVisibility(data) {
 }
 
 function mainConfigurationUpdated(lazy) {
-  if (!lazy) {
+  if (!lazy || !_.get(lazy, "detail")) {
     ProvidersTab.updateForms();
     CarbonBlackTab.updateForms();
     NetWitnessTab.updateForms();

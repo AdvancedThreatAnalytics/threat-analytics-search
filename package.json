@@ -6,14 +6,14 @@
   "repository": "https://github.com/AdvancedThreatAnalytics/threat-analytics-search.git",
   "private": true,
   "scripts": {
-    "build": "webpack --env mode=prod --mode=production --config webpack.config.js",
-    "build:dev": "webpack --env mode=dev --mode=development --config webpack.config.js",
+    "build": "webpack --env mode=chrome --mode=production --config webpack.config.js",
+    "build:dev": "webpack --env mode=chrome --mode=development --config webpack.config.js",
     "build:edge": "webpack --env mode=edge --mode=production --config webpack.config.js",
     "build:zip": "yarn run build && yarn run zip",
     "build:edge:zip": "yarn run build:edge && yarn run zip",
     "lint": "eslint src tests",
     "lint:fix": "prettier --write src tests && eslint src tests --fix",
-    "live": "webpack --env mode=dev --mode=development --config webpack.config.js --watch",
+    "live": "webpack --env mode=chrome --mode=development --config webpack.config.js --watch",
     "test:e2e": "jest e2e --testTimeout=30000",
     "test:unit": "jest unit",
     "zip": "cd dist && bestzip ../dist.zip *"

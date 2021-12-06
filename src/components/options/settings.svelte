@@ -35,8 +35,8 @@ async function updateLastConfigUpdate() {
   var lastConfig = await LocalStore.getOne(StoreKey.LAST_CONFIG_DATA);
 
   let date = _.get(lastConfig, "date", "-");
-  lastConfigUpdateError.innerHTML = _.get(lastConfig, "errorMsg", "");
-  lastConfigUpdate.innerHTML = DateTime.fromSeconds(date / 1000).toLocaleString(
+  lastConfigUpdateError = _.get(lastConfig, "errorMsg", "");
+  lastConfigUpdate = DateTime.fromSeconds(date / 1000).toLocaleString(
     DateTime.DATETIME_SHORT_WITH_SECONDS
   );
 }
@@ -73,9 +73,10 @@ async function updateNow() {
             <li class="list-group-item d-flex">
               <div class="flex-1">
                 <label class="mb-1">Last Updated on:</label>
-                <div bind:this="{lastConfigUpdate}"></div>
-                <div class="text-danger" bind:this="{lastConfigUpdateError}">
-                </div>
+                <div>{lastConfigUpdate}</div>
+                {#if !!lastConfigUpdateError}
+                  <div class="text-danger">{lastConfigUpdateError}</div>
+                {/if}
               </div>
               <div>
                 <button

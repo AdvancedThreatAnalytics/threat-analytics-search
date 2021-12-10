@@ -1,6 +1,6 @@
 {
   "name": "threat-analytics-search",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Use the right-click menu in the browser to conduct single or group searches for selected text.",
   "main": "index.js",
   "repository": "https://github.com/AdvancedThreatAnalytics/threat-analytics-search.git",

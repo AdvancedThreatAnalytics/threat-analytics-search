@@ -71,6 +71,7 @@ function updateTabsVisibility(data) {
 }
 
 function mainConfigurationUpdated(lazy) {
+  // Since svelte component wraps event parameter with event.detail object, we should also check that.
   if (!lazy || !_.get(lazy, "detail")) {
     ProvidersTab.updateForms();
     CarbonBlackTab.updateForms();

@@ -63,7 +63,6 @@
     // Move provider
     providers.splice(event.newIndex, 0, providers.splice(event.oldIndex, 1)[0]);
     providers = providers;
-    console.log(providers);
     await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, providers);
 
     dispatch("updateMainConfiguration");

@@ -1,9 +1,9 @@
 <script>
 import _ from "lodash";
 import Field from "./field.svelte";
-import LocalStore from "../../js/shared/local_store";
+import LocalStore from "../../../js/shared/local_store";
 import { createEventDispatcher } from "svelte";
-import { StoreKey } from "../../js/shared/constants";
+import { StoreKey } from "../../../js/shared/constants";
 
 const dispatch = createEventDispatcher();
 

@@ -4,16 +4,16 @@ import Notiflix from "notiflix";
 import { DateTime } from "luxon";
 import { onMount, createEventDispatcher } from "svelte";
 
-import ConfigFile from "../../js/shared/config_file";
+import ConfigFile from "../../../js/shared/config_file";
 import Fields from "../shared/fields.svelte";
-import ImportExport from "./settings/importExport.svelte";
-import LocalStore from "../../js/shared/local_store";
+import ImportExport from "./importExport.svelte";
+import LocalStore from "../../../js/shared/local_store";
 import {
   CONFIG_FILE_OPTIONS,
   MERGE_OPTIONS,
   SEARCH_RESULT_OPTIONS,
   StoreKey,
-} from "../../js/shared/constants";
+} from "../../../js/shared/constants";
 
 const dispatch = createEventDispatcher();
 

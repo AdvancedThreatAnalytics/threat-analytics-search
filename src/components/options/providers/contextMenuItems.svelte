@@ -22,14 +22,19 @@
   export async function initData() {
     initialProviders =
       (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
-    groups = (await LocalStore.getOne(StoreKey.SETTINGS))?.providersGroups || [];
-    providers = _.cloneDeep(initialProviders);
+    initProvidersAndGroups();
 
     // Make list sortable
     Sortable.create(
       listGroup,
       { handle: ".sortable-handle", onEnd: onDragEnd }
     );
+  }
+
+  // Used by parent component to re-load providers and groups on new add or edit
+  export async function initProvidersAndGroups() {
+    providers = (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
+    groups = (await LocalStore.getOne(StoreKey.SETTINGS))?.providersGroups || [];
   }
 
   async function remove(index) {
@@ -79,7 +84,7 @@
 
 <form name="manage_providers">
   <ul bind:this="{listGroup}" role="list" class="list-group">
-    {#each providers as item, index}
+    {#each providers as item, index (item)}
       <li role="listitem" class="list-group-item sortable pl-1 pr-2 py-3">
         <div class="d-flex align-items-center">
 

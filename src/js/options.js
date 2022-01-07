@@ -127,7 +127,7 @@ var ProvidersTab = {
   },
 
   updateProvidersForm: async function() {
-    contextMenuItems.initData();
+    contextMenuItems.initProvidersAndGroups();
   },
 
   // --- Provider add --- //

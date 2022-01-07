@@ -1,24 +1,25 @@
 <script>
   import _ from "lodash";
   import Notiflix from "notiflix";
+  import { Sortable } from "sortablejs";
+
   import LocalStore from "../../../js/shared/local_store";
   import { createEventDispatcher } from "svelte";
   import { StoreKey } from "../../../js/shared/constants";
-  import { Sortable } from "sortablejs";
 
   const dispatch = createEventDispatcher();
 
-  // Auxiliary variable to store initial providers
+  // Auxiliary variable to store initial providers.
   let initialProviders = [];
 
-  // Bindings
+  // Bindings.
   let listGroup;
 
-  // States
+  // States.
   let providers = [];
   let groups = [];
 
-  // Methods
+  // Methods.
   export async function initData() {
     initialProviders =
       (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
@@ -31,7 +32,7 @@
     );
   }
 
-  // Used by parent component to re-load providers and groups on new add or edit
+  // Used by parent component to re-load providers and groups on new add or edit.
   export async function initProvidersAndGroups() {
     providers = (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
     groups = (await LocalStore.getOne(StoreKey.SETTINGS))?.providersGroups || [];

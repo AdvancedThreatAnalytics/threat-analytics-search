@@ -96,7 +96,7 @@ var ProvidersTab = {
         ).innerHTML = htmlData;
 
         const addProvider = new AddSearchProviders({
-          target: document.getElementById("add_provider")
+          target: document.getElementById("add_provider"),
         });
         addProvider.$on("updateMainConfiguration", mainConfigurationUpdated);
 

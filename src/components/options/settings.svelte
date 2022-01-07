@@ -73,8 +73,9 @@ async function updateNow() {
                 mainConfigurationUpdated(true)}" />
             <li class="list-group-item d-flex">
               <div class="flex-1">
-                <label class="mb-1">Last Updated on:</label>
-                <div>{lastConfigUpdate}</div>
+                <label class="mb-1" for="last-updated-on"
+                  >Last Updated on:</label>
+                <div id="last-updated-on">{lastConfigUpdate}</div>
                 {#if !!lastConfigUpdateError}
                   <div class="text-danger">{lastConfigUpdateError}</div>
                 {/if}

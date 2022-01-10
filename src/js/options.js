@@ -22,8 +22,8 @@ import providerTabHelper from "./shared/provider_helper";
 // Inject Svelte components into the page.
 import Footer from "../components/options/footer.svelte";
 import Header from "../components/options/header.svelte";
-import Settings from "../components/options/settings.svelte";
 import Groups from "../components/options/providers/groups.svelte";
+import Settings from "../components/options/settings/main.svelte";
 
 new Footer({
   target: document.getElementById("footer"),

@@ -1,17 +1,16 @@
 <script>
 import { createEventDispatcher } from "svelte";
 import Notiflix from "notiflix";
-import _ from "lodash";
 import LocalStore from "../../../js/shared/local_store";
 import { StoreKey } from "../../../js/shared/constants";
 
-// Props
+// Props.
 export let initialSettings;
 
 let groups = [];
 const dispatch = createEventDispatcher();
 
-// Methods
+// Methods.
 export async function initialize() {
   groups = (await LocalStore.getOne(StoreKey.SETTINGS))?.providersGroups || [];
 }
@@ -51,21 +50,16 @@ async function reset() {
       <li class="list-group-item" data-index="{index}">
         <div class="d-flex align-items-center">
           <div class="p-2">
-            <strong>{index + 1}</strong>
-          </div>
-          <div class="p-2">
             <div class="form-check">
-              <input
-                type="checkbox"
-                value="yes"
-                checked="{enabled ? 'checked' : ''}"
-                class="form-check-input"
-                id="providers_editGroups_enabled_{index}"
-                on:change="{(e) =>
-                  onChange(index, 'enabled', e.target.checked)}" />
-              <label
-                class="form-check-label"
-                for="providers_editGroups_enabled_{{ index }}">
+              <label class="form-check-label">
+                <input
+                  type="checkbox"
+                  value="yes"
+                  checked="{enabled ? 'checked' : ''}"
+                  class="form-check-input"
+                  id="providers_editGroups_enabled_{index}"
+                  on:change="{(e) =>
+                    onChange(index, 'enabled', e.target.checked)}" />
                 Enabled
               </label>
             </div>

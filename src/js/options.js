@@ -95,9 +95,12 @@ var ProvidersTab = {
         ).innerHTML = htmlData;
 
         contextMenuItems = new ContextMenuItems({
-          target: document.getElementById("context_menu_providers")
+          target: document.getElementById("context_menu_providers"),
         });
-        contextMenuItems.$on("updateMainConfiguration", mainConfigurationUpdated);
+        contextMenuItems.$on(
+          "updateMainConfiguration",
+          mainConfigurationUpdated
+        );
 
         // Add event listeners.
         document
@@ -126,7 +129,7 @@ var ProvidersTab = {
     ]);
   },
 
-  updateProvidersForm: async function() {
+  updateProvidersForm: async function () {
     contextMenuItems.initProvidersAndGroups();
   },
 

@@ -21,7 +21,7 @@ import LocalStore from "./shared/local_store";
 // Inject Svelte components into the page.
 import Footer from "../components/options/footer.svelte";
 import Header from "../components/options/header.svelte";
-import Settings from "../components/options/settings.svelte";
+import Settings from "../components/options/settings/main.svelte";
 import SpecialProvider from "../components/options/special/main.svelte";
 
 new Footer({

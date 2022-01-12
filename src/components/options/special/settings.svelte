@@ -1,10 +1,11 @@
 <script>
 import _ from "lodash";
 import { onMount } from "svelte";
+
 import LocalStore from "../../../js/shared/local_store";
 import providerTabHelper from "../../../js/shared/provider_helper";
 
-// Props
+// Props.
 export let form = "";
 export let configTitle = "";
 export let initData = {};

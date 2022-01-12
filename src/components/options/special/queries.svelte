@@ -1,17 +1,18 @@
 <script>
-import LocalStore from "../../../js/shared/local_store";
-import providerTabHelper from "../../../js/shared/provider_helper";
 import _ from "lodash";
+import Notiflix from "notiflix";
 import { onMount } from "svelte";
 import { Sortable } from "sortablejs";
-import Notiflix from "notiflix";
 
-// Props
+import LocalStore from "../../../js/shared/local_store";
+import providerTabHelper from "../../../js/shared/provider_helper";
+
+// Props.
 export let initData = {};
 export let form = "";
 export let storageKey = null;
 
-// Computed variables
+// Computed variables.
 $: items = [];
 $: newLabel = "";
 $: newQuery = "";

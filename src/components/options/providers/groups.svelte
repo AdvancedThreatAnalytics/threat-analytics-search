@@ -1,6 +1,7 @@
 <script>
-import { createEventDispatcher } from "svelte";
 import Notiflix from "notiflix";
+import { createEventDispatcher } from "svelte";
+
 import LocalStore from "../../../js/shared/local_store";
 import { StoreKey } from "../../../js/shared/constants";
 

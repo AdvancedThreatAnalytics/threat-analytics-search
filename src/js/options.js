@@ -7,10 +7,8 @@ import "../css/main.css";
 import _ from "lodash";
 import Mustache from "mustache";
 import Notiflix from "notiflix";
-import { Sortable } from "sortablejs";
 
 import {
-  MiscURLs,
   StoreKey,
   CBC_CONFIG,
   NWI_CONFIG,
@@ -22,6 +20,7 @@ import providerTabHelper from "./shared/provider_helper";
 // Inject Svelte components into the page.
 import Footer from "../components/options/footer.svelte";
 import Header from "../components/options/header.svelte";
+import ContextMenuItems from "../components/options/providers/contextMenuItems.svelte";
 import Settings from "../components/options/settings/main.svelte";
 import AddSearchProviders from "../components/options/providers/add.svelte";
 
@@ -33,6 +32,7 @@ const myHeader = new Header({
   target: document.getElementById("header"),
 });
 myHeader.$on("tabClicked", updateTabsVisibility);
+let contextMenuItems;
 
 // Global variable for store initial settings (before user changes).
 var initData = {};
@@ -100,10 +100,15 @@ var ProvidersTab = {
         });
         addProvider.$on("updateMainConfiguration", mainConfigurationUpdated);
 
+        contextMenuItems = new ContextMenuItems({
+          target: document.getElementById("context_menu_providers"),
+        });
+        contextMenuItems.$on(
+          "updateMainConfiguration",
+          mainConfigurationUpdated
+        );
+
         // Add event listeners.
-        document
-          .querySelector('form[name="manage_providers"] button[type="reset"]')
-          .addEventListener("click", ProvidersTab.undoProvidersChanges);
         document
           .querySelector('form[name="edit_groups"] button[type="reset"]')
           .addEventListener("click", ProvidersTab.undoGroupsChanges);
@@ -120,165 +125,8 @@ var ProvidersTab = {
     ]);
   },
 
-  // --- Providers list --- //
-
   updateProvidersForm: async function () {
-    var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
-    var searchProviders =
-      (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
-
-    // Update HTML.
-    var template = document.getElementById(
-      "template_menuItemsManager"
-    ).innerHTML;
-    var rendered = Mustache.render(template, {
-      menuItems: _.map(searchProviders, function (item, index) {
-        return _.assign({}, item, {
-          index: index,
-          enabled: item.enabled ? "checked" : "",
-        });
-      }),
-      groups: function () {
-        var item = this;
-        return _.map(settings.providersGroups, function (group, index) {
-          var mask = Math.pow(2, index);
-          return {
-            value: index + 1,
-            name: group.name,
-            checked: item.group & mask ? "checked" : "",
-            classes: group.enabled ? "" : "text-muted",
-          };
-        });
-      },
-    });
-    document.getElementById("providers_menuItems").innerHTML = rendered;
-
-    // Add extension's github url
-    var el = document.getElementById("extension_home_url");
-    el.setAttribute("href", MiscURLs.EXTENSION_HOME_URL);
-    el.innerHTML = MiscURLs.EXTENSION_HOME_URL;
-
-    // Make list sortable.
-    Sortable.create(
-      document.querySelector("#providers_menuItems ul.list-group"),
-      { handle: ".sortable-handle", onEnd: ProvidersTab.onProviderDragged }
-    );
-
-    // Add click listeners to delete buttons.
-    var deleteButtons = document.querySelectorAll(
-      'form[name="manage_providers"] button[title="Delete"]'
-    );
-    _.forEach(deleteButtons, function (button) {
-      button.addEventListener("click", ProvidersTab.removeProvider);
-    });
-
-    // Add click/change listeners to inputs.
-    var inputs = document.querySelectorAll(
-      'form[name="manage_providers"] input'
-    );
-    _.forEach(inputs, function (input) {
-      if (input.type === "checkbox") {
-        input.addEventListener("click", ProvidersTab.onProviderInputChanged);
-      } else {
-        input.addEventListener("change", ProvidersTab.onProviderInputChanged);
-      }
-    });
-  },
-
-  onProviderDragged: async function (event) {
-    // Move provider.
-    var providers = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
-    providers.splice(event.newIndex, 0, providers.splice(event.oldIndex, 1)[0]);
-    await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, providers);
-
-    // Update UI according to this change.
-    // NOTE: Updating the form is required because the 'index' is being used as unique ID for each item.
-    ProvidersTab.updateProvidersForm();
-    mainConfigurationUpdated(true);
-  },
-
-  removeProvider: async function (event) {
-    event.preventDefault();
-
-    if (confirm("Are you sure you want to remove this item?")) {
-      // Get index.
-      var rootElem = event.target.closest("li");
-      var index = parseInt(rootElem.getAttribute("data-index"), 10);
-
-      // Remove provider.
-      var providers = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
-      providers.splice(index, 1);
-      await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, providers);
-
-      // Update UI according to this change.
-      ProvidersTab.updateProvidersForm();
-      mainConfigurationUpdated(true);
-
-      Notiflix.Notify.Success("Item removed");
-    }
-  },
-
-  onProviderInputChanged: async function (event) {
-    var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
-    var providers = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
-
-    // Get index.
-    var rootElem = event.target.closest("li");
-    var index = parseInt(rootElem.getAttribute("data-index"), 10);
-
-    // Get form data.
-    var formElem = document.querySelector('form[name="manage_providers"]');
-    var formData = new FormData(formElem);
-
-    // Update provider.
-    var item = providers[index];
-    item.label = formData.get("label_" + index);
-    item.link = formData.get("link_" + index);
-    item.enabled = formData.get("enabled_" + index) === "yes";
-
-    var group = 0;
-    for (var k = 0; k < settings.providersGroups.length; k++) {
-      var value = k + 1;
-      var isChecked = !_.isNil(formData.get("group_" + index + "_" + value));
-      if (isChecked) {
-        group += Math.pow(2, k);
-      }
-    }
-    item.group = group;
-
-    if (item.postEnabled) {
-      item.postValue = formData.get("postValue_" + index);
-    }
-    if (item.proxyEnabled) {
-      item.proxyUrl = formData.get("proxyUrl_" + index);
-    }
-
-    // Save changes.
-    providers[index] = item;
-    await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, providers);
-
-    // Update context menu
-    mainConfigurationUpdated(true);
-  },
-
-  undoProvidersChanges: async function (event) {
-    event.preventDefault();
-
-    if (
-      confirm(
-        "Are you sure you want to undo all recents changes on menu items?"
-      )
-    ) {
-      // Reset data.
-      var oldProviders = initData[StoreKey.SEARCH_PROVIDERS];
-      await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, oldProviders);
-
-      // Update UI according to this change.
-      ProvidersTab.updateForms();
-      mainConfigurationUpdated(true);
-
-      Notiflix.Notify.Success("Recent changes on menu items were undo");
-    }
+    contextMenuItems.initProvidersAndGroups();
   },
 
   // --- Groups --- //

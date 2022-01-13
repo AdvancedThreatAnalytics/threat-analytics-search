@@ -65,7 +65,7 @@ async function onQueryInputChanged(event) {
 
 async function onQueryDragged(event) {
   // Move query.
-  var queries = _.get(await LocalStore.getOne(storageKey), "queries", []);
+  let queries = _.get(await LocalStore.getOne(storageKey), "queries", []);
   queries.splice(event.newIndex, 0, queries.splice(event.oldIndex, 1)[0]);
   await providerHelper._updateLocalStoreData("queries", queries, true);
 
@@ -92,6 +92,12 @@ function undoQueriesChanges() {
 
 onMount(async () => {
   await initialize();
+
+  // Make list sortable.
+  Sortable.create(
+          document.querySelector(`form[name="${form}Queries"] ul.list-group`),
+          { handle: ".sortable-handle", onEnd: onQueryDragged }
+  );
 });
 </script>
 
@@ -99,7 +105,7 @@ onMount(async () => {
 
 <form name="{form}Queries">
   <ul class="list-group">
-    {#each items as item, index}
+    {#each items as item, index (item)}
       <li class="list-group-item sortable pl-1 pr-2 py-3" data-index="{index}">
         <div class="d-flex align-items-center">
           <div class="sortable-handle p-2">

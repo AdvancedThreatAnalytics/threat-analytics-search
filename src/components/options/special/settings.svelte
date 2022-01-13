@@ -85,7 +85,7 @@ onMount(async () => {
 
 <form name="{form}Config">
   <div class="row">
-    {#each items as item}
+    {#each items as item, index (item)}
       <div class="col-md-6 align-self-end">
         {#if item.isCheckbox}
           <div class="form-check my-3">

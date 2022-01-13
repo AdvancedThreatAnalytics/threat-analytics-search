@@ -5,7 +5,6 @@ import "../styles/theme.scss";
 import "../css/main.css";
 
 import _ from "lodash";
-import Notiflix from "notiflix";
 
 import {
   StoreKey,
@@ -135,74 +134,6 @@ var ProvidersTab = {
 
   updateProvidersForm: async function () {
     contextMenuItems.initProvidersAndGroups();
-  },
-
-  // --- Provider add --- //
-
-  toggleInputByCheckbox: function (event) {
-    var checkbox = event.target;
-    var input = document.getElementById(checkbox.getAttribute("data-target"));
-    if (!_.isNil(input)) {
-      input.disabled = !checkbox.checked;
-    }
-  },
-
-  addNewProvider: async function (event) {
-    event.preventDefault();
-
-    // Get form data.
-    var formElem = document.querySelector('form[name="add_provider"]');
-    var formData = new FormData(formElem);
-
-    // Validate values.
-    var errMsg;
-    if (_.isEmpty(formData.get("label")) || _.isEmpty(formData.get("link"))) {
-      errMsg = "The display name and the link are required values";
-    } else if (
-      formData.get("postEnabled") === "yes" &&
-      _.isEmpty(formData.get("postValue"))
-    ) {
-      errMsg = "If POST is enabled you must provide a value";
-    } else if (
-      formData.get("proxyEnabled") === "yes" &&
-      _.isEmpty(formData.get("proxyUrl"))
-    ) {
-      errMsg = "If proxy is enabled you must provide the Proxy's URL";
-    }
-    if (!_.isNil(errMsg)) {
-      Notiflix.Notify.Failure(errMsg);
-      return;
-    }
-
-    // Add new option.
-    var searchProviders = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
-    searchProviders.push({
-      menuIndex: -1,
-      label: formData.get("label"),
-      link: formData.get("link"),
-      enabled: true,
-      fromConfig: false,
-      group: 0,
-      postEnabled: formData.get("postEnabled") === "yes",
-      postValue: formData.get("postValue"),
-      proxyEnabled: formData.get("proxyEnabled") === "yes",
-      proxyUrl: formData.get("proxyUrl"),
-    });
-    await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, searchProviders);
-
-    // Clear form.
-    _.forEach(
-      document.querySelectorAll('form[name="add_provider"] input[type="text"]'),
-      function (input) {
-        input.value = "";
-      }
-    );
-
-    // Update UI according to this change.
-    ProvidersTab.updateProvidersForm();
-    mainConfigurationUpdated(true);
-
-    Notiflix.Notify.Success("Option added successfully");
   },
 };
 

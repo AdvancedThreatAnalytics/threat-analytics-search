@@ -35,8 +35,6 @@ export async function initProvidersAndGroups() {
 }
 
 async function remove(index) {
-  event.preventDefault();
-
   if (confirm("Are you sure you want to remove this item?")) {
     providers.splice(index, 1);
     providers = providers;

@@ -22,9 +22,7 @@ const DEFAULT = {
 let editData = _.clone(DEFAULT);
 
 // Methods.
-async function add(event) {
-  event.preventDefault();
-
+async function add() {
   if (validate()) {
     // Add new provider
     const searchProviders = await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS);
@@ -173,7 +171,10 @@ function clear() {
     </div>
 
     <div class="text-right mt-2">
-      <button type="submit" class="btn btn-success" on:click="{add}">
+      <button
+        type="submit"
+        class="btn btn-success"
+        on:click|preventDefault="{add}">
         <i class="fas fa-plus-circle" aria-hidden="true"></i> Add new option
       </button>
     </div>

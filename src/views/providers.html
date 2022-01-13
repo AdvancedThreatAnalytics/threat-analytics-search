@@ -7,54 +7,5 @@
 
   <h2 class="mt-3">Manage Groups</h2>
 
-  <p>
-    Groups are special items on the contextual menu that allows you to do a
-    <em>bulk search</em>, executing multiple search providers at the same time.
-  </p>
-
-  <form name="edit_groups">
-    <div id="providers_groupsManager"></div>
-    <script id="template_groupsManager" type="x-tmpl-mustache">
-      <ul class="list-group">
-        {{#groups}}
-          <li class="list-group-item" data-index="{{ index }}">
-            <div class="d-flex d-flex align-items-center">
-              <div class="p-2">
-                <strong>{{ index+1 }}</strong>
-              </div>
-              <div class="p-2">
-                <div class="form-check">
-                  <input
-                    type="checkbox"
-                    value="yes"
-                    class="form-check-input"
-                    name="enabled_{{ index }}"
-                    id="providers_editGroups_enabled_{{ index }}"
-                    {{ checked }}>
-                  <label
-                    class="form-check-label"
-                    for="providers_editGroups_enabled_{{ index }}">
-                    Enabled
-                  </label>
-                </div>
-              </div>
-              <div class="flex-grow-1">
-                <input
-                  type="text"
-                  class="form-control"
-                  name="label_{{ index }}"
-                  value="{{ name }}">
-              </div>
-            </div>
-          </li>
-        {{/groups}}
-      </ul>
-    </script>
-    <div class="text-right mt-2">
-      <button type="reset" class="btn btn-outline-danger">
-        <i class="fas fa-undo" aria-hidden="true"></i>
-        Undo recent changes
-      </button>
-    </div>
-  </form>
+  <div id="manage_provider_groups"></div>
 </div>

@@ -5,7 +5,6 @@ import "../styles/theme.scss";
 import "../css/main.css";
 
 import _ from "lodash";
-import Mustache from "mustache";
 import Notiflix from "notiflix";
 
 import {
@@ -19,8 +18,10 @@ import LocalStore from "./shared/local_store";
 // Inject Svelte components into the page.
 import Footer from "../components/options/footer.svelte";
 import Header from "../components/options/header.svelte";
+import Groups from "../components/options/providers/groups.svelte";
 import ContextMenuItems from "../components/options/providers/contextMenuItems.svelte";
 import Settings from "../components/options/settings/main.svelte";
+import AddSearchProviders from "../components/options/providers/add.svelte";
 import SpecialProvider from "../components/options/special/main.svelte";
 
 new Footer({
@@ -32,6 +33,8 @@ const myHeader = new Header({
 });
 myHeader.$on("tabClicked", updateTabsVisibility);
 let contextMenuItems;
+
+let groups;
 
 // Global variable for store initial settings (before user changes).
 var initData = {};
@@ -121,6 +124,11 @@ var ProvidersTab = {
           'main section[data-tab="search-providers"]'
         ).innerHTML = htmlData;
 
+        const addProvider = new AddSearchProviders({
+          target: document.getElementById("add_provider"),
+        });
+        addProvider.$on("updateMainConfiguration", mainConfigurationUpdated);
+
         contextMenuItems = new ContextMenuItems({
           target: document.getElementById("context_menu_providers"),
         });
@@ -129,20 +137,16 @@ var ProvidersTab = {
           mainConfigurationUpdated
         );
 
-        // Add event listeners.
-        document
-          .querySelector('form[name="edit_groups"] button[type="reset"]')
-          .addEventListener("click", ProvidersTab.undoGroupsChanges);
+        groups = new Groups({
+          target: document.getElementById("manage_provider_groups"),
+          props: {
+            initialSettings: initData[StoreKey.SETTINGS],
+          },
+        });
 
-        document
-          .querySelector('form[name="add_provider"] button[type="submit"]')
-          .addEventListener("click", ProvidersTab.addNewProvider);
-        document
-          .querySelector('form[name="add_provider"] input[name="postEnabled"]')
-          .addEventListener("click", ProvidersTab.toggleInputByCheckbox);
-        document
-          .querySelector('form[name="add_provider"] input[name="proxyEnabled"]')
-          .addEventListener("click", ProvidersTab.toggleInputByCheckbox);
+        groups.$on("updateProvidersForm", this.updateProvidersForm);
+        groups.$on("updateForm", this.updateForms);
+        groups.$on("updateMainConfiguration", mainConfigurationUpdated);
 
         // Update forms with stored values.
         ProvidersTab.updateForms();
@@ -151,7 +155,7 @@ var ProvidersTab = {
 
   updateForms: function () {
     return Promise.all([
-      ProvidersTab.updateGroupsForm(),
+      groups.initialize(),
       ProvidersTab.updateProvidersForm(),
     ]);
   },
@@ -226,75 +230,5 @@ var ProvidersTab = {
     mainConfigurationUpdated(true);
 
     Notiflix.Notify.Success("Option added successfully");
-  },
-
-  // --- Groups --- //
-
-  updateGroupsForm: async function () {
-    var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
-
-    // Update HTML.
-    var template = document.getElementById("template_groupsManager").innerHTML;
-    var rendered = Mustache.render(template, {
-      groups: settings.providersGroups,
-      index: function () {
-        return settings.providersGroups.indexOf(this);
-      },
-      checked: function () {
-        return this.enabled ? "checked" : "";
-      },
-    });
-    document.getElementById("providers_groupsManager").innerHTML = rendered;
-
-    // Add click/change listeners.
-    var inputs = document.querySelectorAll('form[name="edit_groups"] input');
-    _.forEach(inputs, function (input) {
-      if (input.type === "checkbox") {
-        input.addEventListener("click", ProvidersTab.onGroupInputChanged);
-      } else {
-        input.addEventListener("change", ProvidersTab.onGroupInputChanged);
-      }
-    });
-  },
-
-  onGroupInputChanged: async function (event) {
-    // Get index.
-    var rootElem = event.target.closest("li");
-    var index = parseInt(rootElem.getAttribute("data-index"), 10);
-
-    // Get form data.
-    var formElem = document.querySelector('form[name="edit_groups"]');
-    var formData = new FormData(formElem);
-
-    // Update group.
-    var settings = await LocalStore.getOne(StoreKey.SETTINGS);
-    settings.providersGroups[index] = {
-      name: formData.get("label_" + index) || "Group " + (index + 1),
-      enabled: formData.get("enabled_" + index) === "yes",
-    };
-    await LocalStore.setOne(StoreKey.SETTINGS, settings);
-
-    // Update UI according to this change.
-    ProvidersTab.updateProvidersForm();
-    mainConfigurationUpdated(true);
-  },
-
-  undoGroupsChanges: async function (event) {
-    event.preventDefault();
-
-    if (
-      confirm("Are you sure you want to undo all recents changes on groups?")
-    ) {
-      // Reset data.
-      var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
-      settings.providersGroups = initData[StoreKey.SETTINGS].providersGroups;
-      await LocalStore.setOne(StoreKey.SETTINGS, settings);
-
-      // Update UI according to this change.
-      ProvidersTab.updateForms();
-      mainConfigurationUpdated(true);
-
-      Notiflix.Notify.Success("Recent changes on groups were undo");
-    }
   },
 };

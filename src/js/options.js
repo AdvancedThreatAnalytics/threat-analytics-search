@@ -22,6 +22,7 @@ import Header from "../components/options/header.svelte";
 import Groups from "../components/options/providers/groups.svelte";
 import ContextMenuItems from "../components/options/providers/contextMenuItems.svelte";
 import Settings from "../components/options/settings/main.svelte";
+import AddSearchProviders from "../components/options/providers/add.svelte";
 
 new Footer({
   target: document.getElementById("footer"),
@@ -96,6 +97,11 @@ var ProvidersTab = {
           'main section[data-tab="search-providers"]'
         ).innerHTML = htmlData;
 
+        const addProvider = new AddSearchProviders({
+          target: document.getElementById("add_provider"),
+        });
+        addProvider.$on("updateMainConfiguration", mainConfigurationUpdated);
+
         contextMenuItems = new ContextMenuItems({
           target: document.getElementById("context_menu_providers"),
         });
@@ -114,16 +120,6 @@ var ProvidersTab = {
         groups.$on("updateProvidersForm", this.updateProvidersForm);
         groups.$on("updateForm", this.updateForms);
         groups.$on("updateMainConfiguration", mainConfigurationUpdated);
-
-        document
-          .querySelector('form[name="add_provider"] button[type="submit"]')
-          .addEventListener("click", ProvidersTab.addNewProvider);
-        document
-          .querySelector('form[name="add_provider"] input[name="postEnabled"]')
-          .addEventListener("click", ProvidersTab.toggleInputByCheckbox);
-        document
-          .querySelector('form[name="add_provider"] input[name="proxyEnabled"]')
-          .addEventListener("click", ProvidersTab.toggleInputByCheckbox);
 
         // Update forms with stored values.
         ProvidersTab.updateForms();

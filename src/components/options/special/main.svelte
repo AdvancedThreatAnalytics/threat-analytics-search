@@ -1,7 +1,7 @@
 <script>
 import Settings from "./settings.svelte";
-import Qureies from "./queries.svelte";
+import Queries from "./queries.svelte";
 </script>
 
 <Settings {...$$props} />
-<Qureies {...$$props} />
+<Queries {...$$props} />

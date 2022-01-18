@@ -2,7 +2,7 @@
 import _ from "lodash";
 import Notiflix from "notiflix";
 import { DateTime } from "luxon";
-import { onMount, createEventDispatcher } from "svelte";
+import { onMount } from "svelte";
 
 import ConfigFile from "../../../js/shared/config_file";
 import Fields from "../shared/fields.svelte";
@@ -14,8 +14,6 @@ import {
   SEARCH_RESULT_OPTIONS,
   StoreKey,
 } from "../../../js/shared/constants";
-
-const dispatch = createEventDispatcher();
 
 // Bindings.
 let lastConfigUpdate;
@@ -29,7 +27,7 @@ function mainConfigurationUpdated(lazy) {
   if (!lazy) {
     updateLastConfigUpdate();
   }
-  dispatch("updateMainConfiguration", lazy);
+  chrome.runtime.sendMessage({ action: "updateContextualMenu" });
 }
 
 async function updateLastConfigUpdate() {

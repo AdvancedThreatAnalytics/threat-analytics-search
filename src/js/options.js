@@ -35,18 +35,16 @@ let initData = {};
 
 // Wait for the page to be loaded to execute the initialization function.
 document.addEventListener("DOMContentLoaded", async function () {
-  const settingsTab = new Settings({
+  new Settings({
     target: document.querySelector('main section[data-tab="settings"]'),
   });
-  settingsTab.$on("updateMainConfiguration", mainConfigurationUpdated);
 
-  const providersTab = new Providers({
+  new Providers({
     target: document.querySelector('main section[data-tab="search-providers"]'),
     props: {
       initData: initData,
-    }
+    },
   });
-  providersTab.$on("updateMainConfiguration", mainConfigurationUpdated);
 
   new SpecialProvider({
     target: document.querySelector(
@@ -102,8 +100,4 @@ function updateTabsVisibility(data) {
       pages[i].style.display = pageAttr === current ? "block" : "none";
     }
   }
-}
-
-function mainConfigurationUpdated() {
-  chrome.runtime.sendMessage({ action: "updateContextualMenu" });
 }

@@ -13,13 +13,13 @@ import {
   RSA_CONFIG,
 } from "./shared/constants";
 import LocalStore from "./shared/local_store";
-import providerTabHelper from "./shared/provider_helper";
 
 // Inject Svelte components into the page.
 import Footer from "../components/options/footer.svelte";
 import Header from "../components/options/header.svelte";
 import Providers from "../components/options/providers/main.svelte";
 import Settings from "../components/options/settings/main.svelte";
+import SpecialProvider from "../components/options/special/main.svelte";
 
 new Footer({
   target: document.getElementById("footer"),
@@ -48,9 +48,39 @@ document.addEventListener("DOMContentLoaded", async function () {
   });
   providersTab.$on("updateMainConfiguration", mainConfigurationUpdated);
 
-  CarbonBlackTab.initialize();
-  NetWitnessTab.initialize();
-  SearchAnalyticsTab.initialize();
+  new SpecialProvider({
+    target: document.querySelector(
+      'main section[data-tab="security-analytics"]'
+    ),
+    props: {
+      configTitle: "RSA Security Analytics Configuration",
+      form: "rsa",
+      initData,
+      isRSA: true,
+      settings: RSA_CONFIG,
+      storageKey: StoreKey.RSA_SECURITY,
+    },
+  });
+  new SpecialProvider({
+    target: document.querySelector('main section[data-tab="netwitness"]'),
+    props: {
+      configTitle: "NetWitness Investigator Configuration",
+      form: "nwi",
+      initData,
+      settings: NWI_CONFIG,
+      storageKey: StoreKey.NET_WITNESS,
+    },
+  });
+  new SpecialProvider({
+    target: document.querySelector('main section[data-tab="carbon-black"]'),
+    props: {
+      configTitle: "Carbon Black Configuration",
+      form: "cbc",
+      initData,
+      settings: CBC_CONFIG,
+      storageKey: StoreKey.CARBON_BLACK,
+    },
+  });
 
   LocalStore.get([
     StoreKey.CARBON_BLACK,
@@ -74,98 +104,6 @@ function updateTabsVisibility(data) {
   }
 }
 
-function mainConfigurationUpdated(lazy) {
-  // Since svelte component wraps event parameter with event.detail object, we should also check that.
-  if (!lazy || !_.get(lazy, "detail")) {
-    CarbonBlackTab.updateForms();
-    NetWitnessTab.updateForms();
-    SearchAnalyticsTab.updateForms();
-  }
-
+function mainConfigurationUpdated() {
   chrome.runtime.sendMessage({ action: "updateContextualMenu" });
 }
-
-// --- Carbon Black & NetWitness & Serch analytics tabs --- //
-
-var CarbonBlackTab = providerTabHelper(
-  initData,
-  StoreKey.CARBON_BLACK,
-  CBC_CONFIG,
-  "cbcConfig",
-  "cbc_config",
-  "template_providerConfig",
-  "cbcQueries",
-  "cbc_queries",
-  "template_providerQueries",
-  mainConfigurationUpdated.bind(this, true)
-);
-
-var NetWitnessTab = providerTabHelper(
-  initData,
-  StoreKey.NET_WITNESS,
-  NWI_CONFIG,
-  "nwiConfig",
-  "nwi_config",
-  "template_providerConfig",
-  "nwiQueries",
-  "nwi_queries",
-  "template_providerQueries",
-  mainConfigurationUpdated.bind(this, true),
-  function (link) {
-    try {
-      if (!_.isEmpty(link)) {
-        var temp = link.match(/:\/\/([^:/?]*)(:(\d+)|[/?])/);
-        var hostname = temp ? (temp[1] ? temp[1] : "") : "";
-        var port = temp ? (temp[3] ? temp[3] : "") : "";
-        temp = link.match(/collection=([^&]*)/);
-        var collectionName = temp ? (temp[1] ? temp[1] : "") : "";
-
-        return [
-          { key: "NWIConfigEnable", value: true },
-          { key: "NWIConfigHost", value: hostname },
-          { key: "NWIConfigPort", value: port },
-          { key: "NWIConfigCollectionName", value: collectionName },
-        ];
-      }
-    } catch (err) {
-      // Do nothing.
-    }
-    return null;
-  }
-);
-
-var SearchAnalyticsTab = providerTabHelper(
-  initData,
-  StoreKey.RSA_SECURITY,
-  RSA_CONFIG,
-  "rsaConfig",
-  "rsa_config",
-  "template_providerConfig",
-  "rsaQueries",
-  "rsa_queries",
-  "template_providerQueries",
-  mainConfigurationUpdated.bind(this, true),
-  function (link) {
-    try {
-      if (!_.isEmpty(link)) {
-        var ssl = link.search(/https:/) == 0 ? true : false;
-        var temp = link.match(/:\/\/([^:/?]*)(:(\d+)|[/?])/);
-        var hostname = temp ? (temp[1] ? temp[1] : "") : "";
-        var port = temp ? (temp[3] ? temp[3] : "") : "";
-        temp = link.match(/investigation\/([^/]*)\//);
-        var devId = temp ? (temp[1] ? temp[1] : "") : "";
-
-        return [
-          { key: "RSAConfigEnable", value: true },
-          { key: "RSAConfigUseHttps", value: ssl },
-          { key: "RSAConfigHost", value: hostname },
-          { key: "RSAConfigPort", value: port },
-          { key: "RSAConfigDevId", value: devId },
-        ];
-      }
-    } catch (err) {
-      // Do nothing.
-    }
-    return null;
-  }
-);

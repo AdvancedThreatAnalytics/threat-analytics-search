@@ -1,16 +1,10 @@
 <script>
-  import {
-    StoreKey,
-  } from "../../../js/shared/constants";
   import AddSearchProviders from "./add.svelte";
   import ContextMenuItems from "./contextMenuItems.svelte";
   import Groups from "./groups.svelte";
   import { createEventDispatcher, onMount } from "svelte";
 
   const dispatch = createEventDispatcher();
-
-  // Props.
-  export let initialSettings;
 
   let groupComponent;
   let contextMenuComponent;
@@ -44,5 +38,5 @@
     <ContextMenuItems bind:this={contextMenuComponent} on:updateMainConfiguration={mainConfigurationUpdated} />
 
     <h2 class="mt-3">Manage Groups</h2>
-    <Groups bind:this={groupComponent} initialSettings={initialSettings} on:updateMainConfiguration={mainConfigurationUpdated} on:updateMainConfiguration={updateForms} on:updateMainConfiguration={updateProvidersForm}/>
+    <Groups bind:this={groupComponent} {...$$props} on:updateMainConfiguration={mainConfigurationUpdated} on:updateMainConfiguration={updateForms} on:updateMainConfiguration={updateProvidersForm}/>
 </div>

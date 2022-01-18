@@ -6,7 +6,7 @@ import LocalStore from "../../../js/shared/local_store";
 import { StoreKey } from "../../../js/shared/constants";
 
 // Props.
-export let initialSettings;
+export let initData;
 
 let groups = [];
 const dispatch = createEventDispatcher();
@@ -29,7 +29,7 @@ async function reset() {
   if (confirm("Are you sure you want to undo all recents changes on groups?")) {
     // Reset data.
     var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
-    settings.providersGroups = initialSettings.providersGroups;
+    settings.providersGroups = initData[StoreKey.SETTINGS].providersGroups;
     await LocalStore.setOne(StoreKey.SETTINGS, settings);
 
     Notiflix.Notify.Success("Recent changes on groups were undo");

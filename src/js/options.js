@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const providersTab = new Providers({
     target: document.querySelector('main section[data-tab="search-providers"]'),
     props: {
-      initialSettings: initData[StoreKey.SETTINGS],
+      initData: initData,
     }
   });
   providersTab.$on("updateMainConfiguration", mainConfigurationUpdated);

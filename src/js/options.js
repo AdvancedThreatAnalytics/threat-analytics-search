@@ -33,13 +33,16 @@ myHeader.$on("tabClicked", updateTabsVisibility);
 // Global variable for store initial settings (before user changes).
 let initData = {};
 
+let providersTab;
+
 // Wait for the page to be loaded to execute the initialization function.
 document.addEventListener("DOMContentLoaded", async function () {
-  new Settings({
+  const settingsTab = new Settings({
     target: document.querySelector('main section[data-tab="settings"]'),
   });
+  settingsTab.$on("updateMainConfiguration", mainConfigurationUpdated);
 
-  new Providers({
+  providersTab = new Providers({
     target: document.querySelector('main section[data-tab="search-providers"]'),
     props: {
       initData: initData,
@@ -100,4 +103,11 @@ function updateTabsVisibility(data) {
       pages[i].style.display = pageAttr === current ? "block" : "none";
     }
   }
+}
+
+function mainConfigurationUpdated(lazy) {
+  if (!lazy || !_.get(lazy, "detail")) {
+    providersTab.updateForms();
+  }
+  chrome.runtime.sendMessage({ action: "updateContextualMenu" });
 }

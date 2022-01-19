@@ -12,7 +12,7 @@ function mainConfigurationUpdated() {
   chrome.runtime.sendMessage({ action: "updateContextualMenu" });
 }
 
-function updateForms() {
+export function updateForms() {
   return Promise.all([groupComponent.initialize(), updateProvidersForm()]);
 }
 

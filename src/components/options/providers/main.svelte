@@ -37,8 +37,6 @@ onMount(() => {
   <h2 class="mt-3">Manage Groups</h2>
   <Groups
     bind:this="{groupComponent}"
-    {...$$props}
-    on:updateMainConfiguration="{mainConfigurationUpdated}"
-    on:updateMainConfiguration="{updateForms}"
-    on:updateMainConfiguration="{updateProvidersForm}" />
+    initial-settings="{$$props.initialSettings}"
+    on:updateMainConfiguration="{mainConfigurationUpdated}" />
 </div>

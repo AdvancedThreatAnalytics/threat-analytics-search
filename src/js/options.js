@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   providersTab = new Providers({
     target: document.querySelector('main section[data-tab="search-providers"]'),
     props: {
-      initData: initData,
+      initialSettings: initData[StoreKey.SETTINGS],
     },
   });
 

@@ -64,7 +64,7 @@ onMount(() => {
     </section>
 
     <section data-tab="search-providers">
-      <Providers bind:this="{providersTab}" initData="{initData}" />
+      <Providers bind:this="{providersTab}" initialSettings="{initData[StoreKey.SETTINGS]}" />
     </section>
 
     <section data-tab="security-analytics">

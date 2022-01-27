@@ -9,6 +9,7 @@ import {
 } from "../../js/shared/constants";
 import LocalStore from "../../js/shared/local_store";
 import { onMount } from "svelte";
+import { fade } from "svelte/transition";
 
 // Inject Svelte components into the page.
 import Footer from "./footer.svelte";
@@ -20,17 +21,11 @@ import SpecialProvider from "./special/main.svelte";
 // Global variable for store initial settings (before user changes).
 let initData = {};
 
+let currentTab;
 let providersTab;
 
 function updateTabsVisibility(data) {
-  const current = _.get(data, "detail");
-  const pages = document.querySelectorAll("main section");
-  for (let i = 0; i < pages.length; i++) {
-    const pageAttr = pages[i].getAttribute("data-tab");
-    if (!_.isEmpty(pageAttr)) {
-      pages[i].style.display = pageAttr === current ? "block" : "none";
-    }
-  }
+  currentTab = _.get(data, "detail");
 }
 
 function mainConfigurationUpdated(lazy) {
@@ -59,41 +54,46 @@ onMount(() => {
 
   <!-- Tabs content -->
   <main class="container">
-    <section data-tab="settings">
-      <Settings on:updateMainConfiguration="{mainConfigurationUpdated}" />
-    </section>
-
-    <section data-tab="search-providers">
-      <Providers bind:this="{providersTab}" initialSettings="{initData[StoreKey.SETTINGS]}" />
-    </section>
-
-    <section data-tab="security-analytics">
-      <SpecialProvider
-        configTitle="{'RSA Security Analytics Configuration'}"
-        form="{'rsa'}"
-        initData="{initData}"
-        isRSA="{true}"
-        settings="{RSA_CONFIG}"
-        storageKey="{StoreKey.RSA_SECURITY}" />
-    </section>
-
-    <section data-tab="netwitness">
-      <SpecialProvider
-        configTitle="{'NetWitness Investigator Configuration'}"
-        form="{'nwi'}"
-        initData="{initData}"
-        settings="{NWI_CONFIG}"
-        storageKey="{StoreKey.NET_WITNESS}" />
-    </section>
-
-    <section data-tab="carbon-black">
-      <SpecialProvider
-        configTitle="{'Carbon Black Configuration'}"
-        form="{'cbc'}"
-        initData="{initData}"
-        settings="{CBC_CONFIG}"
-        storageKey="{StoreKey.CARBON_BLACK}" />
-    </section>
+    {#if currentTab === "settings"}
+      <section transition:fade="{{ duration: 100 }}">
+        <Settings on:updateMainConfiguration="{mainConfigurationUpdated}" />
+      </section>
+    {:else if currentTab === "search-providers"}
+      <section transition:fade="{{ duration: 100 }}">
+        <Providers
+          bind:this="{providersTab}"
+          initialSettings="{initData[StoreKey.SETTINGS]}"
+          on:updateMainConfiguration="{mainConfigurationUpdated}" />
+      </section>
+    {:else if currentTab === "security-analytics"}
+      <section transition:fade="{{ duration: 100 }}">
+        <SpecialProvider
+          configTitle="{'RSA Security Analytics Configuration'}"
+          form="{'rsa'}"
+          initData="{initData}"
+          isRSA="{true}"
+          settings="{RSA_CONFIG}"
+          storageKey="{StoreKey.RSA_SECURITY}" />
+      </section>
+    {:else if currentTab === "netwitness"}
+      <section transition:fade="{{ duration: 100 }}">
+        <SpecialProvider
+          configTitle="{'NetWitness Investigator Configuration'}"
+          form="{'nwi'}"
+          initData="{initData}"
+          settings="{NWI_CONFIG}"
+          storageKey="{StoreKey.NET_WITNESS}" />
+      </section>
+    {:else if currentTab === "carbon-black"}
+      <section transition:fade="{{ duration: 100 }}">
+        <SpecialProvider
+          configTitle="{'Carbon Black Configuration'}"
+          form="{'cbc'}"
+          initData="{initData}"
+          settings="{CBC_CONFIG}"
+          storageKey="{StoreKey.CARBON_BLACK}" />
+      </section>
+    {/if}
   </main>
 
   <!-- Footer -->

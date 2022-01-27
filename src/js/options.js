@@ -17,10 +17,8 @@ import LocalStore from "./shared/local_store";
 // Inject Svelte components into the page.
 import Footer from "../components/options/footer.svelte";
 import Header from "../components/options/header.svelte";
-import Groups from "../components/options/providers/groups.svelte";
-import ContextMenuItems from "../components/options/providers/contextMenuItems.svelte";
+import Providers from "../components/options/providers/main.svelte";
 import Settings from "../components/options/settings/main.svelte";
-import AddSearchProviders from "../components/options/providers/add.svelte";
 import SpecialProvider from "../components/options/special/main.svelte";
 
 new Footer({
@@ -31,12 +29,11 @@ const myHeader = new Header({
   target: document.getElementById("header"),
 });
 myHeader.$on("tabClicked", updateTabsVisibility);
-let contextMenuItems;
-
-let groups;
 
 // Global variable for store initial settings (before user changes).
-var initData = {};
+let initData = {};
+
+let providersTab;
 
 // Wait for the page to be loaded to execute the initialization function.
 document.addEventListener("DOMContentLoaded", async function () {
@@ -45,7 +42,13 @@ document.addEventListener("DOMContentLoaded", async function () {
   });
   settingsTab.$on("updateMainConfiguration", mainConfigurationUpdated);
 
-  ProvidersTab.initialize();
+  providersTab = new Providers({
+    target: document.querySelector('main section[data-tab="search-providers"]'),
+    props: {
+      initialSettings: initData[StoreKey.SETTINGS],
+    },
+  });
+
   new SpecialProvider({
     target: document.querySelector(
       'main section[data-tab="security-analytics"]'
@@ -103,63 +106,8 @@ function updateTabsVisibility(data) {
 }
 
 function mainConfigurationUpdated(lazy) {
-  // Since svelte component wraps event parameter with event.detail object, we should also check that.
   if (!lazy || !_.get(lazy, "detail")) {
-    ProvidersTab.updateForms();
+    providersTab.updateForms();
   }
-
   chrome.runtime.sendMessage({ action: "updateContextualMenu" });
 }
-
-// --- Search Providers tab --- //
-
-var ProvidersTab = {
-  initialize: function () {
-    fetch("views/providers.html")
-      .then((response) => response.text())
-      .then((htmlData) => {
-        // Insert template file.
-        document.querySelector(
-          'main section[data-tab="search-providers"]'
-        ).innerHTML = htmlData;
-
-        const addProvider = new AddSearchProviders({
-          target: document.getElementById("add_provider"),
-        });
-        addProvider.$on("updateMainConfiguration", mainConfigurationUpdated);
-
-        contextMenuItems = new ContextMenuItems({
-          target: document.getElementById("context_menu_providers"),
-        });
-        contextMenuItems.$on(
-          "updateMainConfiguration",
-          mainConfigurationUpdated
-        );
-
-        groups = new Groups({
-          target: document.getElementById("manage_provider_groups"),
-          props: {
-            initialSettings: initData[StoreKey.SETTINGS],
-          },
-        });
-
-        groups.$on("updateProvidersForm", this.updateProvidersForm);
-        groups.$on("updateForm", this.updateForms);
-        groups.$on("updateMainConfiguration", mainConfigurationUpdated);
-
-        // Update forms with stored values.
-        ProvidersTab.updateForms();
-      });
-  },
-
-  updateForms: function () {
-    return Promise.all([
-      groups.initialize(),
-      ProvidersTab.updateProvidersForm(),
-    ]);
-  },
-
-  updateProvidersForm: async function () {
-    contextMenuItems.initProvidersAndGroups();
-  },
-};

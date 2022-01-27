@@ -95,8 +95,8 @@ onMount(async () => {
 
   // Make list sortable.
   Sortable.create(
-          document.querySelector(`form[name="${form}Queries"] ul.list-group`),
-          { handle: ".sortable-handle", onEnd: onQueryDragged }
+    document.querySelector(`form[name="${form}Queries"] ul.list-group`),
+    { handle: ".sortable-handle", onEnd: onQueryDragged }
   );
 });
 </script>

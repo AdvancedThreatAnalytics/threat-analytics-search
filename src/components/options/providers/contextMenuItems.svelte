@@ -1,10 +1,10 @@
 <script>
 import _ from "lodash";
 import Notiflix from "notiflix";
+import { createEventDispatcher } from "svelte";
 import { Sortable } from "sortablejs";
 
 import LocalStore from "../../../js/shared/local_store";
-import { createEventDispatcher } from "svelte";
 import { StoreKey } from "../../../js/shared/constants";
 
 const dispatch = createEventDispatcher();

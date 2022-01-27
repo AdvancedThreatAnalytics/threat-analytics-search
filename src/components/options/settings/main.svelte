@@ -2,7 +2,7 @@
 import _ from "lodash";
 import Notiflix from "notiflix";
 import { DateTime } from "luxon";
-import { onMount, createEventDispatcher } from "svelte";
+import { createEventDispatcher, onMount } from "svelte";
 
 import ConfigFile from "../../../js/shared/config_file";
 import Fields from "../shared/fields.svelte";

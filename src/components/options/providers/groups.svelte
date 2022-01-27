@@ -21,7 +21,6 @@ async function onChange(index, key, value) {
   settings.providersGroups[index][key] = value;
   await LocalStore.setOne(StoreKey.SETTINGS, settings);
 
-  dispatch("updateProvidersForm");
   dispatch("updateMainConfiguration");
 }
 

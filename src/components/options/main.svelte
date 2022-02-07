@@ -9,7 +9,6 @@ import {
 } from "../../js/shared/constants";
 import LocalStore from "../../js/shared/local_store";
 import { onMount } from "svelte";
-import { fade } from "svelte/transition";
 
 // Inject Svelte components into the page.
 import Footer from "./footer.svelte";
@@ -54,19 +53,16 @@ onMount(() => {
 
   <!-- Tabs content -->
   <main class="container">
-    {#if currentTab === "settings"}
-      <section transition:fade="{{ duration: 100 }}">
+      <section hidden="{currentTab !== 'settings'}">
         <Settings on:updateMainConfiguration="{mainConfigurationUpdated}" />
       </section>
-    {:else if currentTab === "search-providers"}
-      <section transition:fade="{{ duration: 100 }}">
+      <section hidden="{currentTab !== 'search-providers'}">
         <Providers
           bind:this="{providersTab}"
           initialSettings="{initData[StoreKey.SETTINGS]}"
           on:updateMainConfiguration="{mainConfigurationUpdated}" />
       </section>
-    {:else if currentTab === "security-analytics"}
-      <section transition:fade="{{ duration: 100 }}">
+      <section hidden="{currentTab !== 'security-analytics'}">
         <SpecialProvider
           configTitle="{'RSA Security Analytics Configuration'}"
           form="{'rsa'}"
@@ -75,8 +71,7 @@ onMount(() => {
           settings="{RSA_CONFIG}"
           storageKey="{StoreKey.RSA_SECURITY}" />
       </section>
-    {:else if currentTab === "netwitness"}
-      <section transition:fade="{{ duration: 100 }}">
+      <section hidden="{currentTab !== 'netwitness'}">
         <SpecialProvider
           configTitle="{'NetWitness Investigator Configuration'}"
           form="{'nwi'}"
@@ -84,8 +79,7 @@ onMount(() => {
           settings="{NWI_CONFIG}"
           storageKey="{StoreKey.NET_WITNESS}" />
       </section>
-    {:else if currentTab === "carbon-black"}
-      <section transition:fade="{{ duration: 100 }}">
+      <section hidden="{currentTab !== 'carbon-black'}">
         <SpecialProvider
           configTitle="{'Carbon Black Configuration'}"
           form="{'cbc'}"
@@ -93,7 +87,6 @@ onMount(() => {
           settings="{CBC_CONFIG}"
           storageKey="{StoreKey.CARBON_BLACK}" />
       </section>
-    {/if}
   </main>
 
   <!-- Footer -->

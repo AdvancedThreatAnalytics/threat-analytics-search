@@ -35,7 +35,6 @@ The extension is implemented with JavaScript. The full list of dependencies can 
 
 | Library                                    | Used for   |
 | ------------------------------------------ | ---------- |
-| [Mustache](https://mustache.github.io/)    | Templates  |
 | [aes-js](https://github.com/ricmoo/aes-js) | Encryption |
 | [Bootstrap](https://getbootstrap.com/)     | UI         |
 | [Font Awesome](https://fontawesome.com/)   | Icons      |

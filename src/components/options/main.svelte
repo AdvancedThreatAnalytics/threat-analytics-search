@@ -53,40 +53,40 @@ onMount(() => {
 
   <!-- Tabs content -->
   <main class="container">
-      <section hidden="{currentTab !== 'settings'}">
-        <Settings on:updateMainConfiguration="{mainConfigurationUpdated}" />
-      </section>
-      <section hidden="{currentTab !== 'search-providers'}">
-        <Providers
-          bind:this="{providersTab}"
-          initialSettings="{initData[StoreKey.SETTINGS]}"
-          on:updateMainConfiguration="{mainConfigurationUpdated}" />
-      </section>
-      <section hidden="{currentTab !== 'security-analytics'}">
-        <SpecialProvider
-          configTitle="{'RSA Security Analytics Configuration'}"
-          form="{'rsa'}"
-          initData="{initData}"
-          isRSA="{true}"
-          settings="{RSA_CONFIG}"
-          storageKey="{StoreKey.RSA_SECURITY}" />
-      </section>
-      <section hidden="{currentTab !== 'netwitness'}">
-        <SpecialProvider
-          configTitle="{'NetWitness Investigator Configuration'}"
-          form="{'nwi'}"
-          initData="{initData}"
-          settings="{NWI_CONFIG}"
-          storageKey="{StoreKey.NET_WITNESS}" />
-      </section>
-      <section hidden="{currentTab !== 'carbon-black'}">
-        <SpecialProvider
-          configTitle="{'Carbon Black Configuration'}"
-          form="{'cbc'}"
-          initData="{initData}"
-          settings="{CBC_CONFIG}"
-          storageKey="{StoreKey.CARBON_BLACK}" />
-      </section>
+    <section hidden="{currentTab !== 'settings'}">
+      <Settings on:updateMainConfiguration="{mainConfigurationUpdated}" />
+    </section>
+    <section hidden="{currentTab !== 'search-providers'}">
+      <Providers
+        bind:this="{providersTab}"
+        initialSettings="{initData[StoreKey.SETTINGS]}"
+        on:updateMainConfiguration="{mainConfigurationUpdated}" />
+    </section>
+    <section hidden="{currentTab !== 'security-analytics'}">
+      <SpecialProvider
+        configTitle="{'RSA Security Analytics Configuration'}"
+        form="{'rsa'}"
+        initData="{initData}"
+        isRSA="{true}"
+        settings="{RSA_CONFIG}"
+        storageKey="{StoreKey.RSA_SECURITY}" />
+    </section>
+    <section hidden="{currentTab !== 'netwitness'}">
+      <SpecialProvider
+        configTitle="{'NetWitness Investigator Configuration'}"
+        form="{'nwi'}"
+        initData="{initData}"
+        settings="{NWI_CONFIG}"
+        storageKey="{StoreKey.NET_WITNESS}" />
+    </section>
+    <section hidden="{currentTab !== 'carbon-black'}">
+      <SpecialProvider
+        configTitle="{'Carbon Black Configuration'}"
+        form="{'cbc'}"
+        initData="{initData}"
+        settings="{CBC_CONFIG}"
+        storageKey="{StoreKey.CARBON_BLACK}" />
+    </section>
   </main>
 
   <!-- Footer -->

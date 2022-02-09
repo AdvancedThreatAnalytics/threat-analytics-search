@@ -9,7 +9,7 @@ import { StoreKey } from "../../../js/shared/constants";
 
 const dispatch = createEventDispatcher();
 
-// Auxiliary variable to store initial providers.
+// Auxiliary variable to store initial providers
 let initialProviders = [];
 
 // Bindings.
@@ -17,6 +17,7 @@ let listGroup;
 
 // States.
 let providers = [];
+let editProviders = [];
 let groups = [];
 
 // Methods.
@@ -31,45 +32,67 @@ export async function initData() {
 // Used by parent component to re-load providers and groups on new add or edit.
 export async function initProvidersAndGroups() {
   providers = (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
+  editProviders = _.cloneDeep(providers);
   groups = (await LocalStore.getOne(StoreKey.SETTINGS))?.providersGroups || [];
 }
 
-async function remove(index) {
+function remove(index) {
   if (confirm("Are you sure you want to remove this item?")) {
-    providers.splice(index, 1);
-    providers = providers;
-    await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, providers);
+    editProviders.splice(index, 1);
+    editProviders = editProviders;
+    saveProviders();
 
     Notiflix.Notify.Success("Item removed");
-    dispatch("updateMainConfiguration");
   }
 }
 
-async function reset() {
+function reset() {
   if (
     confirm("Are you sure you want to undo all recents changes on menu items?")
   ) {
-    providers = _.cloneDeep(initialProviders);
-    await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, providers);
+    editProviders = _.cloneDeep(initialProviders);
+    saveProviders();
 
     Notiflix.Notify.Success("Recent changes on menu items were undo");
-    dispatch("updateMainConfiguration");
   }
 }
 
-async function onDragEnd(event) {
+function onDragEnd(event) {
   // Move provider
-  providers.splice(event.newIndex, 0, providers.splice(event.oldIndex, 1)[0]);
-  providers = providers;
-  await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, providers);
-
-  dispatch("updateMainConfiguration");
+  editProviders.splice(
+    event.newIndex,
+    0,
+    editProviders.splice(event.oldIndex, 1)[0]
+  );
+  editProviders = editProviders;
+  saveProviders();
 }
 
 async function onChange(index, key, value) {
-  providers[index][key] = value;
-  await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, providers);
+  editProviders[index][key] = value;
+  saveProviders();
+}
+
+async function saveProviders() {
+  await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, editProviders);
+  providers = _.cloneDeep(editProviders);
   dispatch("updateMainConfiguration");
+}
+
+function isValidUrl(string) {
+  try {
+    const url = new URL(string);
+    return ["http:", "https:"].includes(url.protocol);
+  } catch (_) {
+    return false;
+  }
+}
+
+function isLinkInvalid(item, index) {
+  return (
+    (!item.link && !providers[index].link) ||
+    (!isValidUrl(item.link) && !isValidUrl(providers[index].link))
+  );
 }
 
 initData();
@@ -77,7 +100,7 @@ initData();
 
 <form name="manage_providers">
   <ul bind:this="{listGroup}" role="list" class="list-group">
-    {#each providers as item, index (item)}
+    {#each editProviders as item, index (item)}
       <li role="listitem" class="list-group-item sortable pl-1 pr-2 py-3">
         <div class="d-flex align-items-center">
           <div class="sortable-handle px-2 py-3 mr-1">
@@ -86,24 +109,32 @@ initData();
           </div>
 
           <div class="flex-1">
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-start">
               <div class="flex-1">
                 <input
                   type="text"
                   value="{item.label}"
                   class="form-control text-black"
+                  class:is-invalid="{!item.label && !providers[index].label}"
                   placeholder="Label to be used in the context menu"
-                  on:change="{(e) =>
-                    onChange(index, 'label', e.target.value)}" />
+                  on:input="{(e) => (item.label = e.target.value)}"
+                  on:change="{saveProviders}" />
+                <div class="invalid-feedback ml-1">
+                  Label should not be empty
+                </div>
               </div>
               <div class="flex-2 mx-2">
                 <input
                   type="text"
                   value="{item.link}"
                   class="form-control text-info"
+                  class:is-invalid="{isLinkInvalid(item, index)}"
                   placeholder="URL address to which send requests"
-                  on:change="{(e) =>
-                    onChange(index, 'link', e.target.value)}" />
+                  on:input="{(e) => (item.link = e.target.value)}"
+                  on:change="{saveProviders}" />
+                <div class="invalid-feedback ml-1">
+                  {item.link ? "Invalid URL" : "URL should not be empty"}
+                </div>
               </div>
               <div class="form-check mx-2">
                 <input

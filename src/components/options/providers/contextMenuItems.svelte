@@ -177,11 +177,11 @@ initData();
                           item.group ^ Math.pow(2, groupIndex)
                         )}" />
                     <label
-                      class="form-check-label {group.enabled
-                        ? ''
-                        : 'text-muted'}"
+                      class="form-check-label"
+                      class:text-muted={!group.enabled}
+                      class:font-italic={!group.name}
                       for="group_{index}_{groupIndex}">
-                      {group.name}
+                      {group.name || "(not set)"}
                     </label>
                   </div>
                 {/each}

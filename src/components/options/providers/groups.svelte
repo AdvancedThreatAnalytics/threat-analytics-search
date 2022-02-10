@@ -1,41 +1,53 @@
 <script>
+import _ from "lodash";
 import Notiflix from "notiflix";
 import { createEventDispatcher } from "svelte";
 
 import LocalStore from "../../../js/shared/local_store";
 import { StoreKey } from "../../../js/shared/constants";
 
-// Props.
-export let initialSettings;
-
-let groups = [];
 const dispatch = createEventDispatcher();
 
+// Auxiliary variable to store initial settings.
+let initialSettings;
+
+// States.
+let settings;
+let groups = [];
+
 // Methods.
-export async function initialize() {
-  groups = (await LocalStore.getOne(StoreKey.SETTINGS))?.providersGroups || [];
+async function initData() {
+  initialSettings = await LocalStore.getOne(StoreKey.SETTINGS);
+  initGroups();
+}
+
+export async function initGroups() {
+  settings = await LocalStore.getOne(StoreKey.SETTINGS);
+  groups = _.cloneDeep(settings?.providersGroups) || [];
 }
 
 async function onChange(index, key, value) {
-  var settings = await LocalStore.getOne(StoreKey.SETTINGS);
-  settings.providersGroups[index][key] = value;
-  await LocalStore.setOne(StoreKey.SETTINGS, settings);
-
-  dispatch("updateMainConfiguration");
+  groups[index][key] = value;
+  save();
 }
 
 async function reset() {
   if (confirm("Are you sure you want to undo all recents changes on groups?")) {
     // Reset data.
-    var settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
-    settings.providersGroups = initialSettings.providersGroups;
-    await LocalStore.setOne(StoreKey.SETTINGS, settings);
+    groups = _.cloneDeep(initialSettings.providersGroups);
+    save();
 
     Notiflix.Notify.Success("Recent changes on groups were undo");
-
-    dispatch("updateMainConfiguration");
   }
 }
+
+async function save() {
+  settings.providersGroups = groups;
+  await LocalStore.setOne(StoreKey.SETTINGS, settings);
+  dispatch("updateMainConfiguration");
+}
+
+initData();
 </script>
 
 <p>
@@ -47,7 +59,7 @@ async function reset() {
   <ul class="list-group">
     {#each groups as { name, enabled }, index}
       <li class="list-group-item" data-index="{index}">
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-start">
           <div class="p-2">
             <div class="form-check">
               <label class="form-check-label">
@@ -67,8 +79,13 @@ async function reset() {
             <input
               type="text"
               class="form-control"
+              class:is-invalid={!name && !settings.providersGroups[index].name}
               value="{name}"
-              on:change="{(e) => onChange(index, 'name', e.target.value)}" />
+              on:input={(e) => name = e.target.value}
+              on:change={save} />
+            <div class="invalid-feedback">
+              Name should not be empty if the group is enabled
+            </div>
           </div>
         </div>
       </li>

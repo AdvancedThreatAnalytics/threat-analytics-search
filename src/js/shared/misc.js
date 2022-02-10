@@ -32,8 +32,18 @@ export function isDate(date) {
   return new Date(date) !== "Invalid Date" && !isNaN(new Date(date));
 }
 
+export function isUrl(string) {
+  try {
+    const url = new URL(string);
+    return ["http:", "https:"].includes(url.protocol);
+  } catch (_) {
+    return false;
+  }
+}
+
 export default {
   getGroupProviders,
   getProviderTargetURL,
   isDate,
+  isUrl
 };

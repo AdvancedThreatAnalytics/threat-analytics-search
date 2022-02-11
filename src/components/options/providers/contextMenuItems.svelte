@@ -178,8 +178,8 @@ initData();
                         )}" />
                     <label
                       class="form-check-label"
-                      class:text-muted={!group.enabled}
-                      class:font-italic={!group.name}
+                      class:text-muted="{!group.enabled}"
+                      class:font-italic="{!group.name}"
                       for="group_{index}_{groupIndex}">
                       {group.name || "(not set)"}
                     </label>

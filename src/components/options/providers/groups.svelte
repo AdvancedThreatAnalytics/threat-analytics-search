@@ -14,6 +14,7 @@ let initialSettings;
 // States.
 let settings;
 let groups = [];
+let hideErrors = {};
 
 // Methods.
 async function initData() {
@@ -45,6 +46,14 @@ async function save() {
   settings.providersGroups = groups;
   await LocalStore.setOne(StoreKey.SETTINGS, settings);
   dispatch("updateMainConfiguration");
+}
+
+function onInput(index) {
+  hideErrors[index] = true;
+}
+
+function onBlur(index) {
+  hideErrors[index] = false;
 }
 
 initData();
@@ -79,11 +88,12 @@ initData();
             <input
               type="text"
               class="form-control"
-              class:is-invalid={!name && !settings.providersGroups[index].name}
+              class:is-invalid="{!name && !hideErrors[index]}"
               value="{name}"
-              on:input={(e) => name = e.target.value}
-              on:change={save} />
-            <div class="invalid-feedback">
+              on:input="{() => onInput(index)}"
+              on:blur="{() => onBlur(index)}"
+              on:change="{(e) => onChange(index, 'name', e.target.value)}" />
+            <div class="invalid-feedback ml-1">
               Name should not be empty if the group is enabled
             </div>
           </div>

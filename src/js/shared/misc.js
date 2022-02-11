@@ -45,5 +45,5 @@ export default {
   getGroupProviders,
   getProviderTargetURL,
   isDate,
-  isUrl
+  isUrl,
 };

@@ -3,7 +3,7 @@ import _ from "lodash";
 import Notiflix from "notiflix";
 import { createEventDispatcher } from "svelte";
 
-import { isUrl } from "../../../js/shared/misc"
+import { isUrl } from "../../../js/shared/misc";
 import LocalStore from "../../../js/shared/local_store";
 import { MiscURLs, StoreKey } from "../../../js/shared/constants";
 
@@ -57,7 +57,10 @@ function validate() {
     errors.link = true;
   }
 
-  if (editData.postEnabled && (_.isEmpty(editData.postValue) || !isJson(editData.postValue))) {
+  if (
+    editData.postEnabled &&
+    (_.isEmpty(editData.postValue) || !isJson(editData.postValue))
+  ) {
     errors.postValue = true;
   }
 
@@ -130,12 +133,12 @@ function clear() {
           <input
             type="text"
             class="form-control"
-            class:is-invalid={errors.label}
+            class:is-invalid="{errors.label}"
             name="label"
             placeholder="Label to be used in the context menu"
             id="providers_name"
             bind:value="{editData.label}"
-            on:input={(e) => onInput("label")} />
+            on:input="{() => onInput('label')}" />
           <div class="invalid-feedback ml-1">
             Display name should not be empty
           </div>
@@ -147,14 +150,16 @@ function clear() {
           <input
             type="text"
             class="form-control"
-            class:is-invalid={errors.link}
+            class:is-invalid="{errors.link}"
             name="link"
             placeholder="URL address to which send requests"
             id="providers_link"
             bind:value="{editData.link}"
-            on:input={(e) => onInput("link")} />
+            on:input="{() => onInput('link')}" />
           <div class="invalid-feedback ml-1">
-            {editData.link ? "Link should be a valid URL" : "Link should not be empty"}
+            {editData.link
+              ? "Link should be a valid URL"
+              : "Link should not be empty"}
           </div>
         </div>
       </div>
@@ -177,14 +182,16 @@ function clear() {
         <input
           type="text"
           class="form-control text-monospace"
-          class:is-invalid={errors.postValue}
+          class:is-invalid="{errors.postValue}"
           name="postValue"
           placeholder="JSON object to send in POST request"
           disabled="{!editData.postEnabled}"
           bind:value="{editData.postValue}"
-          on:input={(e) => onInput("postValue")} />
+          on:input="{() => onInput('postValue')}" />
         <div class="invalid-feedback ml-1">
-          {editData.postValue ? "Value should be a valid JSON object" : "Value should not be empty if post is enabled"}
+          {editData.postValue
+            ? "Value should be a valid JSON object"
+            : "Value should not be empty if post is enabled"}
         </div>
       </div>
     </div>
@@ -206,14 +213,16 @@ function clear() {
         <input
           type="text"
           class="form-control"
-          class:is-invalid={errors.proxyUrl}
+          class:is-invalid="{errors.proxyUrl}"
           name="proxyUrl"
           placeholder="URL address of Proxy server"
           disabled="{!editData.proxyEnabled}"
           bind:value="{editData.proxyUrl}"
-          on:input={(e) => onInput("proxyUrl")} />
+          on:input="{() => onInput('proxyUrl')}" />
         <div class="invalid-feedback ml-1">
-          {editData.proxyUrl ? "URL should be a valid URL" : "URL should not be empty if proxy is enabled"}
+          {editData.proxyUrl
+            ? "URL should be a valid URL"
+            : "URL should not be empty if proxy is enabled"}
         </div>
       </div>
     </div>

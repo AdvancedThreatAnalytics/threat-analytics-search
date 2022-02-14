@@ -1,10 +1,12 @@
 <script>
 import BSN from "bootstrap.native/dist/bootstrap-native.esm.min.js";
 import { createEventDispatcher, onMount } from "svelte";
+import { isUrl } from "../../../js/shared/misc";
 
 const dispatch = createEventDispatcher();
 
 // Props
+export let items = {};
 export let item = {};
 export let value = null;
 
@@ -16,12 +18,16 @@ let dropdownButton;
 let popoverIcon;
 let popoverTitle;
 
+// States
+let showError = true;
+
 // Computed variables
 $: isCheckbox = item.type === "checkbox";
 $: isInput = item.type === "input";
 $: isDropdown = item.type === "dropdown";
 $: providers =
   item.key === "mergeSearchProviders" ? "search providers" : "queries";
+$: error = getError(item, items);
 
 // Methods
 function onChange(newValue) {
@@ -31,6 +37,30 @@ function onChange(newValue) {
 
   if (isDropdown) {
     dropdown.toggle();
+  }
+}
+
+function onInput() {
+  showError = false;
+}
+
+function onBlur() {
+  showError = true;
+}
+
+function getError(item, items) {
+  const dependentItem = items[item.validateOn];
+  const validateEmpty = item.validateEmpty && (dependentItem?.value ?? true);
+
+  if (validateEmpty && !value) {
+    const dependentMessage = dependentItem
+      ? `if "${dependentItem.item.label}" is enabled`
+      : "";
+    return `${item.label} should not be empty ${dependentMessage}`;
+  }
+
+  if (item.validateUrl && !isUrl(value)) {
+    return `${item.label} should be a valid URL`;
   }
 }
 
@@ -75,9 +105,15 @@ onMount(() => {
         <input
           type="text"
           class="form-control"
+          class:is-invalid="{showError && error}"
           name="{item.key}"
           value="{value}"
-          on:input="{(e) => onChange(e.target.value)}" />
+          on:input="{onInput}"
+          on:blur="{onBlur}"
+          on:change="{(e) => onChange(e.target.value)}" />
+        <div class="invalid-feedback">
+          {error}
+        </div>
       </label>
     </div>
   </li>

@@ -46,34 +46,56 @@ async function add() {
 }
 
 function validate() {
-  errors = {};
-  const errMsg = "Some fields are empty or have invalid values";
+  validateLabel();
+  validateLink();
+  validatePost();
+  validateProxy();
 
+  if (!_.isEmpty(errors)) {
+    Notiflix.Notify.Failure("Some fields are empty or have invalid values");
+    return false;
+  }
+
+  return true;
+}
+
+function validateLabel() {
   if (_.isEmpty(editData.label)) {
     errors.label = true;
+  } else {
+    delete errors.label;
   }
+  errors = errors;
+}
 
+function validateLink() {
   if (!isUrl(editData.link)) {
     errors.link = true;
+  } else {
+    delete errors.link;
   }
+  errors = errors;
+}
 
+function validatePost() {
   if (
     editData.postEnabled &&
     (_.isEmpty(editData.postValue) || !isJson(editData.postValue))
   ) {
     errors.postValue = true;
+  } else {
+    delete errors.postValue;
   }
+  errors = errors;
+}
 
+function validateProxy() {
   if (editData.proxyEnabled && !isUrl(editData.proxyUrl)) {
     errors.proxyUrl = true;
+  } else {
+    delete errors.proxyUrl;
   }
-
-  if (!_.isEmpty(errors)) {
-    Notiflix.Notify.Failure(errMsg);
-    return false;
-  }
-
-  return true;
+  errors = errors;
 }
 
 function isJson(str) {
@@ -84,11 +106,6 @@ function isJson(str) {
   }
 
   return true;
-}
-
-function onInput(name) {
-  delete errors[name];
-  errors = errors;
 }
 
 function clear() {
@@ -138,10 +155,11 @@ function clear() {
             placeholder="Label to be used in the context menu"
             id="providers_name"
             bind:value="{editData.label}"
-            on:input="{() => onInput('label')}" />
-          <div class="invalid-feedback ml-1">
-            Display name should not be empty
-          </div>
+            on:blur="{validateLabel}"
+            on:input="{() => errors.label && validateLabel()}" />
+          {#if errors.label}
+            <div class="invalid-feedback ml-1">The value must not be empty</div>
+          {/if}
         </div>
       </div>
       <div class="col-md-8">
@@ -155,12 +173,15 @@ function clear() {
             placeholder="URL address to which send requests"
             id="providers_link"
             bind:value="{editData.link}"
-            on:input="{() => onInput('link')}" />
-          <div class="invalid-feedback ml-1">
-            {editData.link
-              ? "Link should be a valid URL"
-              : "Link should not be empty"}
-          </div>
+            on:blur="{validateLink}"
+            on:input="{() => errors.link && validateLink()}" />
+          {#if errors.link}
+            <div class="invalid-feedback ml-1">
+              {editData.link
+                ? "The value must be a valid URL"
+                : "The value must not be empty"}
+            </div>
+          {/if}
         </div>
       </div>
     </div>
@@ -173,7 +194,8 @@ function clear() {
               type="checkbox"
               class="form-check-input"
               name="postEnabled"
-              bind:checked="{editData.postEnabled}" />
+              bind:checked="{editData.postEnabled}"
+              on:change="{() => errors.postValue && validatePost()}" />
             Add POST value
           </label>
         </div>
@@ -187,12 +209,15 @@ function clear() {
           placeholder="JSON object to send in POST request"
           disabled="{!editData.postEnabled}"
           bind:value="{editData.postValue}"
-          on:input="{() => onInput('postValue')}" />
-        <div class="invalid-feedback ml-1">
-          {editData.postValue
-            ? "Value should be a valid JSON object"
-            : "Value should not be empty if post is enabled"}
-        </div>
+          on:blur="{validatePost}"
+          on:input="{() => errors.postValue && validatePost()}" />
+        {#if errors.postValue}
+          <div class="invalid-feedback ml-1">
+            {editData.postValue
+              ? "The value must be a valid JSON object"
+              : "The value must not be empty if post is enabled"}
+          </div>
+        {/if}
       </div>
     </div>
 
@@ -204,7 +229,8 @@ function clear() {
               type="checkbox"
               class="form-check-input"
               name="proxyEnabled"
-              bind:checked="{editData.proxyEnabled}" />
+              bind:checked="{editData.proxyEnabled}"
+              on:change="{() => errors.proxyUrl && validateProxy()}" />
             Use Proxy
           </label>
         </div>
@@ -218,12 +244,15 @@ function clear() {
           placeholder="URL address of Proxy server"
           disabled="{!editData.proxyEnabled}"
           bind:value="{editData.proxyUrl}"
-          on:input="{() => onInput('proxyUrl')}" />
-        <div class="invalid-feedback ml-1">
-          {editData.proxyUrl
-            ? "URL should be a valid URL"
-            : "URL should not be empty if proxy is enabled"}
-        </div>
+          on:blur="{validateProxy}"
+          on:input="{() => errors.proxyUrl && validateProxy()}" />
+        {#if errors.proxyUrl}
+          <div class="invalid-feedback ml-1">
+            {editData.proxyUrl
+              ? "The value must be a valid URL"
+              : "The value must not be empty if proxy is enabled"}
+          </div>
+        {/if}
       </div>
     </div>
 

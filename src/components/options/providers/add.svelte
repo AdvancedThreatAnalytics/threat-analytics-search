@@ -3,7 +3,7 @@ import _ from "lodash";
 import Notiflix from "notiflix";
 import { createEventDispatcher } from "svelte";
 
-import { isUrl } from "../../../js/shared/misc";
+import { isJson, isUrl } from "../../../js/shared/misc";
 import LocalStore from "../../../js/shared/local_store";
 import { MiscURLs, StoreKey } from "../../../js/shared/constants";
 
@@ -59,53 +59,33 @@ function validate() {
   return true;
 }
 
-function validateLabel() {
-  if (_.isEmpty(editData.label)) {
-    errors.label = true;
+function updateError(field, isInvalid) {
+  if (isInvalid) {
+    errors[field] = true;
   } else {
-    delete errors.label;
+    delete errors[field];
   }
   errors = errors;
+}
+
+function validateLabel() {
+  updateError("label", _.isEmpty(editData.label));
 }
 
 function validateLink() {
-  if (!isUrl(editData.link)) {
-    errors.link = true;
-  } else {
-    delete errors.link;
-  }
-  errors = errors;
+  updateError("link", !isUrl(editData.link));
 }
 
 function validatePost() {
-  if (
+  updateError(
+    "postValue",
     editData.postEnabled &&
-    (_.isEmpty(editData.postValue) || !isJson(editData.postValue))
-  ) {
-    errors.postValue = true;
-  } else {
-    delete errors.postValue;
-  }
-  errors = errors;
+      (_.isEmpty(editData.postValue) || !isJson(editData.postValue))
+  );
 }
 
 function validateProxy() {
-  if (editData.proxyEnabled && !isUrl(editData.proxyUrl)) {
-    errors.proxyUrl = true;
-  } else {
-    delete errors.proxyUrl;
-  }
-  errors = errors;
-}
-
-function isJson(str) {
-  try {
-    JSON.parse(str);
-  } catch (e) {
-    return false;
-  }
-
-  return true;
+  updateError("proxyUrl", editData.proxyEnabled && !isUrl(editData.proxyUrl));
 }
 
 function clear() {

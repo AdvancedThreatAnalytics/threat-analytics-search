@@ -5,31 +5,31 @@ import { isUrl } from "../../../js/shared/misc";
 
 const dispatch = createEventDispatcher();
 
-// Props
-export let items = {};
+// Props.
+export let allItems = {};
 export let item = {};
 export let value = null;
 
-// Auxiliary variables
+// Auxiliary variables.
 let dropdown = null;
 
-// Bindings
+// Bindings.
 let dropdownButton;
 let popoverIcon;
 let popoverTitle;
 
-// States
+// States.
 let currentValue = value;
 
-// Computed variables
+// Computed variables.
 $: isCheckbox = item.type === "checkbox";
 $: isInput = item.type === "input";
 $: isDropdown = item.type === "dropdown";
 $: providers =
   item.key === "mergeSearchProviders" ? "search providers" : "queries";
-$: error = getError(item, items, currentValue);
+$: error = getError(item, allItems, currentValue);
 
-// Methods
+// Methods.
 function onChange(newValue) {
   if (newValue !== value) {
     dispatch("change", newValue);
@@ -41,8 +41,8 @@ function onChange(newValue) {
   }
 }
 
-function getError(item, items, currentValue) {
-  const dependentItem = items[item.validateOn];
+function getError(item, allItems, currentValue) {
+  const dependentItem = allItems[item.validateOn];
   const validateEmpty = item.validateEmpty && (dependentItem?.value ?? true);
 
   if (validateEmpty && !currentValue && !value) {
@@ -57,13 +57,13 @@ function getError(item, items, currentValue) {
   }
 }
 
-// Hooks
+// Hooks.
 onMount(() => {
   if (isDropdown) {
-    // Initialize dropdown
+    // Initialize dropdown.
     dropdown = new BSN.Dropdown(dropdownButton);
 
-    // Initialize popover
+    // Initialize popover.
     new BSN.Tooltip(popoverIcon, {
       title: popoverTitle.outerHTML,
       customClass: "ml-1",

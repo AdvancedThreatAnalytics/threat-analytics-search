@@ -112,11 +112,16 @@ const ConfigFile = {
     const settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
     let errMsg = null;
 
-    try {
-      const isValidUrl = isUrl(settings.configurationURL);
-      const isValidKey =
-        !settings.configEncrypted || settings.configEncryptionKey;
-      if (isValidUrl && isValidKey) {
+    const invalidUrl = !isUrl(settings.configurationURL);
+    const missingKey =
+      settings.configEncrypted && !settings.configEncryptionKey;
+
+    if (invalidUrl || missingKey) {
+      errMsg = `Update failed - Invalid ${
+        missingKey ? "Encryption Key" : "URL"
+      }`;
+    } else {
+      try {
         // Execute request to get configuration file.
         const response = await fetch(settings.configurationURL);
         if (response.status >= 200 && response.status < 300) {
@@ -140,14 +145,10 @@ const ConfigFile = {
         } else {
           errMsg = "Update failed - Invalid URL";
         }
-      } else {
-        errMsg = `Update failed - Invalid ${
-          isValidUrl ? "Encryption Key" : "URL"
-        }`;
+      } catch (fileErr) {
+        console.error(fileErr);
+        errMsg = "Update failed - Invalid File";
       }
-    } catch (fileErr) {
-      console.error(fileErr);
-      errMsg = "Update failed - Invalid File";
     }
 
     // Update timestamp and error message.

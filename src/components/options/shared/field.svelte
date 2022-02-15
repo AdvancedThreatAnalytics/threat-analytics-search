@@ -19,7 +19,7 @@ let popoverIcon;
 let popoverTitle;
 
 // States
-let showError = true;
+let currentValue = value;
 
 // Computed variables
 $: isCheckbox = item.type === "checkbox";
@@ -27,12 +27,13 @@ $: isInput = item.type === "input";
 $: isDropdown = item.type === "dropdown";
 $: providers =
   item.key === "mergeSearchProviders" ? "search providers" : "queries";
-$: error = getError(item, items);
+$: error = getError(item, items, currentValue);
 
 // Methods
 function onChange(newValue) {
   if (newValue !== value) {
     dispatch("change", newValue);
+    currentValue = newValue;
   }
 
   if (isDropdown) {
@@ -40,27 +41,19 @@ function onChange(newValue) {
   }
 }
 
-function onInput() {
-  showError = false;
-}
-
-function onBlur() {
-  showError = true;
-}
-
-function getError(item, items) {
+function getError(item, items, currentValue) {
   const dependentItem = items[item.validateOn];
   const validateEmpty = item.validateEmpty && (dependentItem?.value ?? true);
 
-  if (validateEmpty && !value) {
+  if (validateEmpty && !currentValue && !value) {
     const dependentMessage = dependentItem
       ? `if "${dependentItem.item.label}" is enabled`
       : "";
-    return `${item.label} should not be empty ${dependentMessage}`;
+    return `The value must not be empty ${dependentMessage}`;
   }
 
-  if (item.validateUrl && !isUrl(value)) {
-    return `${item.label} should be a valid URL`;
+  if (item.validateUrl && !isUrl(currentValue) && !isUrl(value)) {
+    return "The value must be a valid URL";
   }
 }
 
@@ -88,7 +81,7 @@ onMount(() => {
           type="checkbox"
           class="form-check-input"
           name="{item.key}"
-          checked="{value ? 'checked' : ''}"
+          checked="{currentValue ? 'checked' : ''}"
           on:change="{(e) => onChange(e.target.checked)}" />
 
         {item.label}
@@ -105,11 +98,10 @@ onMount(() => {
         <input
           type="text"
           class="form-control"
-          class:is-invalid="{showError && error}"
+          class:is-invalid="{error}"
           name="{item.key}"
-          value="{value}"
-          on:input="{onInput}"
-          on:blur="{onBlur}"
+          value="{currentValue}"
+          on:input="{(e) => currentValue = e.target.value}"
           on:change="{(e) => onChange(e.target.value)}" />
         <div class="invalid-feedback">
           {error}
@@ -130,7 +122,7 @@ onMount(() => {
         data-bs-toggle="dropdown"
         aria-haspopup="true"
         aria-expanded="false">
-        {item.menuItems.find((item) => item.key === value)?.label}
+        {item.menuItems.find((item) => item.key === currentValue)?.label}
       </button>
       <div class="dropdown-menu" tabindex="-1">
         {#each item.menuItems as menuItem}

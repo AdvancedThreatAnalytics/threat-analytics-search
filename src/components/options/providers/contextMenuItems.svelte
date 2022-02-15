@@ -18,7 +18,7 @@ let listGroup;
 
 // States.
 let providers = [];
-let editProviders = [];
+let inputErrors = {};
 let groups = [];
 
 // Methods.
@@ -33,14 +33,13 @@ export async function initData() {
 // Used by parent component to re-load providers and groups on new add or edit.
 export async function initProvidersAndGroups() {
   providers = (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
-  editProviders = _.cloneDeep(providers);
   groups = (await LocalStore.getOne(StoreKey.SETTINGS))?.providersGroups || [];
 }
 
 function remove(index) {
   if (confirm("Are you sure you want to remove this item?")) {
-    editProviders.splice(index, 1);
-    editProviders = editProviders;
+    providers.splice(index, 1);
+    providers = providers;
     saveProviders();
 
     Notiflix.Notify.Success("Item removed");
@@ -51,7 +50,7 @@ function reset() {
   if (
     confirm("Are you sure you want to undo all recents changes on menu items?")
   ) {
-    editProviders = _.cloneDeep(initialProviders);
+    providers = _.cloneDeep(initialProviders);
     saveProviders();
 
     Notiflix.Notify.Success("Recent changes on menu items were undo");
@@ -60,31 +59,49 @@ function reset() {
 
 function onDragEnd(event) {
   // Move provider
-  editProviders.splice(
-    event.newIndex,
-    0,
-    editProviders.splice(event.oldIndex, 1)[0]
-  );
-  editProviders = editProviders;
+  providers.splice(event.newIndex, 0, providers.splice(event.oldIndex, 1)[0]);
+  providers = providers;
   saveProviders();
 }
 
-async function onChange(index, key, value) {
-  editProviders[index][key] = value;
+function onChange(index, key, value) {
+  providers[index][key] = value;
+  validateInput(index, key);
   saveProviders();
 }
 
-function isLabelValid(index) {
-  return editProviders[index].label || providers[index].label;
+function onInput(index, key, value) {
+  providers[index][key] = value;
+  validateInput(index, key, true);
 }
 
-function isLinkValid(index) {
-  return isUrl(editProviders[index].link) || isUrl(providers[index].link);
+function getErrors(index, key) {
+  return inputErrors[`${index}.${key}`];
+}
+
+function hasErrors(index, key) {
+  return !_.isEmpty(getErrors(index, key));
+}
+
+// When "lazy" is 'true', errors are only updated if there was a previous error.
+function validateInput(index, key, lazy) {
+  const value = providers[index][key];
+  const error = !value
+    ? "The field must not be empty"
+    : key === "link" && !isUrl(value)
+    ? "The value must be a valid URL"
+    : null;
+
+  const errKey = `${index}.${key}`;
+  if (!error) {
+    delete inputErrors[errKey];
+  } else if (!lazy || !!inputErrors[errKey]) {
+    inputErrors[errKey] = error;
+  }
 }
 
 async function saveProviders() {
-  await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, editProviders);
-  providers = _.cloneDeep(editProviders);
+  await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, providers);
   dispatch("updateMainConfiguration");
 }
 
@@ -93,7 +110,7 @@ initData();
 
 <form name="manage_providers">
   <ul bind:this="{listGroup}" role="list" class="list-group">
-    {#each editProviders as item, index (item)}
+    {#each providers as item, index (item)}
       <li role="listitem" class="list-group-item sortable pl-1 pr-2 py-3">
         <div class="d-flex align-items-center">
           <div class="sortable-handle px-2 py-3 mr-1">
@@ -108,14 +125,14 @@ initData();
                   type="text"
                   value="{item.label}"
                   class="form-control text-black"
-                  class:is-invalid="{!isLabelValid(index)}"
+                  class:is-invalid="{hasErrors(index, 'label')}"
                   placeholder="Label to be used in the context menu"
-                  on:input="{(e) => (item.label = e.target.value)}"
+                  on:input="{(e) => onInput(index, 'label', e.target.value)}"
                   on:change="{(e) =>
                     onChange(index, 'label', e.target.value)}" />
-                {#if !isLabelValid(index)}
+                {#if hasErrors(index, "label")}
                   <div class="invalid-feedback ml-1">
-                    Label must not be empty
+                    {getErrors(index, "label")}
                   </div>
                 {/if}
               </div>
@@ -124,16 +141,14 @@ initData();
                   type="text"
                   value="{item.link}"
                   class="form-control text-info"
-                  class:is-invalid="{!isLinkValid(index)}"
+                  class:is-invalid="{hasErrors(index, 'link')}"
                   placeholder="URL address to which send requests"
-                  on:input="{(e) => (item.link = e.target.value)}"
+                  on:input="{(e) => onInput(index, 'link', e.target.value)}"
                   on:change="{(e) =>
                     onChange(index, 'link', e.target.value)}" />
-                {#if !isLinkValid(index)}
+                {#if hasErrors(index, "link")}
                   <div class="invalid-feedback ml-1">
-                    {item.link
-                      ? "The value must be a valid URL"
-                      : "The value must not be empty"}
+                    {getErrors(index, "link")}
                   </div>
                 {/if}
               </div>

@@ -14,7 +14,6 @@ let initialSettings;
 // States.
 let settings;
 let groups = [];
-let hideErrors = {};
 
 // Methods.
 async function initData() {
@@ -48,12 +47,12 @@ async function save() {
   dispatch("updateMainConfiguration");
 }
 
-function onInput(index) {
-  hideErrors[index] = true;
-}
-
-function onBlur(index) {
-  hideErrors[index] = false;
+function isNameValid(index) {
+  return (
+    !groups[index].enabled ||
+    groups[index].name ||
+    settings.providersGroups[index].name
+  );
 }
 
 initData();
@@ -66,7 +65,7 @@ initData();
 
 <form name="edit_groups">
   <ul class="list-group">
-    {#each groups as { name, enabled }, index}
+    {#each groups as group, index (group)}
       <li class="list-group-item" data-index="{index}">
         <div class="d-flex align-items-start">
           <div class="p-2">
@@ -75,7 +74,7 @@ initData();
                 <input
                   type="checkbox"
                   value="yes"
-                  checked="{enabled ? 'checked' : ''}"
+                  checked="{group.enabled ? 'checked' : ''}"
                   class="form-check-input"
                   id="providers_editGroups_enabled_{index}"
                   on:change="{(e) =>
@@ -88,14 +87,15 @@ initData();
             <input
               type="text"
               class="form-control"
-              class:is-invalid="{!name && !hideErrors[index]}"
-              value="{name}"
-              on:input="{() => onInput(index)}"
-              on:blur="{() => onBlur(index)}"
-              on:change="{(e) => onChange(index, 'name', e.target.value)}" />
-            <div class="invalid-feedback ml-1">
-              Name should not be empty if the group is enabled
-            </div>
+              class:is-invalid="{!isNameValid(index)}"
+              value="{group.name}"
+              on:input="{(e) => (group.name = e.target.value)}"
+              on:change="{save}" />
+            {#if !isNameValid(index)}
+              <div class="invalid-feedback ml-1">
+                The value must not be empty if the group is enabled
+              </div>
+            {/if}
           </div>
         </div>
       </li>

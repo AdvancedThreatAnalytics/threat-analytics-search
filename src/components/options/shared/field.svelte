@@ -101,7 +101,7 @@ onMount(() => {
           class:is-invalid="{error}"
           name="{item.key}"
           value="{currentValue}"
-          on:input="{(e) => currentValue = e.target.value}"
+          on:input="{(e) => (currentValue = e.target.value)}"
           on:change="{(e) => onChange(e.target.value)}" />
         <div class="invalid-feedback">
           {error}

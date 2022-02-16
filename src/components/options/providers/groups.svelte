@@ -8,33 +8,58 @@ import { StoreKey } from "../../../js/shared/constants";
 
 const dispatch = createEventDispatcher();
 
-// Auxiliary variable to store initial settings.
-let initialSettings;
-
 // States.
-let settings;
+let initialGroups;
 let groups = [];
+let inputErrors = {};
 
 // Methods.
 async function initData() {
-  initialSettings = await LocalStore.getOne(StoreKey.SETTINGS);
+  const settings = await LocalStore.getOne(StoreKey.SETTINGS);
+  initialGroups = settings?.providersGroups || [];
   initGroups();
 }
 
 export async function initGroups() {
-  settings = await LocalStore.getOne(StoreKey.SETTINGS);
+  const settings = await LocalStore.getOne(StoreKey.SETTINGS);
   groups = _.cloneDeep(settings?.providersGroups) || [];
 }
 
-async function onChange(index, key, value) {
+function onChange(index, key, value) {
   groups[index][key] = value;
+  validateName(index);
   save();
+}
+
+function onInput(index, value) {
+  groups[index].name = value;
+  validateName(index, true);
+}
+
+function hasErrors(index) {
+  return !_.isEmpty(inputErrors[index]);
+}
+
+// When "lazy" is 'true', errors are only updated if there was a previous error.
+function validateName(index, lazy) {
+  const value = groups[index].name;
+  const enabled = groups[index].enabled;
+  const error =
+    enabled && !value
+      ? "The field must not be empty if the group is enabled"
+      : null;
+
+  if (!error) {
+    delete inputErrors[index];
+  } else if (!lazy || !!inputErrors[index]) {
+    inputErrors[index] = error;
+  }
 }
 
 async function reset() {
   if (confirm("Are you sure you want to undo all recents changes on groups?")) {
     // Reset data.
-    groups = _.cloneDeep(initialSettings.providersGroups);
+    groups = _.cloneDeep(initialGroups);
     save();
 
     Notiflix.Notify.Success("Recent changes on groups were undo");
@@ -42,17 +67,10 @@ async function reset() {
 }
 
 async function save() {
+  const settings = await LocalStore.getOne(StoreKey.SETTINGS);
   settings.providersGroups = groups;
   await LocalStore.setOne(StoreKey.SETTINGS, settings);
   dispatch("updateMainConfiguration");
-}
-
-function isNameValid(index) {
-  return (
-    !groups[index].enabled ||
-    groups[index].name ||
-    settings.providersGroups[index].name
-  );
 }
 
 initData();
@@ -87,13 +105,13 @@ initData();
             <input
               type="text"
               class="form-control"
-              class:is-invalid="{!isNameValid(index)}"
+              class:is-invalid="{hasErrors(index)}"
               value="{group.name}"
-              on:input="{(e) => (group.name = e.target.value)}"
-              on:change="{save}" />
-            {#if !isNameValid(index)}
+              on:input="{(e) => onInput(index, e.target.value)}"
+              on:change="{(e) => onChange(index, 'name', e.target.value)}" />
+            {#if hasErrors(index)}
               <div class="invalid-feedback ml-1">
-                The value must not be empty if the group is enabled
+                {inputErrors[index]}
               </div>
             {/if}
           </div>

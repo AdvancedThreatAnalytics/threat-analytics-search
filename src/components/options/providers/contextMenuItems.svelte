@@ -4,6 +4,7 @@ import Notiflix from "notiflix";
 import { createEventDispatcher } from "svelte";
 import { Sortable } from "sortablejs";
 
+import { isUrl } from "../../../js/shared/misc";
 import LocalStore from "../../../js/shared/local_store";
 import { StoreKey } from "../../../js/shared/constants";
 
@@ -17,6 +18,7 @@ let listGroup;
 
 // States.
 let providers = [];
+let inputErrors = {};
 let groups = [];
 
 // Methods.
@@ -34,40 +36,71 @@ export async function initProvidersAndGroups() {
   groups = (await LocalStore.getOne(StoreKey.SETTINGS))?.providersGroups || [];
 }
 
-async function remove(index) {
+function remove(index) {
   if (confirm("Are you sure you want to remove this item?")) {
     providers.splice(index, 1);
     providers = providers;
-    await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, providers);
+    saveProviders();
 
     Notiflix.Notify.Success("Item removed");
-    dispatch("updateMainConfiguration");
   }
 }
 
-async function reset() {
+function reset() {
   if (
     confirm("Are you sure you want to undo all recents changes on menu items?")
   ) {
     providers = _.cloneDeep(initialProviders);
-    await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, providers);
+    saveProviders();
 
     Notiflix.Notify.Success("Recent changes on menu items were undo");
-    dispatch("updateMainConfiguration");
   }
 }
 
-async function onDragEnd(event) {
+function onDragEnd(event) {
   // Move provider
   providers.splice(event.newIndex, 0, providers.splice(event.oldIndex, 1)[0]);
   providers = providers;
-  await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, providers);
-
-  dispatch("updateMainConfiguration");
+  saveProviders();
 }
 
-async function onChange(index, key, value) {
+function onChange(index, key, value) {
   providers[index][key] = value;
+  validateInput(index, key);
+  saveProviders();
+}
+
+function onInput(index, key, value) {
+  providers[index][key] = value;
+  validateInput(index, key, true);
+}
+
+function getErrors(index, key) {
+  return inputErrors[`${index}.${key}`];
+}
+
+function hasErrors(index, key) {
+  return !_.isEmpty(getErrors(index, key));
+}
+
+// When "lazy" is 'true', errors are only updated if there was a previous error.
+function validateInput(index, key, lazy) {
+  const value = providers[index][key];
+  const error = !value
+    ? "The field must not be empty"
+    : key === "link" && !isUrl(value)
+    ? "The value must be a valid URL"
+    : null;
+
+  const errKey = `${index}.${key}`;
+  if (!error) {
+    delete inputErrors[errKey];
+  } else if (!lazy || !!inputErrors[errKey]) {
+    inputErrors[errKey] = error;
+  }
+}
+
+async function saveProviders() {
   await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, providers);
   dispatch("updateMainConfiguration");
 }
@@ -86,24 +119,38 @@ initData();
           </div>
 
           <div class="flex-1">
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-start">
               <div class="flex-1">
                 <input
                   type="text"
                   value="{item.label}"
                   class="form-control text-black"
+                  class:is-invalid="{hasErrors(index, 'label')}"
                   placeholder="Label to be used in the context menu"
+                  on:input="{(e) => onInput(index, 'label', e.target.value)}"
                   on:change="{(e) =>
                     onChange(index, 'label', e.target.value)}" />
+                {#if hasErrors(index, "label")}
+                  <div class="invalid-feedback ml-1">
+                    {getErrors(index, "label")}
+                  </div>
+                {/if}
               </div>
               <div class="flex-2 mx-2">
                 <input
                   type="text"
                   value="{item.link}"
                   class="form-control text-info"
+                  class:is-invalid="{hasErrors(index, 'link')}"
                   placeholder="URL address to which send requests"
+                  on:input="{(e) => onInput(index, 'link', e.target.value)}"
                   on:change="{(e) =>
                     onChange(index, 'link', e.target.value)}" />
+                {#if hasErrors(index, "link")}
+                  <div class="invalid-feedback ml-1">
+                    {getErrors(index, "link")}
+                  </div>
+                {/if}
               </div>
               <div class="form-check mx-2">
                 <input

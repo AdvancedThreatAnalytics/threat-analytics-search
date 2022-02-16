@@ -1,7 +1,7 @@
 <script>
 import _ from "lodash";
 import Notiflix from "notiflix";
-import { createEventDispatcher } from "svelte";
+import { createEventDispatcher, onMount } from "svelte";
 import { Sortable } from "sortablejs";
 
 import { isUrl } from "../../../js/shared/misc";
@@ -22,6 +22,11 @@ let inputErrors = {};
 let groups = [];
 
 // Methods.
+
+onMount(() => {
+  initData();
+});
+
 export async function initData() {
   initialProviders = (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
   initProvidersAndGroups();
@@ -33,7 +38,15 @@ export async function initData() {
 // Used by parent component to re-load providers and groups on new add or edit.
 export async function initProvidersAndGroups() {
   providers = (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
+  validateAllProviders();
   groups = (await LocalStore.getOne(StoreKey.SETTINGS))?.providersGroups || [];
+}
+
+function validateAllProviders() {
+  for (var index = 0; index < providers.length; index++) {
+    validateInput(index, "label");
+    validateInput(index, "link");
+  }
 }
 
 function remove(index) {
@@ -104,8 +117,6 @@ async function saveProviders() {
   await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, providers);
   dispatch("updateMainConfiguration");
 }
-
-initData();
 </script>
 
 <form name="manage_providers">

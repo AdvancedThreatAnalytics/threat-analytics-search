@@ -102,9 +102,7 @@ function validateInput(index, key, lazy) {
 
 async function saveProviders() {
   await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, providers);
-  if (inputErrors.isEmpty) {
-    dispatch("updateMainConfiguration");
-  }
+  dispatch("updateMainConfiguration");
 }
 
 initData();

@@ -79,7 +79,6 @@ function onDragEnd(event) {
 
 function onChange(index, key, value) {
   providers[index][key] = value;
-  validateInput(index, key);
   saveProviders();
 }
 
@@ -88,13 +87,13 @@ function onInput(index, key, value) {
   validateInput(index, key, true);
 }
 
-function getErrors(index, key) {
+$: getErrors = function (index, key) {
   return inputErrors[`${index}.${key}`];
-}
+};
 
-function hasErrors(index, key) {
+$: hasErrors = function (index, key) {
   return !_.isEmpty(getErrors(index, key));
-}
+};
 
 // When "lazy" is 'true', errors are only updated if there was a previous error.
 function validateInput(index, key, lazy) {
@@ -139,6 +138,7 @@ async function saveProviders() {
                   class:is-invalid="{hasErrors(index, 'label')}"
                   placeholder="Label to be used in the context menu"
                   on:input="{(e) => onInput(index, 'label', e.target.value)}"
+                  on:blur="{() => validateInput(index, 'label')}"
                   on:change="{(e) =>
                     onChange(index, 'label', e.target.value)}" />
                 {#if hasErrors(index, "label")}
@@ -155,6 +155,7 @@ async function saveProviders() {
                   class:is-invalid="{hasErrors(index, 'link')}"
                   placeholder="URL address to which send requests"
                   on:input="{(e) => onInput(index, 'link', e.target.value)}"
+                  on:blur="{() => validateInput(index, 'link')}"
                   on:change="{(e) =>
                     onChange(index, 'link', e.target.value)}" />
                 {#if hasErrors(index, "link")}

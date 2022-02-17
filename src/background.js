@@ -124,7 +124,7 @@ export var ContextualMenu = {
   // --- Update menu --- //
 
   _addSeparator: function () {
-    createContextMenu({
+    chrome.contextMenus.create({
       id: _.uniqueId(MenuPreffix.SEPARATOR),
       type: "separator",
       contexts: ["selection"],

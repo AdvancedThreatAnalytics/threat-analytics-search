@@ -23,6 +23,13 @@ async function initData() {
 export async function initGroups() {
   const settings = await LocalStore.getOne(StoreKey.SETTINGS);
   groups = _.cloneDeep(settings?.providersGroups) || [];
+  validateAll();
+}
+
+function validateAll() {
+  for (var index = 0; index < groups.length; index++) {
+    validateName(index);
+  }
 }
 
 function onChange(index, key, value) {

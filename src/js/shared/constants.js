@@ -21,9 +21,21 @@ export const StoreKey = {
 };
 
 export const CONFIG_FILE_OPTIONS = [
-  { key: "configurationURL", label: "File URL", type: "input" },
+  {
+    key: "configurationURL",
+    label: "File URL",
+    type: "input",
+    validateEmpty: true,
+    validateUrl: true,
+  },
   { key: "configEncrypted", label: "Encrypted", type: "checkbox" },
-  { key: "configEncryptionKey", label: "Encryption Key", type: "input" },
+  {
+    key: "configEncryptionKey",
+    label: "Encryption Key",
+    type: "input",
+    validateEmpty: true,
+    validateOn: "configEncrypted",
+  },
   {
     key: "autoUpdateConfig",
     label: "Update periodically (once per week)",

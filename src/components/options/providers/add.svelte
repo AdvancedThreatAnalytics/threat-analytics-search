@@ -3,6 +3,7 @@ import _ from "lodash";
 import Notiflix from "notiflix";
 import { createEventDispatcher } from "svelte";
 
+import { isJson, isUrl } from "../../../js/shared/misc";
 import LocalStore from "../../../js/shared/local_store";
 import { MiscURLs, StoreKey } from "../../../js/shared/constants";
 
@@ -20,6 +21,7 @@ const DEFAULT = {
 
 // States.
 let editData = _.clone(DEFAULT);
+let errors = {};
 
 // Methods.
 async function add() {
@@ -44,25 +46,51 @@ async function add() {
 }
 
 function validate() {
-  let errMsg;
-  if (_.isEmpty(editData.label) || _.isEmpty(editData.link)) {
-    errMsg = "The display name and the link are required values";
-  } else if (editData.postEnabled && _.isEmpty(editData.postValue)) {
-    errMsg = "If POST is enabled you must provide a value";
-  } else if (editData.proxyEnabled && _.isEmpty(editData.proxyUrl)) {
-    errMsg = "If proxy is enabled you must provide the Proxy's URL";
-  }
+  validateLabel();
+  validateLink();
+  validatePost();
+  validateProxy();
 
-  if (!_.isNil(errMsg)) {
-    Notiflix.Notify.Failure(errMsg);
+  if (!_.isEmpty(errors)) {
+    Notiflix.Notify.Failure("Some fields are empty or have invalid values");
     return false;
   }
 
   return true;
 }
 
+function updateError(field, isInvalid) {
+  if (isInvalid) {
+    errors[field] = true;
+  } else {
+    delete errors[field];
+  }
+  errors = errors;
+}
+
+function validateLabel() {
+  updateError("label", _.isEmpty(editData.label));
+}
+
+function validateLink() {
+  updateError("link", !isUrl(editData.link));
+}
+
+function validatePost() {
+  updateError(
+    "postValue",
+    editData.postEnabled &&
+      (_.isEmpty(editData.postValue) || !isJson(editData.postValue))
+  );
+}
+
+function validateProxy() {
+  updateError("proxyUrl", editData.proxyEnabled && !isUrl(editData.proxyUrl));
+}
+
 function clear() {
   editData = _.clone(DEFAULT);
+  errors = {};
 }
 </script>
 
@@ -102,10 +130,16 @@ function clear() {
           <input
             type="text"
             class="form-control"
+            class:is-invalid="{errors.label}"
             name="label"
             placeholder="Label to be used in the context menu"
             id="providers_name"
-            bind:value="{editData.label}" />
+            bind:value="{editData.label}"
+            on:blur="{validateLabel}"
+            on:input="{() => errors.label && validateLabel()}" />
+          {#if errors.label}
+            <div class="invalid-feedback ml-1">The value must not be empty</div>
+          {/if}
         </div>
       </div>
       <div class="col-md-8">
@@ -114,23 +148,34 @@ function clear() {
           <input
             type="text"
             class="form-control"
+            class:is-invalid="{errors.link}"
             name="link"
             placeholder="URL address to which send requests"
             id="providers_link"
-            bind:value="{editData.link}" />
+            bind:value="{editData.link}"
+            on:blur="{validateLink}"
+            on:input="{() => errors.link && validateLink()}" />
+          {#if errors.link}
+            <div class="invalid-feedback ml-1">
+              {editData.link
+                ? "The value must be a valid URL"
+                : "The value must not be empty"}
+            </div>
+          {/if}
         </div>
       </div>
     </div>
 
     <div class="row mt-2">
-      <div class="col-md-4 align-self-center">
-        <div class="form-check ml-2">
+      <div class="col-md-4">
+        <div class="form-check ml-2 mt-2">
           <label class="form-check-label">
             <input
               type="checkbox"
               class="form-check-input"
               name="postEnabled"
-              bind:checked="{editData.postEnabled}" />
+              bind:checked="{editData.postEnabled}"
+              on:change="{() => errors.postValue && validatePost()}" />
             Add POST value
           </label>
         </div>
@@ -139,22 +184,33 @@ function clear() {
         <input
           type="text"
           class="form-control text-monospace"
+          class:is-invalid="{errors.postValue}"
           name="postValue"
           placeholder="JSON object to send in POST request"
           disabled="{!editData.postEnabled}"
-          bind:value="{editData.postValue}" />
+          bind:value="{editData.postValue}"
+          on:blur="{validatePost}"
+          on:input="{() => errors.postValue && validatePost()}" />
+        {#if errors.postValue}
+          <div class="invalid-feedback ml-1">
+            {editData.postValue
+              ? "The value must be a valid JSON object"
+              : "The value must not be empty if post is enabled"}
+          </div>
+        {/if}
       </div>
     </div>
 
     <div class="row mt-2">
-      <div class="col-md-4 align-self-center">
-        <div class="form-check ml-2">
+      <div class="col-md-4">
+        <div class="form-check ml-2 mt-2">
           <label class="form-check-label">
             <input
               type="checkbox"
               class="form-check-input"
               name="proxyEnabled"
-              bind:checked="{editData.proxyEnabled}" />
+              bind:checked="{editData.proxyEnabled}"
+              on:change="{() => errors.proxyUrl && validateProxy()}" />
             Use Proxy
           </label>
         </div>
@@ -163,10 +219,20 @@ function clear() {
         <input
           type="text"
           class="form-control"
+          class:is-invalid="{errors.proxyUrl}"
           name="proxyUrl"
           placeholder="URL address of Proxy server"
           disabled="{!editData.proxyEnabled}"
-          bind:value="{editData.proxyUrl}" />
+          bind:value="{editData.proxyUrl}"
+          on:blur="{validateProxy}"
+          on:input="{() => errors.proxyUrl && validateProxy()}" />
+        {#if errors.proxyUrl}
+          <div class="invalid-feedback ml-1">
+            {editData.proxyUrl
+              ? "The value must be a valid URL"
+              : "The value must not be empty if proxy is enabled"}
+          </div>
+        {/if}
       </div>
     </div>
 

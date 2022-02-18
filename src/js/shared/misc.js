@@ -32,6 +32,15 @@ export function isDate(date) {
   return new Date(date) !== "Invalid Date" && !isNaN(new Date(date));
 }
 
+export function isJson(str) {
+  try {
+    JSON.parse(str);
+  } catch (e) {
+    return false;
+  }
+  return true;
+}
+
 export function isUrl(string) {
   try {
     const url = new URL(string);
@@ -45,5 +54,6 @@ export default {
   getGroupProviders,
   getProviderTargetURL,
   isDate,
+  isJson,
   isUrl,
 };

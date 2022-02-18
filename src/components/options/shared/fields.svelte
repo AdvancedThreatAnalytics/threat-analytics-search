@@ -1,5 +1,6 @@
 <script>
 import _ from "lodash";
+
 import Field from "./field.svelte";
 import LocalStore from "../../../js/shared/local_store";
 import { createEventDispatcher } from "svelte";
@@ -58,6 +59,7 @@ for (const item of items) {
     <Field
       item="{pair.item}"
       value="{pair.value}"
-      on:change="{(event) => onChange(pair.item, event.detail)}" />
+      on:change="{(event) => onChange(pair.item, event.detail)}"
+      allItems="{itemsWithValues}" />
   {/each}
 </div>

@@ -1,29 +1,33 @@
 <script>
 import BSN from "bootstrap.native/dist/bootstrap-native.esm.min.js";
 import { createEventDispatcher, onMount } from "svelte";
+import { isUrl } from "../../../js/shared/misc";
 
 const dispatch = createEventDispatcher();
 
-// Props
+// Props.
+export let allItems = {};
 export let item = {};
 export let value = null;
 
-// Auxiliary variables
+// Auxiliary variables.
 let dropdown = null;
 
-// Bindings
+// Bindings.
 let dropdownButton;
 let popoverIcon;
 let popoverTitle;
 
-// Computed variables
+// Computed variables.
 $: isCheckbox = item.type === "checkbox";
 $: isInput = item.type === "input";
 $: isDropdown = item.type === "dropdown";
 $: providers =
   item.key === "mergeSearchProviders" ? "search providers" : "queries";
+$: canValidate = allItems[item.validateOn]?.value ?? true;
+$: error = getError(value, canValidate);
 
-// Methods
+// Methods.
 function onChange(newValue) {
   if (newValue !== value) {
     dispatch("change", newValue);
@@ -34,13 +38,33 @@ function onChange(newValue) {
   }
 }
 
-// Hooks
+function getError(value, canValidate) {
+  if (item.validateEmpty && canValidate && !value) {
+    const dependentItem = allItems[item.validateOn];
+    const dependentMessage = dependentItem
+      ? `if "${dependentItem.item.label}" is enabled`
+      : "";
+    return `The field must not be empty ${dependentMessage}`;
+  }
+
+  if (item.validateUrl && !isUrl(value)) {
+    return "The value must be a valid URL";
+  }
+
+  return null;
+}
+
+function validateField(value) {
+  error = getError(value, canValidate);
+}
+
+// Hooks.
 onMount(() => {
   if (isDropdown) {
-    // Initialize dropdown
+    // Initialize dropdown.
     dropdown = new BSN.Dropdown(dropdownButton);
 
-    // Initialize popover
+    // Initialize popover.
     new BSN.Tooltip(popoverIcon, {
       title: popoverTitle.outerHTML,
       customClass: "ml-1",
@@ -75,9 +99,17 @@ onMount(() => {
         <input
           type="text"
           class="form-control"
+          class:is-invalid="{error}"
           name="{item.key}"
           value="{value}"
-          on:input="{(e) => onChange(e.target.value)}" />
+          on:input="{(e) => error && validateField(e.target.value)}"
+          on:blur="{(e) => validateField(e.target.value)}"
+          on:change="{(e) => onChange(e.target.value)}" />
+        {#if error}
+          <div class="invalid-feedback">
+            {error}
+          </div>
+        {/if}
       </label>
     </div>
   </li>

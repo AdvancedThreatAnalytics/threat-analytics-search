@@ -12,7 +12,7 @@ let groupComponent;
 
 export function updateForms() {
   return Promise.all([
-    groupComponent.initialize(),
+    groupComponent.initGroups(),
     contextMenuComponent.initProvidersAndGroups(),
   ]);
 }
@@ -38,6 +38,5 @@ onMount(() => {
 
   <Groups
     bind:this="{groupComponent}"
-    initial-settings="{$$props.initialSettings}"
     on:updateMainConfiguration="{() => dispatch('updateMainConfiguration')}" />
 </div>

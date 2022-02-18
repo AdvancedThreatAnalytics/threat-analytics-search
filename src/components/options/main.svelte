@@ -59,7 +59,6 @@ onMount(() => {
     <section hidden="{currentTab !== 'search-providers'}">
       <Providers
         bind:this="{providersTab}"
-        initialSettings="{initData[StoreKey.SETTINGS]}"
         on:updateMainConfiguration="{mainConfigurationUpdated}" />
     </section>
     <section hidden="{currentTab !== 'security-analytics'}">

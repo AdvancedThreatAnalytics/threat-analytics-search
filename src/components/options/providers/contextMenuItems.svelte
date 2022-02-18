@@ -1,7 +1,7 @@
 <script>
 import _ from "lodash";
 import Notiflix from "notiflix";
-import { createEventDispatcher } from "svelte";
+import { createEventDispatcher, onMount } from "svelte";
 import { Sortable } from "sortablejs";
 
 import { isUrl } from "../../../js/shared/misc";
@@ -22,6 +22,11 @@ let inputErrors = {};
 let groups = [];
 
 // Methods.
+
+onMount(() => {
+  initData();
+});
+
 export async function initData() {
   initialProviders = (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
   initProvidersAndGroups();
@@ -33,7 +38,15 @@ export async function initData() {
 // Used by parent component to re-load providers and groups on new add or edit.
 export async function initProvidersAndGroups() {
   providers = (await LocalStore.getOne(StoreKey.SEARCH_PROVIDERS)) || [];
+  validateAllProviders();
   groups = (await LocalStore.getOne(StoreKey.SETTINGS))?.providersGroups || [];
+}
+
+function validateAllProviders() {
+  for (var index = 0; index < providers.length; index++) {
+    validateInput(index, "label");
+    validateInput(index, "link");
+  }
 }
 
 function remove(index) {
@@ -66,7 +79,6 @@ function onDragEnd(event) {
 
 function onChange(index, key, value) {
   providers[index][key] = value;
-  validateInput(index, key);
   saveProviders();
 }
 
@@ -75,13 +87,13 @@ function onInput(index, key, value) {
   validateInput(index, key, true);
 }
 
-function getErrors(index, key) {
+$: getErrors = function (index, key) {
   return inputErrors[`${index}.${key}`];
-}
+};
 
-function hasErrors(index, key) {
+$: hasErrors = function (index, key) {
   return !_.isEmpty(getErrors(index, key));
-}
+};
 
 // When "lazy" is 'true', errors are only updated if there was a previous error.
 function validateInput(index, key, lazy) {
@@ -104,8 +116,6 @@ async function saveProviders() {
   await LocalStore.setOne(StoreKey.SEARCH_PROVIDERS, providers);
   dispatch("updateMainConfiguration");
 }
-
-initData();
 </script>
 
 <form name="manage_providers">
@@ -128,6 +138,7 @@ initData();
                   class:is-invalid="{hasErrors(index, 'label')}"
                   placeholder="Label to be used in the context menu"
                   on:input="{(e) => onInput(index, 'label', e.target.value)}"
+                  on:blur="{() => validateInput(index, 'label')}"
                   on:change="{(e) =>
                     onChange(index, 'label', e.target.value)}" />
                 {#if hasErrors(index, "label")}
@@ -144,6 +155,7 @@ initData();
                   class:is-invalid="{hasErrors(index, 'link')}"
                   placeholder="URL address to which send requests"
                   on:input="{(e) => onInput(index, 'link', e.target.value)}"
+                  on:blur="{() => validateInput(index, 'link')}"
                   on:change="{(e) =>
                     onChange(index, 'link', e.target.value)}" />
                 {#if hasErrors(index, "link")}

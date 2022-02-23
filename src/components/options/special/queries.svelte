@@ -17,11 +17,15 @@ $: items = [];
 $: newLabel = "";
 $: newQuery = "";
 
+let inputErrors = {};
+
 const providerHelper = providerTabHelper(initData, storageKey);
 
 async function addQuery() {
   // Validate values.
   if (!newLabel || !newQuery) {
+    validateInput("newLabel", "label", newLabel);
+    validateInput("newQuery", "query", newQuery);
     Notiflix.Notify.Failure("The label and the query are required values");
     return;
   }
@@ -47,6 +51,7 @@ async function addQuery() {
 
 async function initialize() {
   items = _.get(await LocalStore.getOne(storageKey), "queries", []);
+  validateAllQueries();
 
   // Make list sortable.
   Sortable.create(
@@ -90,6 +95,33 @@ function undoQueriesChanges() {
   return providerHelper._undoChanges("queries", "queries", initialize);
 }
 
+$: getErrors = function (index, field) {
+  return inputErrors[`${index}.${field}`];
+};
+
+$: hasErrors = function (index, field) {
+  return !_.isEmpty(getErrors(index, field));
+};
+
+function validateInput(index, field, value, isInput) {
+  const error = !value ? `The ${field} must not be empty` : null;
+  const errKey = `${index}.${field}`;
+
+  if (!error) {
+    delete inputErrors[errKey];
+    inputErrors = inputErrors;
+  } else if (!isInput) {
+    inputErrors[errKey] = error;
+  }
+}
+
+function validateAllQueries() {
+  for (var index = 0; index < items.length; index++) {
+    validateInput(index, "label", items[index].label);
+    validateInput(index, "query", items[index].query);
+  }
+}
+
 onMount(async () => {
   await initialize();
 
@@ -107,7 +139,7 @@ onMount(async () => {
   <ul class="list-group">
     {#each items as item, index (item)}
       <li class="list-group-item sortable pl-1 pr-2 py-3" data-index="{index}">
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-start">
           <div class="sortable-handle p-2">
             <i class="fas fa-arrows-alt text-large" aria-hidden="true"></i>
           </div>
@@ -117,9 +149,18 @@ onMount(async () => {
               type="text"
               bind:value="{item.label}"
               class="form-control text-black"
+              class:is-invalid="{hasErrors(index, 'label')}"
               placeholder="Label to be used in the context menu"
               name="label_{index}"
+              on:input="{(e) =>
+                validateInput(index, 'label', e.target.value, true)}"
+              on:blur="{() => validateInput(index, 'label', item.label)}"
               on:change="{onQueryInputChanged}" />
+            {#if hasErrors(index, "label")}
+              <div class="invalid-feedback ml-1">
+                {getErrors(index, "label")}
+              </div>
+            {/if}
           </div>
 
           <div class="flex-2 mx-2">
@@ -127,9 +168,18 @@ onMount(async () => {
               type="text"
               bind:value="{item.query}"
               class="form-control text-info"
+              class:is-invalid="{hasErrors(index, 'query')}"
               placeholder="Query to be used on the requests"
               name="query_{index}"
+              on:input="{(e) =>
+                validateInput(index, 'query', e.target.value, true)}"
+              on:blur="{() => validateInput(index, 'label', item.label)}"
               on:change="{onQueryInputChanged}" />
+            {#if hasErrors(index, "query")}
+              <div class="invalid-feedback ml-1">
+                {getErrors(index, "query")}
+              </div>
+            {/if}
           </div>
 
           <div class="form-check mx-2">
@@ -162,7 +212,7 @@ onMount(async () => {
     {/each}
 
     <li class="list-group-item pl-1 pr-2">
-      <div class="d-flex align-items-center">
+      <div class="d-flex align-items-start">
         <div class="px-2 py-3">
           <i
             class="fas fa-plus text-extra-large text-primary"
@@ -174,9 +224,18 @@ onMount(async () => {
             type="text"
             bind:value="{newLabel}"
             class="form-control text-black"
+            class:is-invalid="{hasErrors('newLabel', 'label')}"
             placeholder="Label to be used in the context menu"
             name="label_new"
+            on:input="{(e) =>
+              validateInput('newLabel', 'label', e.target.value, true)}"
+            on:blur="{() => validateInput('newLabel', 'label', newLabel)}"
             on:change="{onQueryInputChanged}" />
+          {#if hasErrors("newLabel", "label")}
+            <div class="invalid-feedback ml-1">
+              {getErrors("newLabel", "label")}
+            </div>
+          {/if}
         </div>
 
         <div class="flex-2 mx-2">
@@ -184,9 +243,18 @@ onMount(async () => {
             type="text"
             bind:value="{newQuery}"
             class="form-control text-info"
+            class:is-invalid="{hasErrors('newQuery', 'query')}"
             placeholder="Query to be used on the requests"
             name="query_new"
+            on:input="{(e) =>
+              validateInput('newQuery', 'query', e.target.value, true)}"
+            on:blur="{() => validateInput('newQuery', 'query', newQuery)}"
             on:change="{onQueryInputChanged}" />
+          {#if hasErrors("newQuery", "query")}
+            <div class="invalid-feedback ml-1">
+              {getErrors("newQuery", "query")}
+            </div>
+          {/if}
         </div>
 
         <div>

@@ -26,7 +26,7 @@ async function addQuery() {
   if (!newLabel || !newQuery) {
     validateInput("newLabel", "label", newLabel);
     validateInput("newQuery", "query", newQuery);
-    Notiflix.Notify.Failure("The label and the query are required values");
+    Notiflix.Notify.Failure("Some fields are invalid. The query couldn't be added.");
     return;
   }
 
@@ -173,7 +173,7 @@ onMount(async () => {
               name="query_{index}"
               on:input="{(e) =>
                 validateInput(index, 'query', e.target.value, true)}"
-              on:blur="{() => validateInput(index, 'label', item.label)}"
+              on:blur="{() => validateInput(index, 'query', item.label)}"
               on:change="{onQueryInputChanged}" />
             {#if hasErrors(index, "query")}
               <div class="invalid-feedback ml-1">

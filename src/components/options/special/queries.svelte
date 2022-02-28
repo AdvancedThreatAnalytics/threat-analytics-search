@@ -173,7 +173,7 @@ onMount(async () => {
               name="query_{index}"
               on:input="{(e) =>
                 validateInput(index, 'query', e.target.value, true)}"
-              on:blur="{() => validateInput(index, 'query', item.label)}"
+              on:blur="{() => validateInput(index, 'query', item.query)}"
               on:change="{onQueryInputChanged}" />
             {#if hasErrors(index, "query")}
               <div class="invalid-feedback ml-1">

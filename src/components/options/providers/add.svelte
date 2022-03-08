@@ -3,7 +3,7 @@ import _ from "lodash";
 import Notiflix from "notiflix";
 import { createEventDispatcher } from "svelte";
 
-import { isJson, isUrl } from "../../../js/shared/misc";
+import { isJson, isUrl, isSearchable } from "../../../js/shared/misc";
 import LocalStore from "../../../js/shared/local_store";
 import { MiscURLs, StoreKey } from "../../../js/shared/constants";
 
@@ -22,6 +22,7 @@ const DEFAULT = {
 // States.
 let editData = _.clone(DEFAULT);
 let errors = {};
+let warning;
 
 // Methods.
 async function add() {
@@ -74,6 +75,10 @@ function validateLabel() {
 
 function validateLink() {
   updateError("link", !isUrl(editData.link));
+
+  warning = !isSearchable
+    ? "The link contains neither TESTSEARCH nor TESTB64SEARCH"
+    : null;
 }
 
 function validatePost() {
@@ -91,6 +96,7 @@ function validateProxy() {
 function clear() {
   editData = _.clone(DEFAULT);
   errors = {};
+  warning = null;
 }
 </script>
 
@@ -161,6 +167,9 @@ function clear() {
                 ? "The value must be a valid URL"
                 : "The value must not be empty"}
             </div>
+          {/if}
+          {#if warning}
+            <div class="text-warning text-small ml-1 mt-1">{warning}</div>
           {/if}
         </div>
       </div>

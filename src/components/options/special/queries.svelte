@@ -6,18 +6,36 @@ import { Sortable } from "sortablejs";
 
 import LocalStore from "../../../js/shared/local_store";
 import providerTabHelper from "../../../js/shared/provider_helper";
+import { isSearchable } from "../../../js/shared/misc";
 
 // Props.
 export let initData = {};
 export let form = "";
 export let storageKey = null;
 
+let inputErrors = {};
+let inputWarnings = {};
+
 // Computed variables.
 $: items = [];
 $: newLabel = "";
 $: newQuery = "";
 
-let inputErrors = {};
+$: getError = function (index, field) {
+  return inputErrors[`${index}.${field}`];
+};
+
+$: hasError = function (index, field) {
+  return !_.isEmpty(getError(index, field));
+};
+
+$: getWarning = function (index) {
+  return inputWarnings[index];
+};
+
+$: hasWarning = function (index) {
+  return !_.isEmpty(getWarning(index));
+};
 
 const providerHelper = providerTabHelper(initData, storageKey);
 
@@ -26,7 +44,9 @@ async function addQuery() {
   if (!newLabel || !newQuery) {
     validateInput("newLabel", "label", newLabel);
     validateInput("newQuery", "query", newQuery);
-    Notiflix.Notify.Failure("Some fields are invalid. The query couldn't be added.");
+    Notiflix.Notify.Failure(
+      "Some fields are invalid. The query couldn't be added."
+    );
     return;
   }
 
@@ -95,23 +115,25 @@ function undoQueriesChanges() {
   return providerHelper._undoChanges("queries", "queries", initialize);
 }
 
-$: getErrors = function (index, field) {
-  return inputErrors[`${index}.${field}`];
-};
-
-$: hasErrors = function (index, field) {
-  return !_.isEmpty(getErrors(index, field));
-};
-
 function validateInput(index, field, value, isInput) {
   const error = !value ? `The ${field} must not be empty` : null;
   const errKey = `${index}.${field}`;
+
+  const warning = !isSearchable(value)
+    ? "The link does not contain TESTSEARCH"
+    : null;
 
   if (!error) {
     delete inputErrors[errKey];
     inputErrors = inputErrors;
   } else if (!isInput) {
     inputErrors[errKey] = error;
+  }
+
+  if (!warning) {
+    delete inputWarnings[index];
+  } else {
+    inputWarnings[index] = warning;
   }
 }
 
@@ -149,16 +171,16 @@ onMount(async () => {
               type="text"
               bind:value="{item.label}"
               class="form-control text-black"
-              class:is-invalid="{hasErrors(index, 'label')}"
+              class:is-invalid="{hasError(index, 'label')}"
               placeholder="Label to be used in the context menu"
               name="label_{index}"
               on:input="{(e) =>
                 validateInput(index, 'label', e.target.value, true)}"
               on:blur="{() => validateInput(index, 'label', item.label)}"
               on:change="{onQueryInputChanged}" />
-            {#if hasErrors(index, "label")}
+            {#if hasError(index, "label")}
               <div class="invalid-feedback ml-1">
-                {getErrors(index, "label")}
+                {getError(index, "label")}
               </div>
             {/if}
           </div>
@@ -168,16 +190,21 @@ onMount(async () => {
               type="text"
               bind:value="{item.query}"
               class="form-control text-info"
-              class:is-invalid="{hasErrors(index, 'query')}"
+              class:is-invalid="{hasError(index, 'query')}"
               placeholder="Query to be used on the requests"
               name="query_{index}"
               on:input="{(e) =>
                 validateInput(index, 'query', e.target.value, true)}"
               on:blur="{() => validateInput(index, 'query', item.query)}"
               on:change="{onQueryInputChanged}" />
-            {#if hasErrors(index, "query")}
+            {#if hasError(index, "query")}
               <div class="invalid-feedback ml-1">
-                {getErrors(index, "query")}
+                {getError(index, "query")}
+              </div>
+            {/if}
+            {#if hasWarning(index)}
+              <div class="text-warning text-small ml-1 mt-1">
+                {getWarning(index)}
               </div>
             {/if}
           </div>
@@ -224,16 +251,16 @@ onMount(async () => {
             type="text"
             bind:value="{newLabel}"
             class="form-control text-black"
-            class:is-invalid="{hasErrors('newLabel', 'label')}"
+            class:is-invalid="{hasError('newLabel', 'label')}"
             placeholder="Label to be used in the context menu"
             name="label_new"
             on:input="{(e) =>
               validateInput('newLabel', 'label', e.target.value, true)}"
             on:blur="{() => validateInput('newLabel', 'label', newLabel)}"
             on:change="{onQueryInputChanged}" />
-          {#if hasErrors("newLabel", "label")}
+          {#if hasError("newLabel", "label")}
             <div class="invalid-feedback ml-1">
-              {getErrors("newLabel", "label")}
+              {getError("newLabel", "label")}
             </div>
           {/if}
         </div>
@@ -243,16 +270,22 @@ onMount(async () => {
             type="text"
             bind:value="{newQuery}"
             class="form-control text-info"
-            class:is-invalid="{hasErrors('newQuery', 'query')}"
+            class:is-invalid="{hasError('newQuery', 'query')}"
             placeholder="Query to be used on the requests"
             name="query_new"
             on:input="{(e) =>
               validateInput('newQuery', 'query', e.target.value, true)}"
             on:blur="{() => validateInput('newQuery', 'query', newQuery)}"
             on:change="{onQueryInputChanged}" />
-          {#if hasErrors("newQuery", "query")}
+          {#if hasError("newQuery", "query")}
             <div class="invalid-feedback ml-1">
-              {getErrors("newQuery", "query")}
+              {getError("newQuery", "query")}
+            </div>
+          {/if}
+
+          {#if hasWarning("newQuery")}
+            <div class="text-warning text-small ml-1 mt-1">
+              {getWarning("newQuery")}
             </div>
           {/if}
         </div>

@@ -4,7 +4,7 @@ import Notiflix from "notiflix";
 import { createEventDispatcher, onMount } from "svelte";
 import { Sortable } from "sortablejs";
 
-import { isUrl } from "../../../js/shared/misc";
+import { isUrl, isSearchable } from "../../../js/shared/misc";
 import LocalStore from "../../../js/shared/local_store";
 import { StoreKey } from "../../../js/shared/constants";
 
@@ -20,6 +20,7 @@ let listGroup;
 let providers = [];
 let inputErrors = {};
 let groups = [];
+let inputWarnings = {};
 
 // Methods.
 
@@ -87,12 +88,20 @@ function onInput(index, key, value) {
   validateInput(index, key, true);
 }
 
-$: getErrors = function (index, key) {
+$: getError = function (index, key) {
   return inputErrors[`${index}.${key}`];
 };
 
-$: hasErrors = function (index, key) {
-  return !_.isEmpty(getErrors(index, key));
+$: hasError = function (index, key) {
+  return !_.isEmpty(getError(index, key));
+};
+
+$: getWarning = function (index) {
+  return inputWarnings[index];
+};
+
+$: hasWarning = function (index) {
+  return !_.isEmpty(getWarning(index));
 };
 
 // When "lazy" is 'true', errors are only updated if there was a previous error.
@@ -104,11 +113,21 @@ function validateInput(index, key, lazy) {
     ? "The value must be a valid URL"
     : null;
 
+  const warning = !isSearchable(value)
+    ? "The link contains neither TESTSEARCH nor TESTB64SEARCH"
+    : null;
+
   const errKey = `${index}.${key}`;
   if (!error) {
     delete inputErrors[errKey];
   } else if (!lazy || !!inputErrors[errKey]) {
     inputErrors[errKey] = error;
+  }
+
+  if (!warning) {
+    delete inputWarnings[index];
+  } else {
+    inputWarnings[index] = warning;
   }
 }
 
@@ -135,15 +154,15 @@ async function saveProviders() {
                   type="text"
                   value="{item.label}"
                   class="form-control text-black"
-                  class:is-invalid="{hasErrors(index, 'label')}"
+                  class:is-invalid="{hasError(index, 'label')}"
                   placeholder="Label to be used in the context menu"
                   on:input="{(e) => onInput(index, 'label', e.target.value)}"
                   on:blur="{() => validateInput(index, 'label')}"
                   on:change="{(e) =>
                     onChange(index, 'label', e.target.value)}" />
-                {#if hasErrors(index, "label")}
+                {#if hasError(index, "label")}
                   <div class="invalid-feedback ml-1">
-                    {getErrors(index, "label")}
+                    {getError(index, "label")}
                   </div>
                 {/if}
               </div>
@@ -152,15 +171,20 @@ async function saveProviders() {
                   type="text"
                   value="{item.link}"
                   class="form-control text-info"
-                  class:is-invalid="{hasErrors(index, 'link')}"
+                  class:is-invalid="{hasError(index, 'link')}"
                   placeholder="URL address to which send requests"
                   on:input="{(e) => onInput(index, 'link', e.target.value)}"
                   on:blur="{() => validateInput(index, 'link')}"
                   on:change="{(e) =>
                     onChange(index, 'link', e.target.value)}" />
-                {#if hasErrors(index, "link")}
+                {#if hasError(index, "link")}
                   <div class="invalid-feedback ml-1">
-                    {getErrors(index, "link")}
+                    {getError(index, "link")}
+                  </div>
+                {/if}
+                {#if hasWarning(index)}
+                  <div class="text-warning text-small ml-1 mt-1">
+                    {getWarning(index)}
                   </div>
                 {/if}
               </div>

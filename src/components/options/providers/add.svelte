@@ -76,7 +76,7 @@ function validateLabel() {
 function validateLink() {
   updateError("link", !isUrl(editData.link));
 
-  warning = !isSearchable
+  warning = !isSearchable(editData.link)
     ? "The link contains neither TESTSEARCH nor TESTB64SEARCH"
     : null;
 }
@@ -167,8 +167,7 @@ function clear() {
                 ? "The value must be a valid URL"
                 : "The value must not be empty"}
             </div>
-          {/if}
-          {#if warning}
+          {:else if warning}
             <div class="text-warning text-small ml-1 mt-1">{warning}</div>
           {/if}
         </div>

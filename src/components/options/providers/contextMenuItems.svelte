@@ -181,8 +181,7 @@ async function saveProviders() {
                   <div class="invalid-feedback ml-1">
                     {getError(index, "link")}
                   </div>
-                {/if}
-                {#if hasWarning(index)}
+                {:else if hasWarning(index)}
                   <div class="text-warning text-small ml-1 mt-1">
                     {getWarning(index)}
                   </div>

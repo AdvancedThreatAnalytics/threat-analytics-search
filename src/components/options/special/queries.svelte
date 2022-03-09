@@ -63,6 +63,7 @@ async function addQuery() {
   // Clear form.
   newLabel = "";
   newQuery = "";
+  delete inputWarnings["newQuery"];
 
   // Update UI according to this change and show success message.
   initialize();
@@ -120,7 +121,7 @@ function validateInput(index, field, value, isInput) {
   const errKey = `${index}.${field}`;
 
   const warning = !isSearchable(value)
-    ? "The link does not contain TESTSEARCH"
+    ? "The query does not contain TESTSEARCH"
     : null;
 
   if (!error) {
@@ -201,8 +202,7 @@ onMount(async () => {
               <div class="invalid-feedback ml-1">
                 {getError(index, "query")}
               </div>
-            {/if}
-            {#if hasWarning(index)}
+            {:else if hasWarning(index)}
               <div class="text-warning text-small ml-1 mt-1">
                 {getWarning(index)}
               </div>
@@ -281,9 +281,7 @@ onMount(async () => {
             <div class="invalid-feedback ml-1">
               {getError("newQuery", "query")}
             </div>
-          {/if}
-
-          {#if hasWarning("newQuery")}
+          {:else if hasWarning("newQuery")}
             <div class="text-warning text-small ml-1 mt-1">
               {getWarning("newQuery")}
             </div>

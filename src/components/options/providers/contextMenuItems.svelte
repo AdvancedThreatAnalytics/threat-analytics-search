@@ -104,8 +104,9 @@ $: hasWarning = function (index) {
   return !_.isEmpty(getWarning(index));
 };
 
-// When "lazy" is 'true', errors are only updated if there was a previous error.
-function validateInput(index, key, lazy) {
+// "isActive" is 'true', when user is typing on the input field.
+// It is used not to add any warning or error when user is typing.
+function validateInput(index, key, isActive) {
   const value = providers[index][key];
   const error = !value
     ? "The field must not be empty"
@@ -113,20 +114,21 @@ function validateInput(index, key, lazy) {
     ? "The value must be a valid URL"
     : null;
 
-  const warning = !isSearchable(value)
-    ? "The link contains neither TESTSEARCH nor TESTB64SEARCH"
-    : null;
+  const warning =
+    !error && !isSearchable(value)
+      ? "The link contains neither TESTSEARCH nor TESTB64SEARCH"
+      : null;
 
   const errKey = `${index}.${key}`;
   if (!error) {
     delete inputErrors[errKey];
-  } else if (!lazy || !!inputErrors[errKey]) {
+  } else if (!isActive || !!inputErrors[errKey]) {
     inputErrors[errKey] = error;
   }
 
   if (!warning) {
     delete inputWarnings[index];
-  } else {
+  } else if (!isActive) {
     inputWarnings[index] = warning;
   }
 }
@@ -181,7 +183,8 @@ async function saveProviders() {
                   <div class="invalid-feedback ml-1">
                     {getError(index, "link")}
                   </div>
-                {:else if hasWarning(index)}
+                {/if}
+                {#if hasWarning(index)}
                   <div class="text-warning text-small ml-1 mt-1">
                     {getWarning(index)}
                   </div>

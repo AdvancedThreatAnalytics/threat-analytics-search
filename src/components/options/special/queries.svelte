@@ -116,24 +116,28 @@ function undoQueriesChanges() {
   return providerHelper._undoChanges("queries", "queries", initialize);
 }
 
-function validateInput(index, field, value, isInput) {
+// "isActive" is 'true', when user is typing on the input field.
+// It is used not to add any warning or error when user is typing.
+function validateInput(index, field, value, isActive) {
   const error = !value ? `The ${field} must not be empty` : null;
   const errKey = `${index}.${field}`;
 
-  const warning = !isSearchable(value)
-    ? "The query does not contain TESTSEARCH"
-    : null;
+  const warning =
+    !error && !isSearchable(value)
+      ? "The query does not contain TESTSEARCH"
+      : null;
 
   if (!error) {
     delete inputErrors[errKey];
     inputErrors = inputErrors;
-  } else if (!isInput) {
+  } else if (!isActive) {
     inputErrors[errKey] = error;
   }
 
   if (!warning) {
     delete inputWarnings[index];
-  } else {
+    inputWarnings = inputWarnings;
+  } else if (!isActive) {
     inputWarnings[index] = warning;
   }
 }
@@ -202,7 +206,8 @@ onMount(async () => {
               <div class="invalid-feedback ml-1">
                 {getError(index, "query")}
               </div>
-            {:else if hasWarning(index)}
+            {/if}
+            {#if hasWarning(index)}
               <div class="text-warning text-small ml-1 mt-1">
                 {getWarning(index)}
               </div>

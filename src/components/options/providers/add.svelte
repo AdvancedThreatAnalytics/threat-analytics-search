@@ -73,12 +73,18 @@ function validateLabel() {
   updateError("label", _.isEmpty(editData.label));
 }
 
-function validateLink() {
-  updateError("link", !isUrl(editData.link));
+// "isActive" is 'true', when user is typing on the input field.
+// It is used not to add any warning or error when user is typing.
+function validateLink(isActive) {
+  if (!isActive || errors.link) {
+    updateError("link", !isUrl(editData.link));
+  }
 
-  warning = !isSearchable(editData.link)
-    ? "The link contains neither TESTSEARCH nor TESTB64SEARCH"
-    : null;
+  if (errors["link"] || isSearchable(editData.link)) {
+    warning = null;
+  } else if (!isActive) {
+    warning = "The link contains neither TESTSEARCH nor TESTB64SEARCH";
+  }
 }
 
 function validatePost() {
@@ -159,15 +165,16 @@ function clear() {
             placeholder="URL address to which send requests"
             id="providers_link"
             bind:value="{editData.link}"
-            on:blur="{validateLink}"
-            on:input="{() => errors.link && validateLink()}" />
+            on:blur="{() => validateLink()}"
+            on:input="{() => validateLink(true)}" />
           {#if errors.link}
             <div class="invalid-feedback ml-1">
               {editData.link
                 ? "The value must be a valid URL"
                 : "The value must not be empty"}
             </div>
-          {:else if warning}
+          {/if}
+          {#if warning}
             <div class="text-warning text-small ml-1 mt-1">{warning}</div>
           {/if}
         </div>

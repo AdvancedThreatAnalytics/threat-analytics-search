@@ -41,6 +41,15 @@ export function isJson(str) {
   return true;
 }
 
+// A link is searchable if it contains TESTSEARCH or TESTB64SEARCH or %s.
+export function isSearchable(link) {
+  return (
+    _.includes(link, "TESTSEARCH") ||
+    _.includes(link, "TESTB64SEARCH") ||
+    _.includes(link, "%s")
+  );
+}
+
 export function isUrl(string) {
   try {
     const url = new URL(string);
@@ -50,20 +59,11 @@ export function isUrl(string) {
   }
 }
 
-/// A link is searchable if it contains TESTSEARCH or TESTB64SEARCH or %s
-export function isSearchable(link) {
-  return (
-    _.includes(link, "TESTSEARCH") ||
-    _.includes(link, "TESTB64SEARCH") ||
-    _.includes(link, "%s")
-  );
-}
-
 export default {
   getGroupProviders,
   getProviderTargetURL,
   isDate,
   isJson,
-  isUrl,
   isSearchable,
+  isUrl,
 };

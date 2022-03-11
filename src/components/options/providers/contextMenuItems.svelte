@@ -115,7 +115,7 @@ function validateInput(index, key, isActive) {
     : null;
 
   const warning =
-    !error && !isSearchable(value)
+    key === "link" && !error && !isSearchable(value)
       ? "The link contains neither TESTSEARCH nor TESTB64SEARCH"
       : null;
 

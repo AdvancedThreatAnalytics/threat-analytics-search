@@ -123,7 +123,7 @@ function validateInput(index, field, value, isActive) {
   const errKey = `${index}.${field}`;
 
   const warning =
-    !error && !isSearchable(value)
+    field == "query" && !error && !isSearchable(value)
       ? "The query does not contain TESTSEARCH"
       : null;
 

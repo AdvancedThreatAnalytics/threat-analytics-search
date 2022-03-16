@@ -102,7 +102,12 @@ async function updateNow() {
       </div>
 
       <div class="col-lg-6">
-        <h2 class="mb-3">Merge Settings Options</h2>
+        <h2 class="mb-2">Merge Settings Options</h2>
+        <p>
+          The Merge Settings Options will only be applied when you update using
+          the Configuration File Options, not when you import using the
+          Export/Import Search Options.
+        </p>
         <Fields
           items="{MERGE_OPTIONS}"
           on:updateMainConfiguration="{() => mainConfigurationUpdated(true)}" />

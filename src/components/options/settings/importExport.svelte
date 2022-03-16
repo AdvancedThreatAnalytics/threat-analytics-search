@@ -79,7 +79,7 @@ async function saveSearches(data) {
 
     if (
       confirm(
-        "Are you sure you want to override your local settings with these values?"
+        "The defined Merge Settings Options will not be applied. If you continue, all current settings will be overridden by the settings you are importing."
       )
     ) {
       await ConfigFile.parseJSONFile(parsedData, true);

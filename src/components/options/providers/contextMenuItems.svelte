@@ -158,6 +158,7 @@ async function saveProviders() {
                   class="form-control text-black"
                   class:is-invalid="{hasError(index, 'label')}"
                   placeholder="Label to be used in the context menu"
+                  name="label_{ index }"
                   on:input="{(e) => onInput(index, 'label', e.target.value)}"
                   on:blur="{() => validateInput(index, 'label')}"
                   on:change="{(e) =>

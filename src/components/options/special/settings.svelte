@@ -17,7 +17,7 @@ let items = [];
 
 const providerHelper = providerTabHelper(initData, storageKey);
 
-async function initialize() {
+export async function initialize() {
   var provData = (await LocalStore.getOne(storageKey)) || {};
 
   items = _.map(settings, function (item) {

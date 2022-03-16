@@ -70,7 +70,7 @@ async function addQuery() {
   Notiflix.Notify.Success("Query added successfully");
 }
 
-async function initialize() {
+export async function initialize() {
   items = _.get(await LocalStore.getOne(storageKey), "queries", []);
   validateAllQueries();
 

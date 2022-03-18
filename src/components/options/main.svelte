@@ -22,6 +22,9 @@ let initData = {};
 
 let currentTab;
 let providersTab;
+let rsaTab;
+let nwiTab;
+let cbcTab;
 
 function updateTabsVisibility(data) {
   currentTab = _.get(data, "detail");
@@ -30,6 +33,9 @@ function updateTabsVisibility(data) {
 function mainConfigurationUpdated(lazy) {
   if (!lazy || !_.get(lazy, "detail")) {
     providersTab.updateForms();
+    rsaTab.updateForms();
+    nwiTab.updateForms();
+    cbcTab.updateForms();
   }
   chrome.runtime.sendMessage({ action: "updateContextualMenu" });
 }
@@ -63,6 +69,7 @@ onMount(() => {
     </section>
     <section hidden="{currentTab !== 'security-analytics'}">
       <SpecialProvider
+        bind:this="{rsaTab}"
         configTitle="{'RSA Security Analytics Configuration'}"
         form="{'rsa'}"
         initData="{initData}"
@@ -72,6 +79,7 @@ onMount(() => {
     </section>
     <section hidden="{currentTab !== 'netwitness'}">
       <SpecialProvider
+        bind:this="{nwiTab}"
         configTitle="{'NetWitness Investigator Configuration'}"
         form="{'nwi'}"
         initData="{initData}"
@@ -80,6 +88,7 @@ onMount(() => {
     </section>
     <section hidden="{currentTab !== 'carbon-black'}">
       <SpecialProvider
+        bind:this="{cbcTab}"
         configTitle="{'Carbon Black Configuration'}"
         form="{'cbc'}"
         initData="{initData}"

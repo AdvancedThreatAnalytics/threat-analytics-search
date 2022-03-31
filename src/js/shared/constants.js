@@ -21,9 +21,21 @@ export const StoreKey = {
 };
 
 export const CONFIG_FILE_OPTIONS = [
-  { key: "configurationURL", label: "File URL", type: "input" },
+  {
+    key: "configurationURL",
+    label: "File URL",
+    type: "input",
+    validateEmpty: true,
+    validateUrl: true,
+  },
   { key: "configEncrypted", label: "Encrypted", type: "checkbox" },
-  { key: "configEncryptionKey", label: "Encryption Key", type: "input" },
+  {
+    key: "configEncryptionKey",
+    label: "Encryption Key",
+    type: "input",
+    validateEmpty: true,
+    validateOn: "configEncrypted",
+  },
   {
     key: "autoUpdateConfig",
     label: "Update periodically (once per week)",
@@ -122,9 +134,9 @@ export const NWI_CONFIG = [
 
 // TODO: Should rename field names to just 'key' and 'label'.
 export const MERGE_DROPDOWN_ITEMS = [
-  { itemKey: "merge", itemLabel: "Merge" },
-  { itemKey: "override", itemLabel: "Override" },
-  { itemKey: "ignore", itemLabel: "Ignore" },
+  { key: "merge", label: "Merge" },
+  { key: "override", label: "Override" },
+  { key: "ignore", label: "Ignore" },
 ];
 
 export const MERGE_OPTIONS = [

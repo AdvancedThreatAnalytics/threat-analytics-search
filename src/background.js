@@ -54,13 +54,15 @@ chrome.runtime.onStartup.addListener(function () {
 chrome.alarms.create({
   periodInMinutes: 10080,
 });
-chrome.alarms.onAlarm.addListener(async function () {
+chrome.alarms.onAlarm.addListener(alarmListener);
+
+export async function alarmListener() {
   var settings = await LocalStore.getOne(StoreKey.SETTINGS);
   if (settings.autoUpdateConfig) {
     await ConfigFile.updateNow();
     ContextualMenu.update();
   }
-});
+}
 
 // Messages handler.
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
@@ -112,6 +114,12 @@ export var MenuPreffix = {
   SEPARATOR: "separator-",
 };
 
+function createContextMenu(item) {
+  if (!_.isEmpty(item.title)) {
+    return chrome.contextMenus.create(item);
+  }
+}
+
 export var ContextualMenu = {
   // --- Update menu --- //
 
@@ -130,7 +138,7 @@ export var ContextualMenu = {
 
     // Create the CBC menu (if enabled).
     if (config.CBCConfigEnable) {
-      var parentMenu = chrome.contextMenus.create({
+      var parentMenu = createContextMenu({
         id: _.uniqueId(MenuPreffix.PARENT),
         title: "Carbon Black",
         contexts: ["selection"],
@@ -139,7 +147,7 @@ export var ContextualMenu = {
       // Create entries for queries.
       _.forEach(queries, function (query, index) {
         if (query.enabled !== false && query.enabled !== "false") {
-          query.menuIndex = chrome.contextMenus.create({
+          query.menuIndex = createContextMenu({
             id: MenuPreffix.CARBON_BLACK + index,
             title: query.label,
             contexts: ["selection"],
@@ -163,7 +171,7 @@ export var ContextualMenu = {
 
     // Create the NWI menu (if enabled)
     if (config.NWIConfigEnable) {
-      var parentMenu = chrome.contextMenus.create({
+      var parentMenu = createContextMenu({
         id: _.uniqueId(MenuPreffix.PARENT),
         title: "NetWitness Investigator",
         contexts: ["selection"],
@@ -172,7 +180,7 @@ export var ContextualMenu = {
       // Create entries for queries.
       _.forEach(queries, function (query, index) {
         if (query.enabled !== false && query.enabled !== "false") {
-          query.menuIndex = chrome.contextMenus.create({
+          query.menuIndex = createContextMenu({
             id: MenuPreffix.NET_WITNESS + index,
             title: query.label,
             contexts: ["selection"],
@@ -181,7 +189,7 @@ export var ContextualMenu = {
 
           // Create range entries.
           for (var k = 1; k <= NWI_RANGE_LENGTH; k++) {
-            chrome.contextMenus.create({
+            createContextMenu({
               id: query.menuIndex + "_" + k,
               title: config["NWIConfigRange" + k] + " Hour(s)",
               contexts: ["selection"],
@@ -206,7 +214,7 @@ export var ContextualMenu = {
 
     // Create the RSA menu (if enabled)
     if (config.RSAConfigEnable) {
-      var parentMenu = chrome.contextMenus.create({
+      var parentMenu = createContextMenu({
         id: _.uniqueId(MenuPreffix.PARENT),
         title: "RSA Security Analytics",
         contexts: ["selection"],
@@ -215,7 +223,7 @@ export var ContextualMenu = {
       // Create entries for queries.
       _.forEach(queries, function (query, index) {
         if (query.enabled !== false && query.enabled !== "false") {
-          query.menuIndex = chrome.contextMenus.create({
+          query.menuIndex = createContextMenu({
             id: MenuPreffix.RSA_SECURITY + index,
             title: query.label,
             contexts: ["selection"],
@@ -224,7 +232,7 @@ export var ContextualMenu = {
 
           // Create range entries.
           for (var k = 1; k <= RSA_RANGE_LENGTH; k++) {
-            chrome.contextMenus.create({
+            createContextMenu({
               id: query.menuIndex + "_" + k,
               title: config["RSAConfigRange" + k] + " Hour(s)",
               contexts: ["selection"],
@@ -268,7 +276,7 @@ export var ContextualMenu = {
           getGroupProviders(index, searchProviders).length > 0
         ) {
           // Add entry to contextual menu.
-          chrome.contextMenus.create({
+          createContextMenu({
             id: MenuPreffix.GROUP + index,
             title: group.name,
             contexts: ["selection"],
@@ -287,7 +295,7 @@ export var ContextualMenu = {
     // Add entries for standard seach providers.
     _.forEach(searchProviders, function (provider, index) {
       if (provider.enabled) {
-        provider.menuIndex = chrome.contextMenus.create({
+        provider.menuIndex = createContextMenu({
           id: MenuPreffix.PROVIDER + index,
           title: provider.label,
           contexts: ["selection"],
@@ -304,7 +312,7 @@ export var ContextualMenu = {
     if (settings.enableOptionsMenuItem) {
       ContextualMenu._addSeparator();
 
-      chrome.contextMenus.create({
+      createContextMenu({
         id: MenuPreffix.OPTIONS,
         title: "Options",
         contexts: ["selection"],

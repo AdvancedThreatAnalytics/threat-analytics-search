@@ -3,6 +3,7 @@ import _ from "lodash";
 import { decryptAES } from "./encryption";
 import { StoreKey } from "./constants";
 import LocalStore from "./local_store";
+import { isUrl } from "./misc";
 
 // --- Constants --- //
 
@@ -111,33 +112,43 @@ const ConfigFile = {
     const settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
     let errMsg = null;
 
-    try {
-      // Execute request to get configuration file.
-      const response = await fetch(settings.configurationURL);
-      if (response.status >= 200 && response.status < 300) {
-        let dataRaw = await response.text();
-        dataRaw = dataRaw.replace(/\n\r|\r\n/g, "");
+    const invalidUrl = !isUrl(settings.configurationURL);
+    const missingKey =
+      settings.configEncrypted && !settings.configEncryptionKey;
 
-        // Check if the file should be decripted.
-        if (settings.configEncrypted) {
-          var k1 = settings.configEncryptionKey;
-          try {
-            dataRaw = decryptAES(dataRaw, k1);
-          } catch (decErr) {
-            console.error(decErr);
-            errMsg = "Update failed - Decryption Error";
+    if (invalidUrl || missingKey) {
+      errMsg = `Update failed - Invalid ${
+        missingKey ? "Encryption Key" : "URL"
+      }`;
+    } else {
+      try {
+        // Execute request to get configuration file.
+        const response = await fetch(settings.configurationURL);
+        if (response.status >= 200 && response.status < 300) {
+          let dataRaw = await response.text();
+          dataRaw = dataRaw.replace(/\n\r|\r\n/g, "");
+
+          // Check if the file should be decripted.
+          if (settings.configEncrypted) {
+            var k1 = settings.configEncryptionKey;
+            try {
+              dataRaw = decryptAES(dataRaw, k1);
+            } catch (decErr) {
+              console.error(decErr);
+              errMsg = "Update failed - Decryption Error";
+            }
           }
-        }
 
-        // Parse data object.
-        const data = JSON.parse(dataRaw);
-        await ConfigFile.parseJSONFile(data, false);
-      } else {
-        errMsg = "Update failed - Invalid URL";
+          // Parse data object.
+          const data = JSON.parse(dataRaw);
+          await ConfigFile.parseJSONFile(data, false);
+        } else {
+          errMsg = "Update failed - Invalid URL";
+        }
+      } catch (fileErr) {
+        console.error(fileErr);
+        errMsg = "Update failed - Invalid File";
       }
-    } catch (fileErr) {
-      console.error(fileErr);
-      errMsg = "Update failed - Invalid File";
     }
 
     // Update timestamp and error message.
@@ -265,16 +276,22 @@ const ConfigFile = {
     // - Update group names in the local store (if need).
     const groups = newData.groups;
     if ((overrideAll || settings.mergeGroups) && !_.isEmpty(groups)) {
-      if (_.isEmpty(settings.providersGroups)) {
+      if (
+        (overrideAll && groups.length >= 3) ||
+        _.isEmpty(settings.providersGroups)
+      ) {
         settings.providersGroups = ConfigFile.parseGroups(groups);
       } else {
-        for (
-          let k = 0;
-          k < groups.length && k < settings.providersGroups.length;
-          k++
-        ) {
+        for (let k = 0; k < settings.providersGroups.length; k++) {
           if (groups[k]) {
             settings.providersGroups[k].name = groups[k][GROUP_INDEXES.name];
+          } else if (k < 3) {
+            settings.providersGroups[k].enabled = false;
+          } else {
+            settings.providersGroups.splice(
+              3,
+              settings.providersGroups.length - 3
+            );
           }
         }
       }

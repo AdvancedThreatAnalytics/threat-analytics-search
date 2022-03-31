@@ -32,8 +32,38 @@ export function isDate(date) {
   return new Date(date) !== "Invalid Date" && !isNaN(new Date(date));
 }
 
+export function isJson(str) {
+  try {
+    JSON.parse(str);
+  } catch (e) {
+    return false;
+  }
+  return true;
+}
+
+// A link is searchable if it contains TESTSEARCH or TESTB64SEARCH or %s.
+export function isSearchable(link) {
+  return (
+    _.includes(link, "TESTSEARCH") ||
+    _.includes(link, "TESTB64SEARCH") ||
+    _.includes(link, "%s")
+  );
+}
+
+export function isUrl(string) {
+  try {
+    const url = new URL(string);
+    return ["http:", "https:"].includes(url.protocol);
+  } catch (_) {
+    return false;
+  }
+}
+
 export default {
   getGroupProviders,
   getProviderTargetURL,
   isDate,
+  isJson,
+  isSearchable,
+  isUrl,
 };

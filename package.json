@@ -60,5 +60,8 @@
     "notiflix": "^2.7.0",
     "sass": "^1.69.5",
     "sortablejs": "^1.13.0"
+  },
+  "resolutions": {
+    "tar-fs": "^2.1.4"
   }
 }

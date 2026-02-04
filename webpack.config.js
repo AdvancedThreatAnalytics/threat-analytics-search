@@ -45,7 +45,7 @@ module.exports = (env) => (
     },
     plugins: [
       new Webpack.DefinePlugin({
-        "process.env": JSON.stringify(process.env),
+        "process.env.BROWSER_NAME": JSON.stringify(process.env.BROWSER_NAME),
       }),
       new HtmlWebpackPlugin({
         template: "./src/options.html",

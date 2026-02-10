@@ -65,7 +65,16 @@ describe("Migration (from v4.0)", () => {
     }, sampleData);
 
     // Go to migration page.
-    await ExtensionUtil.goto("migration.html", page);
+    try {
+      await ExtensionUtil.goto("migration.html", page);
+      // Wait a bit for migration to complete
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    } catch (error) {
+      // Ignore frame detached errors as migration page may redirect
+      if (!error.message.includes("detached")) {
+        throw error;
+      }
+    }
 
     // Go back to options page.
     page = await ExtensionUtil.goto("options.html");
@@ -160,7 +169,16 @@ describe("Migration (from v4.0)", () => {
     await page.evaluate(() => window.localStorage.clear());
 
     // Go to migration page.
-    await ExtensionUtil.goto("migration.html", page);
+    try {
+      await ExtensionUtil.goto("migration.html", page);
+      // Wait a bit for migration to complete
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    } catch (error) {
+      // Ignore frame detached errors as migration page may redirect
+      if (!error.message.includes("detached")) {
+        throw error;
+      }
+    }
 
     // Go back to options page.
     page = await ExtensionUtil.goto("options.html");

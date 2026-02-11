@@ -1,5 +1,6 @@
 import aesjs from "aes-js";
 import md5 from "md5";
+import crypto from "crypto";
 
 export function decryptAES(data, key) {
   // Decode the ciphertext and remove the salt part.
@@ -59,27 +60,25 @@ export function randArr(num) {
 }
 
 /**
- * This function is needed to provide backward compatibility and calculate
- * the key and iv in the same way as GibberishAes.
+ * This function derives a key and IV from the given password and salt.
+ * It uses a PBKDF2-based key derivation with sufficient computational effort.
  */
 export function openSSLKey(passwordArr, saltArr) {
-  const rounds = 3;
-  const data00 = passwordArr.concat(saltArr);
+  // Convert password and salt byte arrays into Buffers for pbkdf2Sync.
+  const passwordBuffer = Buffer.from(passwordArr);
+  const saltBuffer = Buffer.from(saltArr);
 
-  let md5_hash = [];
-  let result = [];
+  // Derive 48 bytes (32 for key, 16 for IV) using PBKDF2 with SHA-256.
+  // The iteration count should be high enough to make brute-force attacks expensive.
+  const iterations = 100000;
+  const keyLength = 48;
+  const derived = crypto.pbkdf2Sync(passwordBuffer, saltBuffer, iterations, keyLength, "sha256");
 
-  md5_hash[0] = aesjs.utils.hex.toBytes(md5(data00));
-  result = md5_hash[0];
-
-  for (let i = 1; i < rounds; i++) {
-    md5_hash[i] = aesjs.utils.hex.toBytes(md5(md5_hash[i - 1].concat(data00)));
-    result = result.concat(md5_hash[i]);
-  }
+  const derivedArr = Array.from(derived);
 
   return {
-    key: result.slice(0, 32),
-    iv: result.slice(32, 48),
+    key: derivedArr.slice(0, 32),
+    iv: derivedArr.slice(32, 48),
   };
 }
 

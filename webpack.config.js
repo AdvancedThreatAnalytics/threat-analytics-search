@@ -21,6 +21,9 @@ module.exports = (env) => (
       publicPath: "./",
     },
     devtool: "source-map",
+    resolve: {
+      conditionNames: ["svelte", "browser", "import"],
+    },
     module: {
       rules: [
         {
@@ -39,6 +42,13 @@ module.exports = (env) => (
           test: /\.svelte$/,
           use: {
             loader: "svelte-loader",
+            options: {
+              compilerOptions: {
+                css: "injected",
+              },
+              emitCss: false,
+              hotReload: false,
+            },
           },
         },
       ],
@@ -79,6 +89,7 @@ module.exports = (env) => (
                 "**/migration.html",
                 "**/options.html",
                 "**/postHandler.html",
+                "**/_*", // Ignore files starting with underscore
               ],
             },
           },
@@ -86,9 +97,11 @@ module.exports = (env) => (
             // Replace update URL depending if we are compiling for Edge or for Chrome.
             from: path.join(__dirname, "src/manifest.json"),
             transform(content) {
-              return content
-                .toString()
-                .replace("process.env.update_url", process.env.UPDATE_URL);
+              const manifest = JSON.parse(content.toString());
+              // Remove update_url for unpacked extensions (development)
+              // It's only needed for Chrome Web Store published extensions
+              delete manifest.update_url;
+              return JSON.stringify(manifest, null, 2);
             },
           },
           {

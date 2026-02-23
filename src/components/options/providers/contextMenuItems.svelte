@@ -53,6 +53,7 @@ function validateAllProviders() {
 function remove(index) {
   if (confirm("Are you sure you want to remove this item?")) {
     providers.splice(index, 1);
+    // eslint-disable-next-line no-self-assign
     providers = providers;
     saveProviders();
 
@@ -74,6 +75,7 @@ function reset() {
 function onDragEnd(event) {
   // Move provider
   providers.splice(event.newIndex, 0, providers.splice(event.oldIndex, 1)[0]);
+  // eslint-disable-next-line no-self-assign
   providers = providers;
   saveProviders();
 }

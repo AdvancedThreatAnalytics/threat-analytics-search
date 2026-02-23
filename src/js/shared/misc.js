@@ -29,13 +29,14 @@ export function getProviderTargetURL(provider, selectionText) {
 }
 
 export function isDate(date) {
-  return new Date(date) !== "Invalid Date" && !isNaN(new Date(date));
+  const d = new Date(date);
+  return d.toString() !== "Invalid Date" && !isNaN(d);
 }
 
 export function isJson(str) {
   try {
     JSON.parse(str);
-  } catch (e) {
+  } catch (_e) {
     return false;
   }
   return true;

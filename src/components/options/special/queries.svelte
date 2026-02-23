@@ -129,6 +129,7 @@ function validateInput(index, field, value, isActive) {
 
   if (!error) {
     delete inputErrors[errKey];
+    // eslint-disable-next-line no-self-assign
     inputErrors = inputErrors;
   } else if (!isActive) {
     inputErrors[errKey] = error;
@@ -136,6 +137,7 @@ function validateInput(index, field, value, isActive) {
 
   if (!warning) {
     delete inputWarnings[index];
+    // eslint-disable-next-line no-self-assign
     inputWarnings = inputWarnings;
   } else if (!isActive) {
     inputWarnings[index] = warning;

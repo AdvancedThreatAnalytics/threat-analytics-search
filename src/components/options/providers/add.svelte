@@ -66,6 +66,7 @@ function updateError(field, isInvalid) {
   } else {
     delete errors[field];
   }
+  // eslint-disable-next-line no-self-assign
   errors = errors;
 }
 

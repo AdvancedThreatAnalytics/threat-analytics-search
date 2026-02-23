@@ -2,7 +2,7 @@ require("./util");
 
 import LocalStore from "../../src/js/shared/local_store";
 const ConfigFile = require("../../src/js/shared/config_file");
-const { MiscURLs, StoreKey } = require("../../src/js/shared/constants");
+const { MiscURLs: _MiscURLs, StoreKey } = require("../../src/js/shared/constants");
 const {
   installedListener,
   alarmListener,

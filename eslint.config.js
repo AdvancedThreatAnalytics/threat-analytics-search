@@ -22,6 +22,17 @@ export default [
         sourceType: "module",
       },
     },
+    rules: {
+      // Allow underscore-prefixed variables to be unused
+      "no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+    },
   },
 
   // Svelte files
@@ -34,6 +45,15 @@ export default [
     },
     rules: {
       ...svelte.configs.recommended.rules,
+      // Allow underscore-prefixed variables to be unused
+      "no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
     },
   },
 

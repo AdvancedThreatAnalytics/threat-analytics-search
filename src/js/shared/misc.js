@@ -30,7 +30,7 @@ export function getProviderTargetURL(provider, selectionText) {
 
 export function isDate(date) {
   const d = new Date(date);
-  return d.toString() !== "Invalid Date" && !isNaN(d);
+  return !isNaN(d);
 }
 
 export function isJson(str) {

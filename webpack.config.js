@@ -97,12 +97,9 @@ module.exports = (env) => (
             // Replace update URL depending if we are compiling for Edge or for Chrome.
             from: path.join(__dirname, "src/manifest.json"),
             transform(content) {
-              const manifest = JSON.parse(content.toString());
-              // Remove update_url for unpacked extensions (development)
-              // It's only needed for Chrome Web Store published extensions
-              delete manifest.update_url;
-              return JSON.stringify(manifest, null, 2);
-            },
+              return content
+                .toString()
+                .replace("process.env.update_url", process.env.UPDATE_URL);            },
           },
           {
             from: "./settings.json",

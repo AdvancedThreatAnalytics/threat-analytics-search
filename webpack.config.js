@@ -21,6 +21,9 @@ module.exports = (env) => (
       publicPath: "./",
     },
     devtool: "source-map",
+    resolve: {
+      conditionNames: ["svelte", "browser", "import"],
+    },
     module: {
       rules: [
         {
@@ -39,6 +42,13 @@ module.exports = (env) => (
           test: /\.svelte$/,
           use: {
             loader: "svelte-loader",
+            options: {
+              compilerOptions: {
+                css: "injected",
+              },
+              emitCss: false,
+              hotReload: false,
+            },
           },
         },
       ],
@@ -79,6 +89,7 @@ module.exports = (env) => (
                 "**/migration.html",
                 "**/options.html",
                 "**/postHandler.html",
+                "**/_*", // Ignore files starting with underscore
               ],
             },
           },
@@ -88,8 +99,7 @@ module.exports = (env) => (
             transform(content) {
               return content
                 .toString()
-                .replace("process.env.update_url", process.env.UPDATE_URL);
-            },
+                .replace("process.env.update_url", process.env.UPDATE_URL);            },
           },
           {
             from: "./settings.json",

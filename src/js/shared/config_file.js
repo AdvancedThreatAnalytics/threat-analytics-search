@@ -402,7 +402,7 @@ const ConfigFile = {
     try {
       var response = await fetch("../settings.json");
       return await response.json();
-    } catch (err) {
+    } catch (_err) {
       return {};
     }
   },

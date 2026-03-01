@@ -66,7 +66,7 @@ function updateError(field, isInvalid) {
   } else {
     delete errors[field];
   }
-  errors = errors;
+  errors = { ...errors };
 }
 
 function validateLabel() {

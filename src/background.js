@@ -3,7 +3,6 @@ import _ from "lodash";
 import { DateTime } from "luxon";
 
 import {
-  MiscURLs,
   StoreKey,
   NWI_RANGE_LENGTH,
   RSA_RANGE_LENGTH,
@@ -532,7 +531,7 @@ function showPopupMessage(title, message) {
       iconUrl: "/images/icon_48.png",
       type: "basic",
     });
-  } catch (err) {
+  } catch (_err) {
     // Do nothing.
   }
 }

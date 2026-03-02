@@ -48,7 +48,7 @@
     "sass-loader": "^12.1.0",
     "sinon-chrome": "^3.0.1",
     "style-loader": "^2.0.0",
-    "svelte": "^5.51.5",
+    "svelte": "^5.53.5",
     "svelte-eslint-parser": "^1.4.1",
     "svelte-loader": "^3.2.3",
     "svelte-preprocess": "^6.0.0",

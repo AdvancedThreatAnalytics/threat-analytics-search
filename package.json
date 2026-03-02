@@ -5,6 +5,7 @@
   "main": "index.js",
   "repository": "https://github.com/AdvancedThreatAnalytics/threat-analytics-search.git",
   "private": true,
+  "packageManager": "yarn@4.12.0",
   "scripts": {
     "build": "webpack --env mode=chrome --mode=production --config webpack.config.js",
     "build:dev": "webpack --env mode=chrome --mode=development --config webpack.config.js",

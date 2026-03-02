@@ -1682,13 +1682,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@humanfs/core@npm:^0.19.1":
+  version: 0.19.1
+  resolution: "@humanfs/core@npm:0.19.1"
+  checksum: 10/270d936be483ab5921702623bc74ce394bf12abbf57d9145a69e8a0d1c87eb1c768bd2d93af16c5705041e257e6d9cc7529311f63a1349f3678abc776fc28523
+  languageName: node
+  linkType: hard
+
 "@humanfs/node@npm:^0.16.6":
   version: 0.16.7
   resolution: "@humanfs/node@npm:0.16.7"
   dependencies:
-    "@humanwhocodes/object-schema": "npm:^1.2.0"
-    debug: "npm:^4.1.1"
-    minimatch: "npm:^3.0.4"
+    "@humanfs/core": "npm:^0.19.1"
+    "@humanwhocodes/retry": "npm:^0.4.0"
   checksum: 10/b3633d3dce898592cac515ba5e6693c78e6be92863541d3eaf2c009b10f52b2fa62ff6e6e06f240f2447ddbe7b5f1890bc34e9308470675c876eee207553a08d
   languageName: node
   linkType: hard
@@ -1700,14 +1706,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@humanwhocodes/object-schema@npm:^1.2.0":
-  version: 1.2.1
-  resolution: "@humanwhocodes/object-schema@npm:1.2.1"
-  checksum: 10/b48a8f87fcd5fdc4ac60a31a8bf710d19cc64556050575e6a35a4a48a8543cf8cde1598a65640ff2cdfbfd165b38f9db4fa3782bea7848eb585cc3db824002e6
-  languageName: node
-  linkType: hard
-
-"@humanwhocodes/retry@npm:^0.4.2":
+"@humanwhocodes/retry@npm:^0.4.0, @humanwhocodes/retry@npm:^0.4.2":
   version: 0.4.3
   resolution: "@humanwhocodes/retry@npm:0.4.3"
   checksum: 10/0b32cfd362bea7a30fbf80bb38dcaf77fee9c2cae477ee80b460871d03590110ac9c77d654f04ec5beaf71b6f6a89851bdf6c1e34ccdf2f686bd86fcd97d9e61
@@ -2627,21 +2626,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn-jsx@npm:^5.3.1":
+"acorn-jsx@npm:^5.3.2":
   version: 5.3.2
   resolution: "acorn-jsx@npm:5.3.2"
   peerDependencies:
     acorn: ^6.0.0 || ^7.0.0 || ^8.0.0
   checksum: 10/d4371eaef7995530b5b5ca4183ff6f062ca17901a6d3f673c9ac011b01ede37e7a1f7f61f8f5cfe709e88054757bb8f3277dc4061087cdf4f2a1f90ccbcdb977
-  languageName: node
-  linkType: hard
-
-"acorn@npm:^7.4.0":
-  version: 7.4.1
-  resolution: "acorn@npm:7.4.1"
-  bin:
-    acorn: bin/acorn
-  checksum: 10/8be2a40714756d713dfb62544128adce3b7102c6eb94bc312af196c2cc4af76e5b93079bd66b05e9ca31b35a9b0ce12171d16bc55f366cafdb794fdab9d753ec
   languageName: node
   linkType: hard
 
@@ -4324,8 +4314,11 @@ __metadata:
     semver: "npm:^7.6.3"
     svelte-eslint-parser: "npm:^1.4.0"
   peerDependencies:
-    eslint: ">=6.0.0"
-    svelte: ^3.2.0
+    eslint: ^8.57.1 || ^9.0.0 || ^10.0.0
+    svelte: ^3.37.0 || ^4.0.0 || ^5.0.0
+  peerDependenciesMeta:
+    svelte:
+      optional: true
   checksum: 10/126805abf90507df49640cd45f50d412d95f0221d447926e02c42933c20d53e3e000316f3bb9a1a70c4497eb255fa005157f47cf17a57715c235794d5e58b6aa
   languageName: node
   linkType: hard
@@ -4344,15 +4337,9 @@ __metadata:
   version: 8.4.0
   resolution: "eslint-scope@npm:8.4.0"
   dependencies:
-    eslint-visitor-keys: "npm:^1.1.0"
+    esrecurse: "npm:^4.3.0"
+    estraverse: "npm:^5.2.0"
   checksum: 10/e8e611701f65375e034c62123946e628894f0b54aa8cb11abe224816389abe5cd74cf16b62b72baa36504f22d1a958b9b8b0169b82397fe2e7997674c0d09b06
-  languageName: node
-  linkType: hard
-
-"eslint-visitor-keys@npm:^1.1.0, eslint-visitor-keys@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "eslint-visitor-keys@npm:1.3.0"
-  checksum: 10/595ab230e0fcb52f86ba0986a9a473b9fcae120f3729b43f1157f88f27f8addb1e545c4e3d444185f2980e281ca15be5ada6f65b4599eec227cf30e41233b762
   languageName: node
   linkType: hard
 
@@ -4430,9 +4417,9 @@ __metadata:
   version: 10.4.0
   resolution: "espree@npm:10.4.0"
   dependencies:
-    acorn: "npm:^7.4.0"
-    acorn-jsx: "npm:^5.3.1"
-    eslint-visitor-keys: "npm:^1.3.0"
+    acorn: "npm:^8.15.0"
+    acorn-jsx: "npm:^5.3.2"
+    eslint-visitor-keys: "npm:^4.2.1"
   checksum: 10/9b355b32dbd1cc9f57121d5ee3be258fab87ebeb7c83fc6c02e5af1a74fc8c5ba79fe8c663e69ea112c3e84a1b95e6a2067ac4443ee7813bb85ac7581acb8bf9
   languageName: node
   linkType: hard
@@ -4694,7 +4681,7 @@ __metadata:
   version: 8.0.0
   resolution: "file-entry-cache@npm:8.0.0"
   dependencies:
-    flat-cache: "npm:^3.0.4"
+    flat-cache: "npm:^4.0.0"
   checksum: 10/afe55c4de4e0d226a23c1eae62a7219aafb390859122608a89fa4df6addf55c7fd3f1a2da6f5b41e7cdff496e4cf28bbd215d53eab5c817afa96d2b40c81bfb0
   languageName: node
   linkType: hard
@@ -4766,27 +4753,19 @@ __metadata:
   version: 5.0.0
   resolution: "find-up@npm:5.0.0"
   dependencies:
-    flatted: "npm:^3.1.0"
-    rimraf: "npm:^3.0.2"
+    locate-path: "npm:^6.0.0"
+    path-exists: "npm:^4.0.0"
   checksum: 10/07955e357348f34660bde7920783204ff5a26ac2cafcaa28bace494027158a97b9f56faaf2d89a6106211a8174db650dd9f503f9c0d526b1202d5554a00b9095
   languageName: node
   linkType: hard
 
-"flat-cache@npm:^3.0.4":
-  version: 3.2.0
-  resolution: "flat-cache@npm:3.2.0"
+"flat-cache@npm:^4.0.0":
+  version: 4.0.1
+  resolution: "flat-cache@npm:4.0.1"
   dependencies:
     flatted: "npm:^3.2.9"
-    keyv: "npm:^4.5.3"
-    rimraf: "npm:^3.0.2"
-  checksum: 10/02381c6ece5e9fa5b826c9bbea481d7fd77645d96e4b0b1395238124d581d10e56f17f723d897b6d133970f7a57f0fab9148cbbb67237a0a0ffe794ba60c0c70
-  languageName: node
-  linkType: hard
-
-"flatted@npm:^3.1.0":
-  version: 3.1.1
-  resolution: "flatted@npm:3.1.1"
-  checksum: 10/2ce58ed083be7f7ec4500deba0a58df0673487ddadf14ab197d149149e965db6b5d53bedb40d59dee180afba97b093326c6f836385004ea8929b7beb18bb6033
+    keyv: "npm:^4.5.4"
+  checksum: 10/58ce851d9045fffc7871ce2bd718bc485ad7e777bf748c054904b87c351ff1080c2c11da00788d78738bfb51b71e4d5ea12d13b98eb36e3358851ffe495b62dc
   languageName: node
   linkType: hard
 
@@ -6257,7 +6236,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"keyv@npm:^4.5.3":
+"keyv@npm:^4.5.4":
   version: 4.5.4
   resolution: "keyv@npm:4.5.4"
   dependencies:
@@ -6365,6 +6344,15 @@ __metadata:
   dependencies:
     p-locate: "npm:^4.1.0"
   checksum: 10/83e51725e67517287d73e1ded92b28602e3ae5580b301fe54bfb76c0c723e3f285b19252e375712316774cf52006cb236aed5704692c32db0d5d089b69696e30
+  languageName: node
+  linkType: hard
+
+"locate-path@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "locate-path@npm:6.0.0"
+  dependencies:
+    p-locate: "npm:^5.0.0"
+  checksum: 10/72eb661788a0368c099a184c59d2fee760b3831c9c1c33955e8a19ae4a21b4116e53fa736dc086cdeb9fce9f7cc508f2f92d2d3aae516f133e16a2bb59a39f5a
   languageName: node
   linkType: hard
 
@@ -6633,11 +6621,11 @@ __metadata:
   linkType: hard
 
 "minimatch@npm:^3.0.4, minimatch@npm:^3.1.2":
-  version: 3.1.3
-  resolution: "minimatch@npm:3.1.3"
+  version: 3.1.5
+  resolution: "minimatch@npm:3.1.5"
   dependencies:
     brace-expansion: "npm:^1.1.7"
-  checksum: 10/d430c40785fdb42c9fc1a36b9c9e3b08146044bd0f2fd043b05afb436aa4eaf6cdcb7756939ab8fc01664cd75d6335fd5043b2fe2aa084756927ffc77c1e3597
+  checksum: 10/b11a7ee5773cd34c1a0c8436cdbe910901018fb4b6cb47aa508a18d567f6efd2148507959e35fba798389b161b8604a2d704ccef751ea36bd4582f9852b7d63f
   languageName: node
   linkType: hard
 
@@ -6971,7 +6959,7 @@ __metadata:
     levn: "npm:^0.4.1"
     prelude-ls: "npm:^1.2.1"
     type-check: "npm:^0.4.0"
-    word-wrap: "npm:^1.2.3"
+    word-wrap: "npm:^1.2.5"
   checksum: 10/a8398559c60aef88d7f353a4f98dcdff6090a4e70f874c827302bf1213d9106a1c4d5fcb68dacb1feb3c30a04c4102f41047aa55d4c576b863d6fc876e001af6
   languageName: node
   linkType: hard
@@ -6992,7 +6980,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-limit@npm:^3.1.0":
+"p-limit@npm:^3.0.2, p-limit@npm:^3.1.0":
   version: 3.1.0
   resolution: "p-limit@npm:3.1.0"
   dependencies:
@@ -7007,6 +6995,15 @@ __metadata:
   dependencies:
     p-limit: "npm:^2.2.0"
   checksum: 10/513bd14a455f5da4ebfcb819ef706c54adb09097703de6aeaa5d26fe5ea16df92b48d1ac45e01e3944ce1e6aa2a66f7f8894742b8c9d6e276e16cd2049a2b870
+  languageName: node
+  linkType: hard
+
+"p-locate@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "p-locate@npm:5.0.0"
+  dependencies:
+    p-limit: "npm:^3.0.2"
+  checksum: 10/1623088f36cf1cbca58e9b61c4e62bf0c60a07af5ae1ca99a720837356b5b6c5ba3eb1b2127e47a06865fee59dd0453cad7cc844cda9d5a62ac1a5a51b7c86d3
   languageName: node
   linkType: hard
 
@@ -7792,17 +7789,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rimraf@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "rimraf@npm:3.0.2"
-  dependencies:
-    glob: "npm:^7.1.3"
-  bin:
-    rimraf: bin.js
-  checksum: 10/063ffaccaaaca2cfd0ef3beafb12d6a03dd7ff1260d752d62a6077b5dfff6ae81bea571f655bb6b589d366930ec1bdd285d40d560c0dae9b12f125e54eb743d5
-  languageName: node
-  linkType: hard
-
 "run-parallel@npm:^1.1.9":
   version: 1.2.0
   resolution: "run-parallel@npm:1.2.0"
@@ -8401,9 +8387,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svelte@npm:^5.51.5":
-  version: 5.53.3
-  resolution: "svelte@npm:5.53.3"
+"svelte@npm:^5.53.5":
+  version: 5.53.6
+  resolution: "svelte@npm:5.53.6"
   dependencies:
     "@jridgewell/remapping": "npm:^2.3.4"
     "@jridgewell/sourcemap-codec": "npm:^1.5.0"
@@ -8421,7 +8407,7 @@ __metadata:
     locate-character: "npm:^3.0.0"
     magic-string: "npm:^0.30.11"
     zimmerframe: "npm:^1.1.2"
-  checksum: 10/0caf82fbcee62223d147d6e97840a042a03981c782c4404c5ecdbb44c3298cda75e3773127e315ffe511812740a536824e5a18e15699549147b892bfda6772f2
+  checksum: 10/e043387f14b78f64456ac7e276f302a2fb1d7f754d7ac656c7c400c97361762345e27de74a5d02792caea9436cbfabf7ce62ae6fdcdb2da3b8387dda2391420c
   languageName: node
   linkType: hard
 
@@ -8601,7 +8587,7 @@ __metadata:
     sinon-chrome: "npm:^3.0.1"
     sortablejs: "npm:^1.13.0"
     style-loader: "npm:^2.0.0"
-    svelte: "npm:^5.51.5"
+    svelte: "npm:^5.53.5"
     svelte-eslint-parser: "npm:^1.4.1"
     svelte-loader: "npm:^3.2.3"
     svelte-preprocess: "npm:^6.0.0"
@@ -9022,10 +9008,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"word-wrap@npm:^1.2.3":
-  version: 1.2.4
-  resolution: "word-wrap@npm:1.2.4"
-  checksum: 10/a749c0cf410724acde4bdb263dcb13de61489dde22889a6a408e8a57e5948477c5b7438a757e25bb92985ed02562ab271aade90d605a24f3ae78410b638fbbd8
+"word-wrap@npm:^1.2.5":
+  version: 1.2.5
+  resolution: "word-wrap@npm:1.2.5"
+  checksum: 10/1ec6f6089f205f83037be10d0c4b34c9183b0b63fca0834a5b3cee55dd321429d73d40bb44c8fc8471b5203d6e8f8275717f49a8ff4b2b0ab41d7e1b563e0854
   languageName: node
   linkType: hard
 

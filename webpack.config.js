@@ -86,6 +86,7 @@ module.exports = (env) => (
             globOptions: {
               ignore: [
                 "**/*.+(css|js|svelte)",
+                "**/manifest.json",
                 "**/migration.html",
                 "**/options.html",
                 "**/postHandler.html",

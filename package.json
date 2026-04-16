@@ -15,7 +15,7 @@
     "lint": "eslint src tests",
     "lint:fix": "prettier --write src tests && eslint src tests --fix",
     "live": "webpack --env mode=chrome --mode=development --config webpack.config.js --watch",
-    "test:e2e": "jest e2e --testTimeout=30000",
+    "test:e2e": "yarn build:dev && jest e2e --testTimeout=30000 --runInBand",
     "test:unit": "jest unit",
     "zip": "cd dist && bestzip ../dist.zip *"
   },

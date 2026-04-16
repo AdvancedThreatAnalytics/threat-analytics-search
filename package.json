@@ -65,7 +65,7 @@
     "bootstrap": "^4.6.0",
     "bootstrap.native": "^3.0.15",
     "js-beautify": "^1.13.13",
-    "lodash": "^4.17.23",
+    "lodash": "^4.18.1",
     "luxon": "^1.28.1",
     "md5": "^2.3.0",
     "notiflix": "^2.7.0",

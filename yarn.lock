@@ -2275,13 +2275,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/types@npm:^8.2.0":
-  version: 8.57.2
-  resolution: "@typescript-eslint/types@npm:8.57.2"
-  checksum: 10/6d30ff13c8ebe01ba8bcce5f1a5ba52f2c6546056e056f50e010394461d2fffda46dad2a4ebdff59c179873abd274242d8f6a8246c60d7ce244d02ad87bb07f8
-  languageName: node
-  linkType: hard
-
 "@webassemblyjs/ast@npm:1.14.1, @webassemblyjs/ast@npm:^1.14.1":
   version: 1.14.1
   resolution: "@webassemblyjs/ast@npm:1.14.1"
@@ -3116,11 +3109,11 @@ __metadata:
   linkType: hard
 
 "brace-expansion@npm:^5.0.2":
-  version: 5.0.5
-  resolution: "brace-expansion@npm:5.0.5"
+  version: 5.0.6
+  resolution: "brace-expansion@npm:5.0.6"
   dependencies:
     balanced-match: "npm:^4.0.2"
-  checksum: 10/f259b2ddf04489da9512ad637ba6b4ef2d77abd4445d20f7f1714585f153435200a53fa6a2e4a5ee974df14ddad4cd16421f6f803e96e8b452bd48598878d0ee
+  checksum: 10/a7acf120fefa79e9d7c9c92898114f57c07596a3920197f3c5917e6a628b04220a5f7f9618c30bdd973a6576a32113b99f9c3f1c8245ccc399dd2a9a718d81d8
   languageName: node
   linkType: hard
 
@@ -3759,10 +3752,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"devalue@npm:^5.6.4":
-  version: 5.6.4
-  resolution: "devalue@npm:5.6.4"
-  checksum: 10/e54e04524f8e47cc4c86dd7c7139c2f67eca351f6f34129a4033cc09d0060d83e37db1abbe0443eb689b30a1e62ca5af47a41120a5b0db7d97665a024aae07e1
+"devalue@npm:^5.8.1":
+  version: 5.8.1
+  resolution: "devalue@npm:5.8.1"
+  checksum: 10/f5e1905d100c9f287c78bcd873773cda19a90d8972af3dfdd972a2b6793ce688156b8237dbccde9e132c941b6dc34dd75f5d2e8c843fc2275c5a471132cb24eb
   languageName: node
   linkType: hard
 
@@ -4205,13 +4198,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esrap@npm:^2.2.2":
-  version: 2.2.4
-  resolution: "esrap@npm:2.2.4"
+"esrap@npm:^2.2.4":
+  version: 2.2.8
+  resolution: "esrap@npm:2.2.8"
   dependencies:
     "@jridgewell/sourcemap-codec": "npm:^1.4.15"
-    "@typescript-eslint/types": "npm:^8.2.0"
-  checksum: 10/94495d9b0e5fa827068be791f830a10a0026a43f16a97ecdb32512ff5edcb4cf0c926d5f2c2bf9dea134ea00f37f18d5810b40376ac0d76087d026e2ac475693
+  peerDependencies:
+    "@typescript-eslint/types": ^8.2.0
+  peerDependenciesMeta:
+    "@typescript-eslint/types":
+      optional: true
+  checksum: 10/8c4e6aafd02fdc48ce96fa77791650a9cabb73baca24c8bd4083ad2bbf009bd86b362defde1247034c239688ff2286683d6e6b1314a9f4ae2bb0aada717f2b54
   languageName: node
   linkType: hard
 
@@ -7861,9 +7858,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svelte@npm:^5.53.5":
-  version: 5.55.0
-  resolution: "svelte@npm:5.55.0"
+"svelte@npm:^5.55.7":
+  version: 5.55.7
+  resolution: "svelte@npm:5.55.7"
   dependencies:
     "@jridgewell/remapping": "npm:^2.3.4"
     "@jridgewell/sourcemap-codec": "npm:^1.5.0"
@@ -7874,14 +7871,14 @@ __metadata:
     aria-query: "npm:5.3.1"
     axobject-query: "npm:^4.1.0"
     clsx: "npm:^2.1.1"
-    devalue: "npm:^5.6.4"
+    devalue: "npm:^5.8.1"
     esm-env: "npm:^1.2.1"
-    esrap: "npm:^2.2.2"
+    esrap: "npm:^2.2.4"
     is-reference: "npm:^3.0.3"
     locate-character: "npm:^3.0.0"
     magic-string: "npm:^0.30.11"
     zimmerframe: "npm:^1.1.2"
-  checksum: 10/bb7deaf94995216e1136d4cb762d2e4c9379d6543db5c70779b0baedb9eb4aad4c47818a6f3b5dd8d30f2a407180c748e08c02f639436cde59f2ebdef7e7c7b3
+  checksum: 10/8bb012d734097fd0e4ad8b7e451361fe6c1e088218d7b0bc12ef752e118b0dfdaff4720e3c2a00a950a0a664a5e66002183c12832c0cce0664b5c2e47c3edd7a
   languageName: node
   linkType: hard
 
@@ -8051,7 +8048,7 @@ __metadata:
     sinon-chrome: "npm:^3.0.1"
     sortablejs: "npm:^1.13.0"
     style-loader: "npm:^2.0.0"
-    svelte: "npm:^5.53.5"
+    svelte: "npm:^5.55.7"
     svelte-eslint-parser: "npm:^1.4.1"
     svelte-loader: "npm:^3.2.3"
     svelte-preprocess: "npm:^6.0.0"

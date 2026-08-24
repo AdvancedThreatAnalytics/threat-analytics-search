@@ -132,7 +132,7 @@ const ConfigFile = {
           if (settings.configEncrypted) {
             var k1 = settings.configEncryptionKey;
             try {
-              dataRaw = decryptAES(dataRaw, k1);
+              dataRaw = await decryptAES(dataRaw, k1);
             } catch (decErr) {
               console.error(decErr);
               errMsg = "Update failed - Decryption Error";
@@ -402,7 +402,7 @@ const ConfigFile = {
     try {
       var response = await fetch("../settings.json");
       return await response.json();
-    } catch (err) {
+    } catch (_err) {
       return {};
     }
   },

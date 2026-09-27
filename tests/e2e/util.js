@@ -22,7 +22,9 @@ module.exports = {
 
   async goto(url, page = null) {
     page = page || (await this.browser.newPage());
-    await page.goto(`chrome-extension://${EXTENSION_ID}/${url}`);
+    await page.goto(`chrome-extension://${EXTENSION_ID}/${url}`, {
+      waitUntil: "domcontentloaded",
+    });
     return page;
   },
 };

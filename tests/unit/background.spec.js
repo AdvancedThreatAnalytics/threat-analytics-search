@@ -18,7 +18,7 @@ describe("onInstall", () => {
   it("Should open 'migration.html' if previous version was 4", () => {
     installedListener({ previousVersion: "4" });
     expect(createTabs).toHaveBeenCalled();
-    expect(createTabs).toBeCalledWith({
+    expect(createTabs).toHaveBeenCalledWith({
       url: "migration.html?previous=4",
       selected: true,
     });

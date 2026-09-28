@@ -1,11 +1,18 @@
 module.exports = {
-  preset: "jest-puppeteer",
-  testMatch: [
-    "**/tests/**/*.spec.js"
-  ],
   transform: {
     "^.+\\.jsx?$": "babel-jest"
   },
   verbose: true,
-  testEnvironment: "node"
+  projects: [
+    {
+      displayName: "unit",
+      testMatch: ["**/tests/unit/**/*.spec.js"],
+      testEnvironment: "node"
+    },
+    {
+      displayName: "e2e",
+      preset: "jest-puppeteer",
+      testMatch: ["**/tests/e2e/**/*.spec.js"]
+    }
+  ]
 }

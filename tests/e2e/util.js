@@ -1,9 +1,9 @@
-const puppeteer = require("puppeteer");
-
 const EXTENSION_ID = "eliokoocofjemjjohafbmhmgjmedomko";
 
 module.exports = {
   async load() {
+    const { default: puppeteer } = await import("puppeteer");
+
     this.browser = await puppeteer.launch({
       headless: false,
 
@@ -22,7 +22,9 @@ module.exports = {
 
   async goto(url, page = null) {
     page = page || (await this.browser.newPage());
-    await page.goto(`chrome-extension://${EXTENSION_ID}/${url}`);
+    await page.goto(`chrome-extension://${EXTENSION_ID}/${url}`, {
+      waitUntil: "domcontentloaded",
+    });
     return page;
   },
 };

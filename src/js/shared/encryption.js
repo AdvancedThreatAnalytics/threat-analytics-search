@@ -12,24 +12,17 @@ export async function decryptAES(data, key) {
 
   data = data.slice(16, data.length);
 
-  // Try PBKDF2-based key derivation first (new secure format).
-  try {
-    const pbe = await openSSLKey(s2a, salt);
-    const aesCbc = new aesjs.ModeOfOperation.cbc(pbe.key, pbe.iv);
-    const decryptedBytes = aesCbc.decrypt(data);
+  // Only use PBKDF2-based key derivation (secure format). The legacy
+  // MD5-based derivation is no longer used as an automatic fallback here,
+  // since silently downgrading to a broken hash algorithm on any decryption
+  // error creates a cryptographic downgrade vulnerability (CWE-328).
+  // openSSLKeyLegacy remains available for explicit, opt-in legacy migration.
+  const pbe = await openSSLKey(s2a, salt);
+  const aesCbc = new aesjs.ModeOfOperation.cbc(pbe.key, pbe.iv);
+  const decryptedBytes = aesCbc.decrypt(data);
 
-    // Remove pre added paddings and parse from byte to utf8.
-    return aesjs.utils.utf8.fromBytes(aesjs.padding.pkcs7.strip(decryptedBytes));
-  } catch (_) {
-    // Fall back to legacy MD5-based key derivation for backward compatibility
-    // with data encrypted before the PBKDF2 upgrade.
-    const pbe = openSSLKeyLegacy(s2a, salt);
-    const aesCbc = new aesjs.ModeOfOperation.cbc(pbe.key, pbe.iv);
-    const decryptedBytes = aesCbc.decrypt(data);
-
-    // Remove pre added paddings and parse from byte to utf8.
-    return aesjs.utils.utf8.fromBytes(aesjs.padding.pkcs7.strip(decryptedBytes));
-  }
+  // Remove pre added paddings and parse from byte to utf8.
+  return aesjs.utils.utf8.fromBytes(aesjs.padding.pkcs7.strip(decryptedBytes));
 }
 
 export async function encryptAES(data, password, salt) {

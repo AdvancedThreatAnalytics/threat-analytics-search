@@ -40,6 +40,8 @@ async function updateLastConfigUpdate() {
   lastConfigUpdate = DateTime.fromSeconds(date / 1000).toLocaleString(
     DateTime.DATETIME_SHORT_WITH_SECONDS
   );
+
+  return lastConfigUpdateError;
 }
 
 async function updateNow() {
@@ -50,11 +52,12 @@ async function updateNow() {
 
     Notiflix.Notify.Success("The settings were refreshed");
   } else {
-    // Update Last Config label to show error details.
-    updateLastConfigUpdate();
+    // Update Last Config label and toast to show error details.
+    const errorMessage = await updateLastConfigUpdate();
 
     Notiflix.Notify.Failure(
-      "The settings couldn't be updated, please check the URL or the file content"
+      errorMessage ||
+        "The settings couldn't be updated, please check the URL or the file content"
     );
   }
 }

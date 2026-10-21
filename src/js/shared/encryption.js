@@ -1,7 +1,7 @@
 import aesjs from "aes-js";
 import md5 from "md5";
 
-export function decryptAES(data, key) {
+export async function decryptAES(data, key) {
   // Decode the ciphertext and remove the salt part.
   data = Array.from(atob(data), (c) => c.charCodeAt(0));
 
@@ -9,26 +9,37 @@ export function decryptAES(data, key) {
   const s2a = Array.from(unescape(encodeURIComponent(key)), (c) =>
     c.charCodeAt(0)
   );
-  const pbe = openSSLKey(s2a, salt);
 
   data = data.slice(16, data.length);
 
-  // Decrypt the ciphertext using aesjs.
-  const aesCbc = new aesjs.ModeOfOperation.cbc(pbe.key, pbe.iv);
-  const decryptedBytes = aesCbc.decrypt(data);
+  // Try PBKDF2-based key derivation first (new secure format).
+  try {
+    const pbe = await openSSLKey(s2a, salt);
+    const aesCbc = new aesjs.ModeOfOperation.cbc(pbe.key, pbe.iv);
+    const decryptedBytes = aesCbc.decrypt(data);
 
-  // Remove pre added paddings and parse from byte to utf8.
-  return aesjs.utils.utf8.fromBytes(aesjs.padding.pkcs7.strip(decryptedBytes));
+    // Remove pre added paddings and parse from byte to utf8.
+    return aesjs.utils.utf8.fromBytes(aesjs.padding.pkcs7.strip(decryptedBytes));
+  } catch (_) {
+    // Fall back to legacy MD5-based key derivation for backward compatibility
+    // with data encrypted before the PBKDF2 upgrade.
+    const pbe = openSSLKeyLegacy(s2a, salt);
+    const aesCbc = new aesjs.ModeOfOperation.cbc(pbe.key, pbe.iv);
+    const decryptedBytes = aesCbc.decrypt(data);
+
+    // Remove pre added paddings and parse from byte to utf8.
+    return aesjs.utils.utf8.fromBytes(aesjs.padding.pkcs7.strip(decryptedBytes));
+  }
 }
 
-export function encryptAES(data, password, salt) {
+export async function encryptAES(data, password, salt) {
   if (!salt) {
     salt = randArr(8);
   }
   const s2a = Array.from(unescape(encodeURIComponent(password)), (c) =>
     c.charCodeAt(0)
   );
-  const pbe = openSSLKey(s2a, salt);
+  const pbe = await openSSLKey(s2a, salt);
 
   // Spells out 'Salted__'
   let saltBlock = [83, 97, 108, 116, 101, 100, 95, 95].concat(salt);
@@ -59,10 +70,11 @@ export function randArr(num) {
 }
 
 /**
- * This function is needed to provide backward compatibility and calculate
- * the key and iv in the same way as GibberishAes.
+ * Legacy key derivation function using MD5-based OpenSSL/GibberishAes derivation.
+ * Kept for backward compatibility to decrypt data encrypted before the PBKDF2 upgrade.
+ * @deprecated Use openSSLKey for new encryptions.
  */
-export function openSSLKey(passwordArr, saltArr) {
+export function openSSLKeyLegacy(passwordArr, saltArr) {
   const rounds = 3;
   const data00 = passwordArr.concat(saltArr);
 
@@ -83,8 +95,48 @@ export function openSSLKey(passwordArr, saltArr) {
   };
 }
 
+/**
+ * Derives a key and IV from the given password and salt using PBKDF2 (SHA-256)
+ * via the Web Crypto API. Works in both browser (Chrome extension) and Node.js
+ * environments without requiring native Node.js modules.
+ *
+ * Uses 100,000 iterations to provide sufficient computational effort against
+ * brute-force attacks (per OWASP recommendations).
+ */
+export async function openSSLKey(passwordArr, saltArr) {
+  const passwordBuffer = new Uint8Array(passwordArr);
+  const saltBuffer = new Uint8Array(saltArr);
+
+  const keyMaterial = await globalThis.crypto.subtle.importKey(
+    "raw",
+    passwordBuffer,
+    "PBKDF2",
+    false,
+    ["deriveBits"]
+  );
+
+  const derivedBits = await globalThis.crypto.subtle.deriveBits(
+    {
+      name: "PBKDF2",
+      hash: "SHA-256",
+      salt: saltBuffer,
+      iterations: 100000,
+    },
+    keyMaterial,
+    48 * 8 // 48 bytes = 32 (key) + 16 (IV)
+  );
+
+  const derivedArr = Array.from(new Uint8Array(derivedBits));
+
+  return {
+    key: derivedArr.slice(0, 32),
+    iv: derivedArr.slice(32, 48),
+  };
+}
+
 export default {
   decryptAES,
   encryptAES,
   openSSLKey,
+  openSSLKeyLegacy,
 };

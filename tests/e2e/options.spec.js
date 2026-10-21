@@ -96,6 +96,9 @@ describe("Options page", () => {
     // Blur the input so that the extension updates its value on local storage.
     await page.$eval(exampleLink, (el) => el.blur());
 
+    // Wait for Svelte to update the reactive fields
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     enable = await page.$eval(enable, (el) => el.value);
     host = await page.$eval(host, (el) => el.value);
     port = await page.$eval(port, (el) => el.value);
@@ -135,6 +138,9 @@ describe("Options page", () => {
 
     // Blur the input so that the extension updates its value on local storage.
     await page.$eval(exampleLink, (el) => el.blur());
+
+    // Wait for Svelte to update the reactive fields
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     enable = await page.$eval(enable, (el) => el.value);
     host = await page.$eval(host, (el) => el.value);

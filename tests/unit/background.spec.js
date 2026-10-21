@@ -2,7 +2,7 @@ require("./util");
 
 import LocalStore from "../../src/js/shared/local_store";
 const ConfigFile = require("../../src/js/shared/config_file");
-const { MiscURLs, StoreKey } = require("../../src/js/shared/constants");
+const { StoreKey } = require("../../src/js/shared/constants");
 const {
   installedListener,
   alarmListener,
@@ -18,7 +18,7 @@ describe("onInstall", () => {
   it("Should open 'migration.html' if previous version was 4", () => {
     installedListener({ previousVersion: "4" });
     expect(createTabs).toHaveBeenCalled();
-    expect(createTabs).toBeCalledWith({
+    expect(createTabs).toHaveBeenCalledWith({
       url: "migration.html?previous=4",
       selected: true,
     });
@@ -30,14 +30,10 @@ describe("onInstall", () => {
     expect(updateNow).not.toHaveBeenCalled();
   });
 
-  it("Should call 'updateNow' and open welcome URL if installing for the first time", async () => {
+  it("Should call 'updateNow' if installing for the first time", async () => {
     await installedListener({ reason: "install" });
     expect(sanitizeSettings).toHaveReturned();
     expect(updateNow).toHaveBeenCalled();
-    expect(createTabs).toBeCalledWith({
-      url: MiscURLs.INSTALLED_URL,
-      selected: true,
-    });
   });
 });
 

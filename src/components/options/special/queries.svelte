@@ -129,14 +129,14 @@ function validateInput(index, field, value, isActive) {
 
   if (!error) {
     delete inputErrors[errKey];
-    inputErrors = inputErrors;
+    inputErrors = { ...inputErrors };
   } else if (!isActive) {
     inputErrors[errKey] = error;
   }
 
   if (!warning) {
     delete inputWarnings[index];
-    inputWarnings = inputWarnings;
+    inputWarnings = { ...inputWarnings };
   } else if (!isActive) {
     inputWarnings[index] = warning;
   }

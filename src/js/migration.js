@@ -174,7 +174,7 @@ function tryJSONparse(string) {
   var res;
   try {
     res = JSON.parse(string);
-  } catch (err) {
+  } catch (_err) {
     res = null;
   }
   return res;

@@ -22,7 +22,7 @@ function providerTabHelper(initData, storageKey) {
             { key: "RSAConfigDevId", value: devId },
           ];
         }
-      } catch (err) {
+      } catch (_err) {
         // Do nothing.
       }
       return null;
@@ -44,7 +44,7 @@ function providerTabHelper(initData, storageKey) {
             { key: "NWIConfigCollectionName", value: collectionName },
           ];
         }
-      } catch (err) {
+      } catch (_err) {
         // Do nothing.
       }
       return null;

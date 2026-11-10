@@ -49,7 +49,7 @@ describe("ContextualMenu", () => {
           group.enabled &&
           getGroupProviders(index, searchProviders).length > 0
         ) {
-          expect(createContextMenu).toBeCalledWith({
+          expect(createContextMenu).toHaveBeenCalledWith({
             id: MenuPreffix.GROUP + index,
             title: group.name,
             contexts: ["selection"],
@@ -75,13 +75,13 @@ describe("ContextualMenu", () => {
       // Check that only non-disabled providers were added.
       searchProviders.forEach((provider, index) => {
         if (provider.enabled) {
-          expect(createContextMenu).toBeCalledWith({
+          expect(createContextMenu).toHaveBeenCalledWith({
             id: MenuPreffix.PROVIDER + index,
             title: provider.label,
             contexts: ["selection"],
           });
         } else {
-          expect(createContextMenu).not.toBeCalledWith({
+          expect(createContextMenu).not.toHaveBeenCalledWith({
             id: MenuPreffix.PROVIDER + index,
             title: provider.label,
             contexts: ["selection"],
@@ -137,14 +137,14 @@ describe("ContextualMenu", () => {
         const queries = _.get(settings, "queries", []);
 
         if (config[provider.enableKey]) {
-          expect(createContextMenu).toBeCalledWith(
+          expect(createContextMenu).toHaveBeenCalledWith(
             expect.objectContaining({
               title: provider.title,
               contexts: ["selection"],
             })
           );
         } else {
-          expect(createContextMenu).not.toBeCalledWith(
+          expect(createContextMenu).not.toHaveBeenCalledWith(
             expect.objectContaining({
               title: provider.title,
               contexts: ["selection"],
@@ -156,14 +156,14 @@ describe("ContextualMenu", () => {
         for (const index in queries) {
           const query = queries[index];
           if (config[provider.enableKey] && query.enabled) {
-            expect(createContextMenu).toBeCalledWith(
+            expect(createContextMenu).toHaveBeenCalledWith(
               expect.objectContaining({
                 title: query.label,
                 contexts: ["selection"],
               })
             );
           } else {
-            expect(createContextMenu).not.toBeCalledWith(
+            expect(createContextMenu).not.toHaveBeenCalledWith(
               expect.objectContaining({
                 title: query.label,
                 contexts: ["selection"],
@@ -207,7 +207,7 @@ describe("ContextualMenu", () => {
         return item.menuIndex === info.menuItemId;
       });
       const targetURL = getProviderTargetURL(provider, info.selectionText);
-      expect(createTabs).toBeCalledWith({
+      expect(createTabs).toHaveBeenCalledWith({
         url: targetURL,
         selected: !settings.resultsInBackgroundTab,
         index: tab.index + 1,
@@ -229,7 +229,7 @@ describe("ContextualMenu", () => {
       await onClickedListener(info, tab);
       const targetURL = getProviderTargetURL(providers[0], info.selectionText);
 
-      expect(createTabs).toBeCalledWith({
+      expect(createTabs).toHaveBeenCalledWith({
         url: targetURL,
         selected: !settings.resultsInBackgroundTab,
         index: tab.index + 1,
@@ -253,7 +253,7 @@ describe("ContextualMenu", () => {
       await onClickedListener(info, tab);
       const targetURL = getProviderTargetURL(providers[0], info.selectionText);
 
-      expect(createTabs).toBeCalledWith({
+      expect(createTabs).toHaveBeenCalledWith({
         url: targetURL,
         selected: !settings.resultsInBackgroundTab,
         index: tab.index + 1,
@@ -316,12 +316,12 @@ describe("ContextualMenu", () => {
       settings.openGroupsInNewWindow = false;
       await LocalStore.setOne(StoreKey.SETTINGS, settings);
       await onClickedListener(info, tab);
-      expect(createTabs).toBeCalledWith({
+      expect(createTabs).toHaveBeenCalledWith({
         url: urls[0],
         selected: !settings.resultsInBackgroundTab,
         index: settings.enableAdjacentTabs ? ++tab.index : null,
       });
-      expect(createTabs).toBeCalledWith({
+      expect(createTabs).toHaveBeenCalledWith({
         url: urls[1],
         selected: !settings.resultsInBackgroundTab,
         index: settings.enableAdjacentTabs ? ++tab.index : null,
@@ -342,7 +342,7 @@ describe("ContextualMenu", () => {
       const subUrl = "https://192.168.1.10/investigation/2/navigate/query";
 
       await onClickedListener(info);
-      expect(createTabs).toBeCalledWith({
+      expect(createTabs).toHaveBeenCalledWith({
         selected: true,
         url: expect.stringContaining(subUrl),
       });
@@ -357,7 +357,7 @@ describe("ContextualMenu", () => {
       const subUrl = "https://192.168.1.10/#/search/cb.urlver=1&q=test";
 
       await onClickedListener(info);
-      expect(createTabs).toBeCalledWith({
+      expect(createTabs).toHaveBeenCalledWith({
         selected: true,
         url: expect.stringContaining(subUrl),
       });
@@ -372,7 +372,7 @@ describe("ContextualMenu", () => {
       const subUrl = "nw:///?collection=&where=%28ip.src%3Dtest";
 
       await onClickedListener(info);
-      expect(createTabs).toBeCalledWith({
+      expect(createTabs).toHaveBeenCalledWith({
         url: expect.stringContaining(subUrl),
       });
     });
@@ -400,7 +400,7 @@ describe("ContextualMenu", () => {
         resultsInBackgroundTab: true,
       });
       await onClickedListener(info, tab);
-      expect(createTabs).toBeCalledWith({
+      expect(createTabs).toHaveBeenCalledWith({
         url: targetURL,
         selected: false,
         index: tab.index + 1,
@@ -428,7 +428,7 @@ describe("ContextualMenu", () => {
         resultsInBackgroundTab: false,
       });
       await onClickedListener(info, tab);
-      expect(createTabs).toBeCalledWith({
+      expect(createTabs).toHaveBeenCalledWith({
         url: targetURL,
         selected: true,
         index: tab.index + 1,
@@ -456,7 +456,7 @@ describe("ContextualMenu", () => {
         enableAdjacentTabs: true,
       });
       await onClickedListener(info, tab);
-      expect(createTabs).toBeCalledWith({
+      expect(createTabs).toHaveBeenCalledWith({
         url: targetURL,
         selected: !settings.resultsInBackgroundTab,
         index: tab.index + 1,
@@ -484,7 +484,7 @@ describe("ContextualMenu", () => {
         enableAdjacentTabs: false,
       });
       await onClickedListener(info, tab);
-      expect(createTabs).toBeCalledWith({
+      expect(createTabs).toHaveBeenCalledWith({
         url: targetURL,
         selected: !settings.resultsInBackgroundTab,
         index: null,
@@ -557,12 +557,12 @@ describe("ContextualMenu", () => {
         openGroupsInNewWindow: false,
       });
       await onClickedListener(info, tab);
-      expect(createTabs).toBeCalledWith({
+      expect(createTabs).toHaveBeenCalledWith({
         url: urls[0],
         selected: !settings.resultsInBackgroundTab,
         index: null,
       });
-      expect(createTabs).toBeCalledWith({
+      expect(createTabs).toHaveBeenCalledWith({
         url: urls[1],
         selected: !settings.resultsInBackgroundTab,
         index: null,

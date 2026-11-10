@@ -4,8 +4,9 @@ import "../styles/theme.scss";
 
 import "../css/main.css";
 
+import { mount } from "svelte";
 import Options from "../components/options/main.svelte";
 
-new Options({
+mount(Options, {
   target: document.getElementById("options"),
 });

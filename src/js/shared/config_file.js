@@ -40,6 +40,9 @@ const PROVIDER_MAPPING = [
   { index: 9, field: "proxyUrl" },
 ];
 
+const DECRYPTION_ERROR_MESSAGE =
+  "Could not decrypt the configuration. Check the encryption key and verify the file uses the current format; legacy encrypted files are no longer supported.";
+
 // --- Utility functions --- //
 
 function mapArrayToObject(array, mapping) {
@@ -127,21 +130,25 @@ const ConfigFile = {
         if (response.status >= 200 && response.status < 300) {
           let dataRaw = await response.text();
           dataRaw = dataRaw.replace(/\n\r|\r\n/g, "");
+          let data;
 
           // Check if the file should be decripted.
           if (settings.configEncrypted) {
             var k1 = settings.configEncryptionKey;
             try {
               dataRaw = await decryptAES(dataRaw, k1);
+              data = JSON.parse(dataRaw);
             } catch (decErr) {
               console.error(decErr);
-              errMsg = "Update failed - Decryption Error";
+              errMsg = DECRYPTION_ERROR_MESSAGE;
             }
+          } else {
+            data = JSON.parse(dataRaw);
           }
 
-          // Parse data object.
-          const data = JSON.parse(dataRaw);
-          await ConfigFile.parseJSONFile(data, false);
+          if (!errMsg) {
+            await ConfigFile.parseJSONFile(data, false);
+          }
         } else {
           errMsg = "Update failed - Invalid URL";
         }

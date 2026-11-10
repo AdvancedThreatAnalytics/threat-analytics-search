@@ -1,5 +1,4 @@
 import aesjs from "aes-js";
-import md5 from "md5";
 
 export async function decryptAES(data, key) {
   // Decode the ciphertext and remove the salt part.
@@ -12,24 +11,14 @@ export async function decryptAES(data, key) {
 
   data = data.slice(16, data.length);
 
-  // Try PBKDF2-based key derivation first (new secure format).
-  try {
-    const pbe = await openSSLKey(s2a, salt);
-    const aesCbc = new aesjs.ModeOfOperation.cbc(pbe.key, pbe.iv);
-    const decryptedBytes = aesCbc.decrypt(data);
+  // Only use PBKDF2-based key derivation. Fail closed instead of downgrading
+  // to the broken legacy hash algorithm when decryption fails (CWE-328).
+  const pbe = await openSSLKey(s2a, salt);
+  const aesCbc = new aesjs.ModeOfOperation.cbc(pbe.key, pbe.iv);
+  const decryptedBytes = aesCbc.decrypt(data);
 
-    // Remove pre added paddings and parse from byte to utf8.
-    return aesjs.utils.utf8.fromBytes(aesjs.padding.pkcs7.strip(decryptedBytes));
-  } catch (_) {
-    // Fall back to legacy MD5-based key derivation for backward compatibility
-    // with data encrypted before the PBKDF2 upgrade.
-    const pbe = openSSLKeyLegacy(s2a, salt);
-    const aesCbc = new aesjs.ModeOfOperation.cbc(pbe.key, pbe.iv);
-    const decryptedBytes = aesCbc.decrypt(data);
-
-    // Remove pre added paddings and parse from byte to utf8.
-    return aesjs.utils.utf8.fromBytes(aesjs.padding.pkcs7.strip(decryptedBytes));
-  }
+  // Remove pre added paddings and parse from byte to utf8.
+  return aesjs.utils.utf8.fromBytes(aesjs.padding.pkcs7.strip(decryptedBytes));
 }
 
 export async function encryptAES(data, password, salt) {
@@ -67,32 +56,6 @@ export function randArr(num) {
     result = result.concat(Math.floor(Math.random() * 256));
   }
   return result;
-}
-
-/**
- * Legacy key derivation function using MD5-based OpenSSL/GibberishAes derivation.
- * Kept for backward compatibility to decrypt data encrypted before the PBKDF2 upgrade.
- * @deprecated Use openSSLKey for new encryptions.
- */
-export function openSSLKeyLegacy(passwordArr, saltArr) {
-  const rounds = 3;
-  const data00 = passwordArr.concat(saltArr);
-
-  let md5_hash = [];
-  let result = [];
-
-  md5_hash[0] = aesjs.utils.hex.toBytes(md5(data00));
-  result = md5_hash[0];
-
-  for (let i = 1; i < rounds; i++) {
-    md5_hash[i] = aesjs.utils.hex.toBytes(md5(md5_hash[i - 1].concat(data00)));
-    result = result.concat(md5_hash[i]);
-  }
-
-  return {
-    key: result.slice(0, 32),
-    iv: result.slice(32, 48),
-  };
 }
 
 /**
@@ -138,5 +101,4 @@ export default {
   decryptAES,
   encryptAES,
   openSSLKey,
-  openSSLKeyLegacy,
 };

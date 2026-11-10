@@ -7,6 +7,7 @@ import { StoreKey } from "../../src/js/shared/constants";
 
 const defaultSettings = require("../resources/defaultSettings.json");
 const encryptedSettings = require("../resources/encryptedSettings.json");
+const legacyEncryptedSettings = "U2FsdGVkX18BAgMEBQYHCIIDqJR/5a0Ybc8XCiHuVWs=";
 
 const parseJSONFile = jest.spyOn(ConfigFile, "parseJSONFile");
 const updateNow = jest.spyOn(ConfigFile, "updateNow");
@@ -88,6 +89,26 @@ describe("ConfigFile", () => {
       const lastConfigData = await LocalStore.getOne(StoreKey.LAST_CONFIG_DATA);
       expect(lastConfigData.errorMsg).toBeDefined();
       expect(result).toBeFalsy();
+    });
+
+    it("Shows a useful error for unsupported legacy encrypted configuration", async () => {
+      const settings = (await LocalStore.getOne(StoreKey.SETTINGS)) || {};
+      await LocalStore.setOne(StoreKey.SETTINGS, {
+        ...settings,
+        configEncrypted: true,
+        configEncryptionKey: "password",
+      });
+      parseJSONFile.mockClear();
+      fetch.mockResponseOnce(legacyEncryptedSettings);
+
+      const result = await updateNow();
+
+      const lastConfigData = await LocalStore.getOne(StoreKey.LAST_CONFIG_DATA);
+      expect(result).toBeFalsy();
+      expect(lastConfigData.errorMsg).toBe(
+        "Could not decrypt the configuration. Check the encryption key and verify the file uses the current format; legacy encrypted files are no longer supported."
+      );
+      expect(parseJSONFile).not.toHaveBeenCalled();
     });
   });
 
